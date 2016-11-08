@@ -13,10 +13,13 @@ This project is still under developing.
 
 The first release will include four basic features. The second release have not planned yet.
 
-spy - excluding "closure related function: calledOn, alwaysCalledOn"
-stub
-mock
-sandbox
+spy[30%] - excluding "closure related function: calledOn, alwaysCalledOn"
+
+stub[0%]
+
+mock[0%]
+
+sandbox[0%]
 
 ## Installation
 
