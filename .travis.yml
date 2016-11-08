@@ -1,0 +1,8 @@
+language: python
+python:
+  - "2.7"
+  - "3.5"
+env:
+  - TEST_DIR=test
+script:
+    "python -m unittest *"
