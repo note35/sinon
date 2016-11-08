@@ -5,4 +5,5 @@ python:
 env:
   - TEST_DIR=test
 script:
-    "python -m unittest *"
+    cd $TEST_DIR && \
+    python -m unittest TestSinonBase

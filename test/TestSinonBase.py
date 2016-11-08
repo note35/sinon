@@ -100,7 +100,3 @@ class TestSinonBase(unittest.TestCase):
         sinon.g.B_func()
         self.assertTrue(base.called)
         base.restore()
-
-
-if __name__ == "__main__":
-    unittest.main()
