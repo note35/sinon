@@ -1,8 +1,10 @@
+![dev-branch-ci-status](https://travis-ci.org/note35/python-sinon.svg?branch=dev "dev-branch-ci-status")
+
 # Sinon.py
 
 Standalone and test framework agnostic Python test spies, stubs and mocks (pronounced "sigh-non").
 
-## special thanks 
+## Special Thanks 
 
 This idea is inspired by [sinonjs](https://github.com/sinonjs/sinon)
 All the content is copied the idea but rewriting in python.
