@@ -1,3 +1,7 @@
+global CALLQUEUE
+CALLQUEUE = []
+
+
 def addStates(f):
 
     def empty_function(*args, **kwargs):
@@ -5,6 +9,7 @@ def addStates(f):
 
     def wrapped(*args, **kwargs):
         wrapped.callCount += 1
+        CALLQUEUE.append(wrapped)
         if args:
             wrapped.args_list.append(args)
         if kwargs:
@@ -14,7 +19,7 @@ def addStates(f):
         except:
             wrapped.error_list.append(Exception)
             return empty_function
-           
+
     wrapped.callCount = 0
     wrapped.args_list = []
     wrapped.kwargs_list = []

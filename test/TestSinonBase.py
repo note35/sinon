@@ -191,7 +191,7 @@ class TestSinonBase(unittest.TestCase):
         base3.restore()
         base4.restore()
 
-    def test021_calledBefore_calledAfter(self):
+    def test021_calledBefore_calledAfter_normal(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         base3 = SinonBase(B_func)
@@ -207,6 +207,41 @@ class TestSinonBase(unittest.TestCase):
         base1.restore()
         base2.restore()
         base3.restore()
+
+    def test021_calledBefore_nothing_called(self):
+        base1 = SinonBase(os, "system")
+        base2 = SinonBase()
+        base3 = SinonBase(B_func)
+        self.assertFalse(base1.calledBefore(base2))
+        self.assertFalse(base2.calledAfter(base1))
+        base1.restore()
+        base2.restore()
+
+    def test021_calledBefore_calledAfter_recalled_method(self):
+        base1 = SinonBase(os, "system")
+        base2 = SinonBase()
+        os.system("cd")
+        base2()
+        os.system("cd")
+        self.assertTrue(base1.calledBefore(base2))
+        self.assertTrue(base1.calledAfter(base2))
+        self.assertTrue(base2.calledBefore(base1))
+        self.assertTrue(base2.calledAfter(base1))
+        base1.restore()
+        base2.restore()
+
+    def test021_calledBefore_calledAfter_called_restore_recalled(self):
+        base1 = SinonBase(os, "system")
+        base2 = SinonBase()
+        os.system("cd")
+        base1.restore()
+        base1 = SinonBase(os, "system")
+        base2()
+        os.system("cd")
+        self.assertTrue(base1.calledAfter(base2))
+        self.assertTrue(base2.calledBefore(base1))
+        base1.restore()
+        base2.restore()
 
     def test022_calledWithExactly_method_args_only(self):
         base = SinonBase(C_func)

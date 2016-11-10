@@ -24,7 +24,6 @@ def init(target_globals):
 class SinonBase(object):
 
     _queue = []
-    # Todo: _queue should update when self is called
 
     def __new__(self, obj=None, prop=None):
         new = super(SinonBase, self).__new__(self)
@@ -108,16 +107,20 @@ class SinonBase(object):
 
     def delWrap(self):
         if self.args_type == "MODULE_FUNCTION":
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.obj, self.prop)]
             setattr(self.obj, self.prop, self.orig_func)
         elif self.args_type == "MODULE":
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
             delattr(self.obj, LOCK)
         elif self.args_type == "FUNCTION":
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(g, self.obj.__name__)]
             setattr(g, self.obj.__name__, self.orig_func)
         elif self.args_type == "PURE":
-            pass
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
 
 
     def __call__(self):
+        Wrapper.CALLQUEUE.append(self)
         self.pure_count = self.pure_count + 1
 
     def _args_list(self):
@@ -149,6 +152,16 @@ class SinonBase(object):
             return getattr(g, self.obj.__name__).error_list
         elif self.args_type == "PURE":
             pass
+
+    def _getCallQueueIndex(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.obj, self.prop)]
+        elif self.args_type == "MODULE":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
+        elif self.args_type == "FUNCTION":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(g, self.obj.__name__)]
+        elif self.args_type == "PURE":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
 
     @property
     def args(self):
@@ -201,27 +214,31 @@ class SinonBase(object):
 
     @property
     def firstCall(self):
-        return True if self._queue.index(self) == 0 else False
+        return True if 0 in self._getCallQueueIndex() else False
 
     @property
     def secondCall(self):
-        return True if self._queue.index(self) == 1 else False
+        return True if 1 in self._getCallQueueIndex() else False
 
     @property
     def thirdCall(self):
-        return True if self._queue.index(self) == 2 else False
+        return True if 2 in self._getCallQueueIndex() else False
 
     @property
     def lastCall(self):
-        return True if len(self._queue) - self._queue.index(self) - 1 == 0 else False
+        return True if len(Wrapper.CALLQUEUE)-1 in self._getCallQueueIndex() else False
 
     def calledBefore(self, another_obj):
-        str_queue = [s.__str__() for s in self._queue]
-        return True if self._queue.index(self) < str_queue.index(another_obj.__str__()) else False
+        if Wrapper.CALLQUEUE:
+            return True if min(self._getCallQueueIndex()) < max(another_obj._getCallQueueIndex()) else False
+        else:
+            return False
 
     def calledAfter(self, another_obj):
-        str_queue = [s.__str__() for s in self._queue]
-        return True if self._queue.index(self) > str_queue.index(another_obj.__str__()) else False
+        if Wrapper.CALLQUEUE:
+            return True if max(self._getCallQueueIndex()) > min(another_obj._getCallQueueIndex()) else False
+        else:
+            return False
 
     def calledOn(obj):
         pass
