@@ -118,7 +118,58 @@ class SinonBase(object):
 
     def __call__(self):
         self.pure_count = self.pure_count + 1
- 
+
+    def _args_list(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).args_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).args_list
+        elif self.args_type == "PURE":
+            pass
+
+    def _kwargs_list(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).kwargs_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).kwargs_list
+        elif self.args_type == "PURE":
+            pass
+
+    def _error_list(self): 
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).error_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).error_list
+        elif self.args_type == "PURE":
+            pass
+
+    @property
+    def args(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).args_list[-1]
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).args_list[-1]
+        elif self.args_type == "PURE":
+            pass
+
+    @property
+    def kwargs(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).kwargs_list[-1]
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).kwargs_list[-1]
+        elif self.args_type == "PURE":
+            pass
 
     @property
     def callCount(self):
@@ -144,7 +195,7 @@ class SinonBase(object):
         return True if self.callCount == 2 else False
 
     @property
-    def calledTrice(self):
+    def calledThrice(self):
         return True if self.callCount == 3 else False
 
     @property
@@ -169,15 +220,47 @@ class SinonBase(object):
     def calledAfter(self, another_obj):
         return True if self._queue.index(self) > self._queue.index(another_obj) else False
 
-    def calledWith(self, *args):
+    def calledOn(obj):
+        pass
+
+    def alwaysCalledOn(obj):
+        pass
+
+    def calledWith(self, *args, **kwargs):
+        pass
+
+    def alwaysCalledWith(self, *args, **kwargs):
+        pass
+
+    def calledWithExactly(self, *args, **kwargs):
+        if args and kwargs:
+            ret1 = True if args in self._args_list() else False
+            ret2 = True if kwargs in self._kwargs_list() else False
+            return True if ret1 and ret2 else False
+        elif args:
+            return True if args in self._args_list() else False
+        elif kwargs:
+            return True if kwargs in self._kwargs_list() else False
+        else:
+            ErrorHandler.calledWithEmptyError()
+
+    def alwaysCalledWithExactly(self, *args, **kwargs):
+        pass
+
+    def calledWithMatch(self, *args, **kwargs):
+        pass
+
+    def alwaysCalledWithMatch(self, *args, **kwargs):
+        pass
+
+    def calledWithNew():
+        pass
+
+    def neverCalledWith(self, *args, **kwargs):
+        pass
+
+    def neverCalledWithMatch(self, *args, **kwargs):
         pass
 
     def threw(self):
-        pass
-
-    @property
-    def args(self):
-        if self.args_type == "METHOD":
-            print(getattr(self.module, self.method).args)
-        pass 
-
+        return True if len(self._error_list())>0 else False

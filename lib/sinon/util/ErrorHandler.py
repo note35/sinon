@@ -17,3 +17,6 @@ def propInObjError(obj, prop):
 
 def lockError(name):
     return exceptionHelper("[{}] have already been declared".format(name))
+
+def calledWithEmptyError():
+    return exceptionHelper("calledWith() have no argument")
