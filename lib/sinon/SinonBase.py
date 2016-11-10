@@ -24,6 +24,7 @@ def init(target_globals):
 class SinonBase(object):
 
     _queue = []
+    # Todo: _queue should update when self is called
 
     def __new__(self, obj=None, prop=None):
         new = super(SinonBase, self).__new__(self)
@@ -215,10 +216,12 @@ class SinonBase(object):
         return True if len(self._queue) - self._queue.index(self) - 1 == 0 else False
 
     def calledBefore(self, another_obj):
-        return True if self._queue.index(self) < self._queue.index(another_obj) else False
+        str_queue = [s.__str__() for s in self._queue]
+        return True if self._queue.index(self) < str_queue.index(another_obj.__str__()) else False
 
     def calledAfter(self, another_obj):
-        return True if self._queue.index(self) > self._queue.index(another_obj) else False
+        str_queue = [s.__str__() for s in self._queue]
+        return True if self._queue.index(self) > str_queue.index(another_obj.__str__()) else False
 
     def calledOn(obj):
         pass

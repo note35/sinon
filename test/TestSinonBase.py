@@ -212,18 +212,22 @@ class TestSinonBase(unittest.TestCase):
         base = SinonBase(C_func)
         sinon.g.C_func("a", "b", "c")
         self.assertTrue(base.calledWithExactly("a", "b", "c"))
+        base.restore()
 
-    def test022_calledWithExactly_method_args_only_partial(self):
+    def test023_calledWithExactly_method_args_only_partial(self):
         base = SinonBase(C_func)
         sinon.g.C_func("a", "b", "c")
         self.assertFalse(base.calledWithExactly("a", "b"))
+        base.restore()
 
     def test050_threw_with_err(self):
         base = SinonBase(D_func)
         sinon.g.D_func(err=True)
         self.assertTrue(base.threw()) 
+        base.restore()
 
     def test051_threw_without_err(self):
         base = SinonBase(D_func)
         sinon.g.D_func(err=False)
         self.assertFalse(base.threw()) 
+        base.restore()
