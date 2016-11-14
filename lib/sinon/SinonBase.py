@@ -6,7 +6,7 @@ import inspect
 from copy import deepcopy
 from types import ModuleType, FunctionType
 
-from lib.sinon.util import ErrorHandler, Wrapper
+from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
 
 global LOCK
 LOCK = "__SINONLOCK__"
@@ -247,25 +247,44 @@ class SinonBase(object):
         pass
 
     def calledWith(self, *args, **kwargs):
-        pass
+        if args and kwargs:
+            return True if CollectionHandler.partialTupleInTupleList(self._args_list(), args) and CollectionHandler.partialDictInDictList(self._kwargs_list(), kwargs) else False
+        elif args:
+            return True if CollectionHandler.partialTupleInTupleList(self._args_list(), args) else False
+        elif kwargs:
+            return True if CollectionHandler.partialDictInDictList(self._kwargs_list(), kwargs) else False
+        else:
+            ErrorHandler.calledWithEmptyError()
 
     def alwaysCalledWith(self, *args, **kwargs):
-        pass
+        if args and kwargs:
+            return True if CollectionHandler.partialTupleInTupleListAlways(self._args_list(), args) and CollectionHandler.partialDictInDictListAlways(self._kwargs_list(), kwargs) else False
+        elif args:
+            return True if CollectionHandler.partialTupleInTupleListAlways(self._args_list(), args) else False
+        elif kwargs:
+            return True if CollectionHandler.partialDictInDictListAlways(self._kwargs_list(), kwargs) else False
+        else:
+            ErrorHandler.calledWithEmptyError()
 
     def calledWithExactly(self, *args, **kwargs):
         if args and kwargs:
-            ret1 = True if args in self._args_list() else False
-            ret2 = True if kwargs in self._kwargs_list() else False
-            return True if ret1 and ret2 else False
+            return True if CollectionHandler.tupleInTupleList(self._args_list(), args) and CollectionHandler.dictInDictList(self._kwargs_list(), kwargs) else False
         elif args:
-            return True if args in self._args_list() else False
+            return True if CollectionHandler.tupleInTupleList(self._args_list(), args) else False
         elif kwargs:
-            return True if kwargs in self._kwargs_list() else False
+            return True if CollectionHandler.dictInDictList(self._kwargs_list(), kwargs) else False
         else:
             ErrorHandler.calledWithEmptyError()
 
     def alwaysCalledWithExactly(self, *args, **kwargs):
-        pass
+        if args and kwargs:
+            return True if CollectionHandler.tupleInTupleListAlways(self._args_list(), args) and CollectionHandler.dictInDictListAlways(self._kwargs_list(), kwargs) else False
+        elif args:
+            return True if CollectionHandler.tupleInTupleListAlways(self._args_list(), args) else False
+        elif kwargs:
+            return True if CollectionHandler.dictInDictListAlways(self._kwargs_list(), kwargs) else False
+        else:
+            ErrorHandler.calledWithEmptyError()
 
     def calledWithMatch(self, *args, **kwargs):
         pass

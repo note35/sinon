@@ -48,15 +48,15 @@ class TestSinonBase(unittest.TestCase):
             base.called
         self.assertTrue(exception in str(context.exception))
 
-    def test001_constructor_custom_module(self):
+    def test011_constructor_custom_module(self):
         base = SinonBase(A_object)
         base.restore()
 
-    def test002_constructor_library_module(self):
+    def test012_constructor_library_module(self):
         base = SinonBase(os)
         base.restore()
 
-    def test003_constructor_module_repeated(self):
+    def test013_constructor_module_repeated(self):
         base1 = SinonBase(os)
         exception = "[{}] have already been declared".format(os.__name__)
         with self.assertRaises(Exception) as context:
@@ -64,7 +64,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(exception in str(context.exception))
         base1.restore()
 
-    def test004_constructor_module_reassigned(self):
+    def test014_constructor_module_reassigned(self):
         base = SinonBase(os)
         exception = "[{}] have already been declared".format(os.__name__)
         with self.assertRaises(Exception) as context:
@@ -72,15 +72,15 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(exception in str(context.exception))
         base.restore()
 
-    def test005_constructor_custom_module_method(self):
+    def test015_constructor_custom_module_method(self):
         base = SinonBase(A_object, "A_func")
         base.restore()
 
-    def test006_constructor_library_module_method(self):
+    def test016_constructor_library_module_method(self):
         base = SinonBase(os, "system")
         base.restore()
 
-    def test007_constructor_module_method_repeated(self):
+    def test017_constructor_module_method_repeated(self):
         base = SinonBase(os, "system")
         exception = "[{}] have already been declared".format("system")
         with self.assertRaises(Exception) as context:
@@ -88,15 +88,15 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(exception in str(context.exception))
         base.restore()
 
-    def test008_constructor_empty(self):
+    def test018_constructor_empty(self):
         base = SinonBase()
         base.restore()
 
-    def test009_constructor_method(self):
+    def test019_constructor_method(self):
         base = SinonBase(B_func)
         base.restore()
 
-    def test010_constructor_method_repeated(self):
+    def test020_constructor_method_repeated(self):
         base = SinonBase(B_func)
         exception = "[{}] have already been declared".format(B_func.__name__)
         with self.assertRaises(Exception) as context:
@@ -104,26 +104,26 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(exception in str(context.exception))
         base.restore()
 
-    def test011_called_method(self):
+    def test040_called_method(self):
         base = SinonBase(B_func)
         sinon.g.B_func()
         self.assertTrue(base.called)
         base.restore()
 
-    def test011_calledOnce_method(self):
+    def test041_calledOnce_method(self):
         base = SinonBase(B_func)
         sinon.g.B_func()
         self.assertTrue(base.calledOnce)
         base.restore()
 
-    def test012_calledTwice_method(self):
+    def test042_calledTwice_method(self):
         base = SinonBase(B_func)
         sinon.g.B_func()
         sinon.g.B_func()
         self.assertTrue(base.calledTwice)
         base.restore()
 
-    def test013_calledThrice_method(self):
+    def test043_calledThrice_method(self):
         base = SinonBase(B_func)
         sinon.g.B_func()
         sinon.g.B_func()
@@ -131,20 +131,20 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.calledThrice)
         base.restore()
 
-    def test014_calledOnce_module_method(self):
+    def test044_calledOnce_module_method(self):
         base = SinonBase(os, "system")
         os.system("cd")
         self.assertTrue(base.calledOnce)
         base.restore()
 
-    def test015_calledTwice_module_method(self):
+    def test045_calledTwice_module_method(self):
         base = SinonBase(os, "system")
         os.system("cd")
         os.system("cd")
         self.assertTrue(base.calledTwice)
         base.restore()
 
-    def test016_calledThrice_module_method(self):
+    def test046_calledThrice_module_method(self):
         base = SinonBase(os, "system")
         os.system("cd")
         os.system("cd")
@@ -152,20 +152,20 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.calledThrice)
         base.restore()
 
-    def test017_calledOnce_empty(self):
+    def test047_calledOnce_empty(self):
         base = SinonBase()
         base()
         self.assertTrue(base.calledOnce)
         base.restore()
 
-    def test018_calledTwice_empty(self):
+    def test048_calledTwice_empty(self):
         base = SinonBase()
         base()
         base()
         self.assertTrue(base.calledTwice)
         base.restore()
 
-    def test019_calledThrice_empty(self):
+    def test049_calledThrice_empty(self):
         base = SinonBase()
         base()
         base()
@@ -173,7 +173,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.calledThrice)
         base.restore()
 
-    def test020_firstCall_secondCall_thirdCall_lastCall(self):
+    def test50_firstCall_secondCall_thirdCall_lastCall(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         base3 = SinonBase(B_func)
@@ -191,7 +191,7 @@ class TestSinonBase(unittest.TestCase):
         base3.restore()
         base4.restore()
 
-    def test021_calledBefore_calledAfter_normal(self):
+    def test051_calledBefore_calledAfter_normal(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         base3 = SinonBase(B_func)
@@ -208,7 +208,7 @@ class TestSinonBase(unittest.TestCase):
         base2.restore()
         base3.restore()
 
-    def test021_calledBefore_nothing_called(self):
+    def test052_calledBefore_nothing_called(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         base3 = SinonBase(B_func)
@@ -217,7 +217,7 @@ class TestSinonBase(unittest.TestCase):
         base1.restore()
         base2.restore()
 
-    def test021_calledBefore_calledAfter_recalled_method(self):
+    def test053_calledBefore_calledAfter_recalled_method(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         os.system("cd")
@@ -230,7 +230,7 @@ class TestSinonBase(unittest.TestCase):
         base1.restore()
         base2.restore()
 
-    def test021_calledBefore_calledAfter_called_restore_recalled(self):
+    def test054_calledBefore_calledAfter_called_restore_recalled(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         os.system("cd")
@@ -243,25 +243,193 @@ class TestSinonBase(unittest.TestCase):
         base1.restore()
         base2.restore()
 
-    def test022_calledWithExactly_method_args_only(self):
+    def test070_calledWith_method_fullmatch(self):
         base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.calledWith(a="a", b="b", c="c"))
+        self.assertFalse(base.calledWith(a="wrong", b="b", c="c"))
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(base.calledWith("a", "b", "c"))
+        self.assertFalse(base.calledWith("a", "wrong", "c"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.calledWith("a", b="b", c="c"))
+        self.assertTrue(base.calledWith("a", "b", c="c"))
+        self.assertTrue(base.calledWith("a", "b", "c"))
+        self.assertFalse(base.calledWith("a", "b", "d"))
+        self.assertFalse(base.calledWith("a", "b", c="d"))
+        base.restore()
+
+    def test071_calledWith_method_partialmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertFalse(base.calledWith(a="wrong"))
+        self.assertTrue(base.calledWith(a="a"))
+        self.assertTrue(base.calledWith(b="b"))
+        self.assertTrue(base.calledWith(c="c"))
+        self.assertFalse(base.calledWith(a="wrong", b="b"))
+        self.assertTrue(base.calledWith(a="a", b="b"))
+        self.assertTrue(base.calledWith(b="b", c="c"))
+        self.assertTrue(base.calledWith(a="a", c="c"))
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        self.assertFalse(base.calledWith("d"))
+        self.assertTrue(base.calledWith("a"))
+        self.assertTrue(base.calledWith("b"))
+        self.assertTrue(base.calledWith("c"))
+        self.assertFalse(base.calledWith("wrong", "b"))
+        self.assertTrue(base.calledWith("a", "b"))
+        self.assertTrue(base.calledWith("b", "c"))
+        self.assertTrue(base.calledWith("a", "c"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.calledWith("a", b="b"))
+        self.assertTrue(base.calledWith("a", c="c"))
+        self.assertTrue(base.calledWith(b="b", c="c"))
+        self.assertTrue(base.calledWith("a"))
+        self.assertTrue(base.calledWith(c="c"))
+        self.assertFalse(base.calledWith("wrong", b="b"))
+        self.assertFalse(base.calledWith("a", b="wrong"))
+        self.assertFalse(base.calledWith("a", c="wrong"))
+        base.restore()
+
+    def test072_alwaysCalledWith_method_fullmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWith(a="a", b="b", c="c"))
+        sinon.g.C_func(a="d", b="e", c="f")
+        self.assertFalse(base.alwaysCalledWith(a="a", b="b", c="c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(base.alwaysCalledWith("a", "b", "c"))
+        sinon.g.C_func("d", "e", "f")
+        self.assertFalse(base.alwaysCalledWith("a", "b", "c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWith("a", b="b", c="c"))
+        sinon.g.C_func("b", b="b", c="c")
+        self.assertFalse(base.alwaysCalledWith("a", b="b", c="c"))
+        base.restore()
+
+    def test073_alwaysCalledWith_method_partialmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        sinon.g.C_func(a="xxxx", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWith(b="b", c="c"))
+        sinon.g.C_func(a="d", b="e", c="f")
+        self.assertFalse(base.alwaysCalledWith(b="b", c="c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        sinon.g.C_func("a", "b", "xxxx")
+        self.assertTrue(base.alwaysCalledWith("a", "b"))
+        sinon.g.C_func("d", "e", "f")
+        self.assertFalse(base.alwaysCalledWith("a", "b"))
+        base.restore()
+        base = SinonBase(C_func)
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        sinon.g.C_func("a", b="b")
+        self.assertTrue(base.alwaysCalledWith("a", b="b"))
+        sinon.g.C_func("b", b="b", c="c")
+        self.assertFalse(base.alwaysCalledWith("a", b="b"))
+        base.restore()
+
+    def test074_calledWithExactly_method_fullmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.calledWithExactly(a="a", b="b", c="c"))
+        self.assertFalse(base.calledWithExactly(a="d", b="e", c="f"))
+        #pure args
         sinon.g.C_func("a", "b", "c")
         self.assertTrue(base.calledWithExactly("a", "b", "c"))
+        self.assertFalse(base.calledWithExactly("d", "e", "f"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.calledWithExactly("a", b="b", c="c"))
+        self.assertFalse(base.calledWithExactly("wrong", b="b", c="c"))
         base.restore()
 
-    def test023_calledWithExactly_method_args_only_partial(self):
+    def test075_calledWithExactly_method_partialmatch(self):
         base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertFalse(base.calledWithExactly(a="a", b="b"))
+        #pure args
         sinon.g.C_func("a", "b", "c")
         self.assertFalse(base.calledWithExactly("a", "b"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertFalse(base.calledWithExactly("a", b="b"))
         base.restore()
 
-    def test050_threw_with_err(self):
-        base = SinonBase(D_func)
-        sinon.g.D_func(err=True)
-        self.assertTrue(base.threw()) 
+    def test076_alwaysCalledWithExactly_method_fullmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWithExactly(a="a", b="b", c="c"))
+        sinon.g.C_func(a="d", b="e", c="f")
+        self.assertFalse(base.alwaysCalledWithExactly(a="a", b="b", c="c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(base.alwaysCalledWithExactly("a", "b", "c"))
+        sinon.g.C_func("d", "e", "f")
+        self.assertFalse(base.alwaysCalledWithExactly("a", "b", "c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWithExactly("a", b="b", c="c"))
+        sinon.g.C_func("b", b="b", c="c")
+        self.assertFalse(base.alwaysCalledWithExactly("a", b="b", c="c"))
         base.restore()
 
-    def test051_threw_without_err(self):
+    def test077_alwaysCalledWithExactly_method_partialmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWithExactly(a="a", b="b", c="c"))
+        sinon.g.C_func(a="xxxx", b="b", c="c")
+        self.assertFalse(base.alwaysCalledWithExactly(b="b", c="c"))
+        base.restore()
+        base = SinonBase(C_func)
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(base.alwaysCalledWithExactly("a", "b", "c"))
+        sinon.g.C_func("a", "b", "xxxx")
+        self.assertFalse(base.alwaysCalledWithExactly("a", "b"))
+        base.restore()
+        base = SinonBase(C_func)
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertTrue(base.alwaysCalledWithExactly("a", b="b", c="c"))
+        sinon.g.C_func("a", b="b", c="xxx")
+        self.assertFalse(base.alwaysCalledWithExactly("a", b="b"))
+        base.restore()
+
+    def test090_threw_without_err(self):
         base = SinonBase(D_func)
         sinon.g.D_func(err=False)
         self.assertFalse(base.threw()) 
