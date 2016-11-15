@@ -1,5 +1,8 @@
 def partialTupleInTupleList(main, sub):
     """
+    >>> main = [('a', 'b', 'c')] 
+    >>> partialTupleInTupleList(main, ('a','b','c'))
+    True
     >>> main = [('a', 'b', 'c'), ('c', 'd')] 
     >>> partialTupleInTupleList(main, ('a',))
     True
@@ -16,7 +19,9 @@ def partialTupleInTupleList(main, sub):
 
 def partialDictInDictList(main, sub):
     """
-    # Note: The last one is special case
+    >>> main = [{'c': 'c', 'a': 'a', 'b': 'b'}]
+    >>> partialDictInDictList(main, {'c': 'c', 'a': 'a', 'b': 'b'})
+    True
     >>> main = [{'c': 'c', 'a': 'a', 'b': 'b'}, {'c': 'c', 'd': 'd'}]
     >>> partialDictInDictList(main, {'c': 'c'})
     True
@@ -27,8 +32,10 @@ def partialDictInDictList(main, sub):
     >>> partialDictInDictList(main, {'z': 'z'})
     False
     >>> partialDictInDictList(main, {})
-    True
+    False
     """
+    if not sub:
+        return False
     return True if [item for item in main if set(sub.items()).issubset(set(item.items()))] else False
 
 def itemInList(main, sub):

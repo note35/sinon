@@ -296,7 +296,7 @@ class SinonBase(object):
         pass
 
     def neverCalledWith(self, *args, **kwargs):
-        pass
+        return not self.calledWith(*args, **kwargs)
 
     def neverCalledWithMatch(self, *args, **kwargs):
         pass

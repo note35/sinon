@@ -429,6 +429,60 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysCalledWithExactly("a", b="b"))
         base.restore()
 
+    def test078_neverCalledWith_method_fullmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        print ("###",base.neverCalledWith(a="a", b="b", c="c"))
+        self.assertFalse(base.neverCalledWith(a="a", b="b", c="c"))
+        self.assertTrue(base.neverCalledWith(a="wrong", b="b", c="c"))
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        self.assertFalse(base.neverCalledWith("a", "b", "c"))
+        self.assertTrue(base.neverCalledWith("a", "wrong", "c"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertFalse(base.neverCalledWith("a", b="b", c="c"))
+        self.assertFalse(base.neverCalledWith("a", "b", c="c"))
+        self.assertFalse(base.neverCalledWith("a", "b", "c"))
+        self.assertTrue(base.neverCalledWith("a", "b", "d"))
+        self.assertTrue(base.neverCalledWith("a", "b", c="d"))
+        base.restore()
+
+    def test079_neverCalledWith_method_partialmatch(self):
+        base = SinonBase(C_func)
+        #pure kwargs
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(base.neverCalledWith(a="wrong"))
+        self.assertFalse(base.neverCalledWith(a="a"))
+        self.assertFalse(base.neverCalledWith(b="b"))
+        self.assertFalse(base.neverCalledWith(c="c"))
+        self.assertTrue(base.neverCalledWith(a="wrong", b="b"))
+        self.assertFalse(base.neverCalledWith(a="a", b="b"))
+        self.assertFalse(base.neverCalledWith(b="b", c="c"))
+        self.assertFalse(base.neverCalledWith(a="a", c="c"))
+        #pure args
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(base.neverCalledWith("d"))
+        self.assertFalse(base.neverCalledWith("a"))
+        self.assertFalse(base.neverCalledWith("b"))
+        self.assertFalse(base.neverCalledWith("c"))
+        self.assertTrue(base.neverCalledWith("wrong", "b"))
+        self.assertFalse(base.neverCalledWith("a", "b"))
+        self.assertFalse(base.neverCalledWith("b", "c"))
+        self.assertFalse(base.neverCalledWith("a", "c"))
+        #combine kwargs and args
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertFalse(base.neverCalledWith("a", b="b"))
+        self.assertFalse(base.neverCalledWith("a", c="c"))
+        self.assertFalse(base.neverCalledWith(b="b", c="c"))
+        self.assertFalse(base.neverCalledWith("a"))
+        self.assertFalse(base.neverCalledWith(c="c"))
+        self.assertTrue(base.neverCalledWith("wrong", b="b"))
+        self.assertTrue(base.neverCalledWith("a", b="wrong"))
+        self.assertTrue(base.neverCalledWith("a", c="wrong"))
+        base.restore()
+
     def test090_threw_without_err(self):
         base = SinonBase(D_func)
         sinon.g.D_func(err=False)
