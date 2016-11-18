@@ -179,3 +179,27 @@ def partialDictInDictListAlways(main, sub):
         if not set(sub.items()).issubset(set(item.items())):
             return False
     return True
+
+def objInList(l, obj):
+    """
+    >>> l = [1,2,3,4]
+    >>> objInList(l, 2)
+    True
+    >>> objInList(l, 5)
+    False
+    """
+    return True if obj in l else False
+
+def objInListAlways(l, obj):
+    """
+    >>> l = [1,1,1]
+    >>> objInListAlways(l, 1)
+    True
+    >>> l.append(2)
+    >>> objInListAlways(l, 1)
+    False
+    """
+    for item in set(l):
+        if item is not obj:
+            return False
+    return True

@@ -18,7 +18,9 @@ class A_object(object):
     def A_func(self):
         return "test_global_A_func"
 # global function
-def B_func():
+def B_func(x=None):
+    if x:
+        return "test_local_B_func2"+str(x)
     return "test_local_B_func"
 
 def C_func(a="a", b="b", c="c"):
@@ -507,7 +509,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysThrew()) 
         base.restore()
 
-    def test091_alwaysThrew_with_same_err(self):
+    def test093_alwaysThrew_with_same_err(self):
         class MyException(Exception):
             pass
         base = SinonBase(D_func)
@@ -518,3 +520,27 @@ class TestSinonBase(unittest.TestCase):
         sinon.g.D_func(err=ValueError)
         self.assertFalse(base.alwaysThrew(MyException))
         base.restore()
+
+    def test100_returned(self):
+        base = SinonBase(B_func)
+        sinon.g.B_func()
+        self.assertTrue(base.returned("test_local_B_func"))
+        base.restore()
+
+    def test101_returned_exception(self):
+        # exception will return a empty function with no return
+        base = SinonBase(D_func)
+        sinon.g.D_func(err=ValueError)
+        self.assertFalse(base.returned("test_local_D_func"))
+        sinon.g.D_func()
+        self.assertTrue(base.returned("test_local_D_func"))
+        base.restore()
+
+    def test102_alwaysReturned(self):
+        base = SinonBase(B_func)
+        sinon.g.B_func()
+        sinon.g.B_func()
+        self.assertTrue(base.alwaysReturned("test_local_B_func"))
+        sinon.g.B_func(123)
+        self.assertFalse(base.alwaysReturned("test_local_B_func"))
+        base.restore() 

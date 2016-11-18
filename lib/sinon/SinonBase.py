@@ -153,6 +153,17 @@ class SinonBase(object):
         elif self.args_type == "PURE":
             pass
 
+    def _ret_list(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).ret_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(g, self.obj.__name__).ret_list
+        elif self.args_type == "PURE":
+            pass
+
+
     def _getCallQueueIndex(self):
         if self.args_type == "MODULE_FUNCTION":
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.obj, self.prop)]
@@ -305,16 +316,16 @@ class SinonBase(object):
         if not error_type:
             return True if len(self._error_list())>0 else False
         else:
-            for err in self._error_list():
-                if err is error_type:
-                    return True
-            return False
+            return CollectionHandler.objInList(self._error_list(), error_type)
 
     def alwaysThrew(self, error_type=None):
         if not error_type:
             return True if len(self._error_list()) == self.callCount else False
         else:
-            for err in set(self._error_list()):
-                if err is not error_type:
-                    return False
-            return True
+            return CollectionHandler.objInListAlways(self._error_list(), error_type)
+
+    def returned(self, obj):
+        return CollectionHandler.objInList(self._ret_list(), obj)
+
+    def alwaysReturned(self, obj):
+        return CollectionHandler.objInListAlways(self._ret_list(), obj)
