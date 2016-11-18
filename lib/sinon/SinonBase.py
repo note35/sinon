@@ -301,5 +301,20 @@ class SinonBase(object):
     def neverCalledWithMatch(self, *args, **kwargs):
         pass
 
-    def threw(self):
-        return True if len(self._error_list())>0 else False
+    def threw(self, error_type=None):
+        if not error_type:
+            return True if len(self._error_list())>0 else False
+        else:
+            for err in self._error_list():
+                if err is error_type:
+                    return True
+            return False
+
+    def alwaysThrew(self, error_type=None):
+        if not error_type:
+            return True if len(self._error_list()) == self.callCount else False
+        else:
+            for err in set(self._error_list()):
+                if err is not error_type:
+                    return False
+            return True

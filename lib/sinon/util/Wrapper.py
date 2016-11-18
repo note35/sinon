@@ -16,10 +16,11 @@ def addStates(f):
             wrapped.kwargs_list.append(kwargs)
         try:
             return f(*args, **kwargs)
-        except:
-            wrapped.error_list.append(Exception)
+        except Exception as e:
+            # Todo: make sure e.__class__ is enough for all purpose or not
+            wrapped.error_list.append(e.__class__)
             return empty_function
-
+            
     wrapped.callCount = 0
     wrapped.args_list = []
     wrapped.kwargs_list = []

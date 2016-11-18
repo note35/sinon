@@ -25,8 +25,8 @@ def C_func(a="a", b="b", c="c"):
     return "test_local_C_func"
 
 def D_func(err=False):
-    if err is True:
-        raise ValueError("test_local_D_func")
+    if err:
+        raise err
     else:
         return "test_local_D_func"
 """
@@ -433,7 +433,6 @@ class TestSinonBase(unittest.TestCase):
         base = SinonBase(C_func)
         #pure kwargs
         sinon.g.C_func(a="a", b="b", c="c")
-        print ("###",base.neverCalledWith(a="a", b="b", c="c"))
         self.assertFalse(base.neverCalledWith(a="a", b="b", c="c"))
         self.assertTrue(base.neverCalledWith(a="wrong", b="b", c="c"))
         #pure args
@@ -487,4 +486,35 @@ class TestSinonBase(unittest.TestCase):
         base = SinonBase(D_func)
         sinon.g.D_func(err=False)
         self.assertFalse(base.threw()) 
+        base.restore()
+
+    def test091_threw_with_err(self):
+        class MyException(Exception):
+            pass
+        base = SinonBase(D_func)
+        sinon.g.D_func(err=MyException)
+        self.assertTrue(base.threw()) 
+        self.assertTrue(base.threw(MyException))
+        self.assertFalse(base.threw(ValueError))
+        sinon.g.D_func(err=ValueError)
+        self.assertTrue(base.threw(ValueError))
+        base.restore()
+
+    def test092_alwaysThrew_without_err(self):
+        base = SinonBase(D_func)
+        sinon.g.D_func(err=False)
+        sinon.g.D_func(err=False)
+        self.assertFalse(base.alwaysThrew()) 
+        base.restore()
+
+    def test091_alwaysThrew_with_same_err(self):
+        class MyException(Exception):
+            pass
+        base = SinonBase(D_func)
+        sinon.g.D_func(err=MyException)
+        sinon.g.D_func(err=MyException)
+        self.assertTrue(base.alwaysThrew()) 
+        self.assertTrue(base.alwaysThrew(MyException))
+        sinon.g.D_func(err=ValueError)
+        self.assertFalse(base.alwaysThrew(MyException))
         base.restore()

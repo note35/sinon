@@ -15,7 +15,7 @@ This project is still under developing.
 
 The first release will include four basic features. The second release have not planned yet.
 
-spy[30%] - excluding "closure related function: calledOn, alwaysCalledOn"
+spy[80%] - excluding "closure related function: calledOn, alwaysCalledOn"
 
 stub[0%]
 
