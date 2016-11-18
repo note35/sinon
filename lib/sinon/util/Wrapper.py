@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 global CALLQUEUE
 CALLQUEUE = []
 
@@ -16,7 +14,6 @@ def addStates(f):
             wrapped.args_list.append(args)
         if kwargs:
             wrapped.kwargs_list.append(kwargs)
-        copy_f = deepcopy(f)
         try:
             wrapped.ret_list.append(f(*args, **kwargs))
             return f(*args, **kwargs)

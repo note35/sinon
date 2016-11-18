@@ -1,9 +1,9 @@
-def exceptionHelper(msg, debug=False):
+def exceptionHelper(msg, debug=False, exception=Exception):
     if debug:
         print (msg)
         return msg
     else:
-        raise Exception(msg)
+        raise exception(msg)
         return None
 
 def objTypeError(obj):
@@ -20,3 +20,6 @@ def lockError(name):
 
 def calledWithEmptyError():
     return exceptionHelper("calledWith() have no argument")
+
+def getCallIndexError(n):
+    return exceptionHelper("The call queue only contains {} calls".format(str(n)), exception=IndexError)

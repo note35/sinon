@@ -329,3 +329,10 @@ class SinonBase(object):
 
     def alwaysReturned(self, obj):
         return CollectionHandler.objInListAlways(self._ret_list(), obj)
+
+    @classmethod
+    def getCall(self, n):
+        try:
+            return self._queue[n]
+        except IndexError:
+            ErrorHandler.getCallIndexError(len(self._queue))

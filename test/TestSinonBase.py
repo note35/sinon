@@ -175,7 +175,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.calledThrice)
         base.restore()
 
-    def test50_firstCall_secondCall_thirdCall_lastCall(self):
+    def test050_firstCall_secondCall_thirdCall_lastCall(self):
         base1 = SinonBase(os, "system")
         base2 = SinonBase()
         base3 = SinonBase(B_func)
@@ -544,3 +544,19 @@ class TestSinonBase(unittest.TestCase):
         sinon.g.B_func(123)
         self.assertFalse(base.alwaysReturned("test_local_B_func"))
         base.restore() 
+
+    def test110_getCall(self):
+        base = SinonBase(B_func)
+        sinon.g.B_func()
+        base = SinonBase(C_func)
+        call = SinonBase.getCall(0)
+        self.assertFalse(base.called)   #C_func is never called
+        self.assertTrue(call.called)    #B_func is called
+        base.restore() 
+        call.restore()
+
+    def test111_getCall_wrongIndex(self):
+        exception = "The call queue only contains 1 calls"
+        with self.assertRaises(Exception) as context:
+            SinonBase.getCall(100)
+        self.assertTrue(exception in str(context.exception))
