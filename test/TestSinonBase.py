@@ -20,7 +20,7 @@ class A_object(object):
 # global function
 def B_func(x=None):
     if x:
-        return "test_local_B_func2"+str(x)
+        return "test_local_B_func"+str(x)
     return "test_local_B_func"
 
 def C_func(a="a", b="b", c="c"):
@@ -105,6 +105,12 @@ class TestSinonBase(unittest.TestCase):
             base = SinonBase(B_func)
         self.assertTrue(exception in str(context.exception))
         base.restore()
+
+    def test021_constructor_instance(self):
+        #A = A_object()
+        #base = SinonBase(A, "A_func")
+        #base.restore()
+        pass
 
     def test040_called_method(self):
         base = SinonBase(B_func)
@@ -525,6 +531,8 @@ class TestSinonBase(unittest.TestCase):
         base = SinonBase(B_func)
         sinon.g.B_func()
         self.assertTrue(base.returned("test_local_B_func"))
+        sinon.g.B_func(2)
+        self.assertTrue(base.returned("test_local_B_func2"))
         base.restore()
 
     def test101_returned_exception(self):
@@ -546,17 +554,67 @@ class TestSinonBase(unittest.TestCase):
         base.restore() 
 
     def test110_getCall(self):
-        base = SinonBase(B_func)
+        base1 = SinonBase(B_func)
+        base2 = SinonBase(C_func)
         sinon.g.B_func()
-        base = SinonBase(C_func)
-        call = SinonBase.getCall(0)
-        self.assertFalse(base.called)   #C_func is never called
+        call = SinonBase.getCall(1)
+        self.assertFalse(base2.called)  #C_func is never called
         self.assertTrue(call.called)    #B_func is called
-        base.restore() 
-        call.restore()
+        base1.restore() 
+        base2.restore()
 
     def test111_getCall_wrongIndex(self):
         exception = "The call queue only contains 1 calls"
         with self.assertRaises(Exception) as context:
             SinonBase.getCall(100)
         self.assertTrue(exception in str(context.exception))
+
+    def test120_kwargs(self):
+        base = SinonBase(C_func)
+        self.assertEqual(base.kwargs, [])
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertEqual(base.kwargs, [{"a":"a", "b":"b", "c":"c"}])
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertEqual(base.kwargs, [{"a":"a", "b":"b", "c":"c"}, {"a":"a", "b":"b", "c":"c"}])
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertEqual(base.kwargs, [{"a":"a", "b":"b", "c":"c"}, {"a":"a", "b":"b", "c":"c"}, {"b": "b", "c": "c"}])
+        base.restore()
+
+    def test121_args(self):
+        base = SinonBase(C_func)
+        self.assertEqual(base.args, [])
+        sinon.g.C_func("a", "b", "c")
+        self.assertEqual(base.args, [("a", "b", "c")])
+        sinon.g.C_func("a", "b", "c")
+        self.assertEqual(base.args, [("a", "b", "c"), ("a", "b", "c")])
+        sinon.g.C_func("a", b="b", c="c")
+        self.assertEqual(base.args, [("a", "b", "c"), ("a", "b", "c"), ("a",)])
+        base.restore()
+
+    def test122_exceptions(self):
+        base = SinonBase(D_func)
+        self.assertEqual(base.exceptions, [])
+        sinon.g.D_func(ValueError)
+        self.assertEqual(base.exceptions, [ValueError])
+        sinon.g.D_func(TypeError)
+        self.assertEqual(base.exceptions, [ValueError, TypeError])
+        base.restore()
+
+    def test123_returnValues(self):
+        base = SinonBase(B_func)
+        self.assertEqual(base.exceptions, [])
+        sinon.g.B_func()
+        self.assertEqual(base.returnValues, ["test_local_B_func"])
+        sinon.g.B_func(2)
+        self.assertEqual(base.returnValues, ["test_local_B_func", "test_local_B_func2"])
+        base.restore()
+
+    def test130_reset(self):
+        base = SinonBase(B_func)
+        sinon.g.B_func(2)
+        self.assertTrue(base.called)
+        self.assertTrue(base.args)
+        base.reset()
+        self.assertFalse(base.called)
+        self.assertFalse(base.args)
+        base.restore()

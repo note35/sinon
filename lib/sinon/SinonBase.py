@@ -38,7 +38,6 @@ class SinonBase(object):
 
 
     def __init__(self, obj=None, prop=None):
-
         if not hasattr(self, "args_type"):
             self.setType(obj, prop)
             self.obj, self.prop = obj, prop
@@ -336,3 +335,26 @@ class SinonBase(object):
             return self._queue[n]
         except IndexError:
             ErrorHandler.getCallIndexError(len(self._queue))
+
+    def thisValues(self):
+        pass
+
+    @property
+    def args(self):
+        return self._args_list()
+
+    @property
+    def kwargs(self):
+        return self._kwargs_list()
+
+    @property
+    def exceptions(self):
+        return self._error_list()
+
+    @property
+    def returnValues(self):
+        return self._ret_list()
+
+    def reset(self):
+        self.delWrap()
+        self.addWrap()
