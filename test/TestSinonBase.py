@@ -17,6 +17,7 @@ class A_object(object):
     # customized function
     def A_func(self):
         return "test_global_A_func"
+
 # global function
 def B_func(x=None):
     if x:
@@ -107,10 +108,9 @@ class TestSinonBase(unittest.TestCase):
         base.restore()
 
     def test021_constructor_instance(self):
-        #A = A_object()
-        #base = SinonBase(A, "A_func")
-        #base.restore()
-        pass
+        A = A_object()
+        base = SinonBase(A, "A_func")
+        base.restore()
 
     def test040_called_method(self):
         base = SinonBase(B_func)

@@ -59,7 +59,11 @@ class SinonBase(object):
                 self.args_type = "FUNCTION"
                 self.orig_func = None
         elif obj:
-            ErrorHandler.objTypeError(obj) 
+            if hasattr(obj, "__class__"): #handle instance as class
+                obj = obj.__class__
+                self.args_type = "MODULE"
+            else:
+                ErrorHandler.objTypeError(obj) 
 
         # property
         if prop and (isinstance(prop, str) or isinstance(prop, unicode)):
