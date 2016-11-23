@@ -49,6 +49,11 @@ class SinonBase(object):
             self.pure_count = 0
 
 
+    def __call__(self):
+        Wrapper.CALLQUEUE.append(self)
+        self.pure_count = self.pure_count + 1
+
+
     def setType(self, obj, prop):
         # pure
         if not prop and not obj:
@@ -83,13 +88,13 @@ class SinonBase(object):
         if self.args_type == "MODULE_FUNCTION":
             if hasattr(self.obj, LOCK):
                 ErrorHandler.lockError(self.obj.__name__)
-            if hasattr(getattr(self.obj, self.prop), "callCount"):
+            if hasattr(getattr(self.obj, self.prop), "LOCK"):
                 ErrorHandler.lockError(self.prop)
         elif self.args_type == "MODULE":
             if hasattr(self.obj, LOCK):
                 ErrorHandler.lockError(self.obj.__name__)
         elif self.args_type == "FUNCTION":
-            if hasattr(getattr(g, self.obj.__name__), "callCount"):
+            if hasattr(getattr(g, self.obj.__name__), "LOCK"):
                 ErrorHandler.lockError(self.obj.__name__)
         elif self.args_type == "PURE":
             pass
