@@ -2,10 +2,14 @@ global CALLQUEUE
 CALLQUEUE = []
 
 
-def addStates(f):
+class empty_class(object):
+    pass
 
-    def empty_function(*args, **kwargs):
-        pass
+def empty_function(*args, **kwargs):
+    pass
+
+
+def addStates(f):
 
     def wrapped(*args, **kwargs):
         wrapped.callCount += 1
@@ -31,10 +35,16 @@ def addStates(f):
     return wrapped
 
 
-def wrap(f):
+def wrap_custom_func(f, custom_func=None):
+    if not custom_func:
+        custom_func = empty_function
+    def fn(*args, **kwargs):
+        return custom_func(*args, **kwargs)
+    return fn
 
+
+def wrap(f):
     @addStates
     def fn(*args, **kwargs):
         return f(*args, **kwargs)
-
     return fn

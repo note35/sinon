@@ -190,3 +190,13 @@ class SinonBase(object):
             return getattr(g, self.obj.__name__).callCount
         elif self.args_type == "PURE":
             return self.pure_count
+
+    def _setStub(self, func):
+        if self.args_type == "MODULE_FUNCTION":
+            setattr(self.obj, self.prop, Wrapper.wrap_custom_func(getattr(self.obj, self.prop), func))
+        elif self.args_type == "MODULE":
+            setattr(g, self.obj.__name__, Wrapper.empty_class)
+        elif self.args_type == "FUNCTION":
+            setattr(g, self.obj.__name__, Wrapper.wrap_custom_func(getattr(g, self.obj.__name__), func))
+        elif self.args_type == "PURE":
+            pass
