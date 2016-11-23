@@ -6,27 +6,70 @@ from lib.sinon.SinonBase import SinonBase
 
 class SinonSpy(SinonBase):
 
-    @property
-    def args(self):
+    def __call__(self):
+        Wrapper.CALLQUEUE.append(self)
+        self.pure_count = self.pure_count + 1
+
+    def _args_list(self):
         if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).args_list[-1]
+            return getattr(self.obj, self.prop).args_list
         elif self.args_type == "MODULE":
             pass
         elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).args_list[-1]
+            return getattr(self.g, self.obj.__name__).args_list
         elif self.args_type == "PURE":
             pass
 
-    @property
-    def kwargs(self):
+    def _kwargs_list(self):
         if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).kwargs_list[-1]
+            return getattr(self.obj, self.prop).kwargs_list
         elif self.args_type == "MODULE":
             pass
         elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).kwargs_list[-1]
+            return getattr(self.g, self.obj.__name__).kwargs_list
         elif self.args_type == "PURE":
             pass
+
+    def _error_list(self): 
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).error_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(self.g, self.obj.__name__).error_list
+        elif self.args_type == "PURE":
+            pass
+
+    def _ret_list(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).ret_list
+        elif self.args_type == "MODULE":
+            pass
+        elif self.args_type == "FUNCTION":
+            return getattr(self.g, self.obj.__name__).ret_list
+        elif self.args_type == "PURE":
+            pass
+
+    def _getCallQueueIndex(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.obj, self.prop)]
+        elif self.args_type == "MODULE":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
+        elif self.args_type == "FUNCTION":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.g, self.obj.__name__)]
+        elif self.args_type == "PURE":
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
+
+    @property
+    def callCount(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).callCount
+        elif self.args_type == "MODULE":
+            return self.pure_count
+        elif self.args_type == "FUNCTION":
+            return getattr(self.g, self.obj.__name__).callCount
+        elif self.args_type == "PURE":
+            return self.pure_count
 
     @property
     def called(self):

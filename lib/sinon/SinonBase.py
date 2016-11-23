@@ -125,72 +125,6 @@ class SinonBase(object):
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
 
 
-    def __call__(self):
-        Wrapper.CALLQUEUE.append(self)
-        self.pure_count = self.pure_count + 1
-
-    def _args_list(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).args_list
-        elif self.args_type == "MODULE":
-            pass
-        elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).args_list
-        elif self.args_type == "PURE":
-            pass
-
-    def _kwargs_list(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).kwargs_list
-        elif self.args_type == "MODULE":
-            pass
-        elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).kwargs_list
-        elif self.args_type == "PURE":
-            pass
-
-    def _error_list(self): 
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).error_list
-        elif self.args_type == "MODULE":
-            pass
-        elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).error_list
-        elif self.args_type == "PURE":
-            pass
-
-    def _ret_list(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).ret_list
-        elif self.args_type == "MODULE":
-            pass
-        elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).ret_list
-        elif self.args_type == "PURE":
-            pass
-
-
-    def _getCallQueueIndex(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.obj, self.prop)]
-        elif self.args_type == "MODULE":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
-        elif self.args_type == "FUNCTION":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(g, self.obj.__name__)]
-        elif self.args_type == "PURE":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
-
-    @property
-    def callCount(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).callCount
-        elif self.args_type == "MODULE":
-            return self.pure_count
-        elif self.args_type == "FUNCTION":
-            return getattr(g, self.obj.__name__).callCount
-        elif self.args_type == "PURE":
-            return self.pure_count
-
     def _setStub(self, func):
         if self.args_type == "MODULE_FUNCTION":
             setattr(self.obj, self.prop, Wrapper.wrap_custom_func(getattr(self.obj, self.prop), func))
@@ -200,3 +134,7 @@ class SinonBase(object):
             setattr(g, self.obj.__name__, Wrapper.wrap_custom_func(getattr(g, self.obj.__name__), func))
         elif self.args_type == "PURE":
             pass
+
+    @property
+    def g(self):
+        return g
