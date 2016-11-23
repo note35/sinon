@@ -8,6 +8,4 @@ class SinonStub(SinonBase):
 
     def __init__(self, obj=None, prop=None, func=None):
         super(SinonStub, self).__init__(obj, prop)
-        self._setStub(func)
-
-
+        super(SinonStub, self).addWrapStub(func)

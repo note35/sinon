@@ -6,9 +6,8 @@ from lib.sinon.SinonBase import SinonBase
 
 class SinonSpy(SinonBase):
 
-    def __call__(self):
-        Wrapper.CALLQUEUE.append(self)
-        self.pure_count = self.pure_count + 1
+    def __init__(self, obj=None, prop=None):
+        super(SinonSpy, self).__init__(obj, prop)
 
     def _args_list(self):
         if self.args_type == "MODULE_FUNCTION":
@@ -221,5 +220,5 @@ class SinonSpy(SinonBase):
         return self._ret_list()
 
     def reset(self):
-        self.delWrap()
-        self.addWrap()
+        super(SinonSpy, self).delWrapSpy()
+        super(SinonSpy, self).addWrapSpy()

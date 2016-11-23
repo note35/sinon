@@ -36,7 +36,7 @@ class SinonBase(object):
 
     
     def restore(self):
-        self.delWrap()
+        self.delWrapSpy()
         self._queue.remove(self)
 
 
@@ -45,7 +45,7 @@ class SinonBase(object):
             self.setType(obj, prop)
             self.obj, self.prop = obj, prop
             self.checkLock()
-            self.addWrap()
+            self.addWrapSpy()
             self.pure_count = 0
 
 
@@ -100,7 +100,7 @@ class SinonBase(object):
             pass
 
 
-    def addWrap(self):
+    def addWrapSpy(self):
         if self.args_type == "MODULE_FUNCTION":
             self.orig_func = deepcopy(getattr(self.obj, self.prop))
             setattr(self.obj, self.prop, Wrapper.wrap(getattr(self.obj, self.prop)))
@@ -116,7 +116,7 @@ class SinonBase(object):
             pass
 
 
-    def delWrap(self):
+    def delWrapSpy(self):
         if self.args_type == "MODULE_FUNCTION":
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.obj, self.prop)]
             setattr(self.obj, self.prop, self.orig_func)
@@ -130,7 +130,7 @@ class SinonBase(object):
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
 
 
-    def _setStub(self, func):
+    def addWrapStub(self, func):
         if self.args_type == "MODULE_FUNCTION":
             setattr(self.obj, self.prop, Wrapper.wrap_custom_func(getattr(self.obj, self.prop), func))
         elif self.args_type == "MODULE":
