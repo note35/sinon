@@ -25,9 +25,12 @@ class SinonBase(object):
 
     _queue = []
 
-    def __new__(self, obj=None, prop=None):
+    def __new__(self, obj=None, prop=None, func=None):
         new = super(SinonBase, self).__new__(self)
-        new.__init__(obj, prop)
+        if func:
+            new.__init__(obj, prop, func)
+        else:
+            new.__init__(obj, prop)
         self._queue.append(new)
         return weakref.proxy(new)
 
@@ -91,6 +94,7 @@ class SinonBase(object):
         elif self.args_type == "PURE":
             pass
 
+
     def addWrap(self):
         if self.args_type == "MODULE_FUNCTION":
             self.orig_func = deepcopy(getattr(self.obj, self.prop))
@@ -119,6 +123,7 @@ class SinonBase(object):
             setattr(g, self.obj.__name__, self.orig_func)
         elif self.args_type == "PURE":
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
+
 
     def __call__(self):
         Wrapper.CALLQUEUE.append(self)
