@@ -60,17 +60,6 @@ class SinonSpy(SinonBase):
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
 
     @property
-    def callCount(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).callCount
-        elif self.args_type == "MODULE":
-            return self.pure_count
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).callCount
-        elif self.args_type == "PURE":
-            return self.pure_count
-
-    @property
     def called(self):
         return True if self.callCount > 0 else False
 

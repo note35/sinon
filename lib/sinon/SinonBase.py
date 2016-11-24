@@ -103,7 +103,7 @@ class SinonBase(object):
     def addWrapSpy(self):
         if self.args_type == "MODULE_FUNCTION":
             self.orig_func = deepcopy(getattr(self.obj, self.prop))
-            setattr(self.obj, self.prop, Wrapper.wrap(getattr(self.obj, self.prop)))
+            setattr(self.obj, self.prop, Wrapper.wrapSpy(getattr(self.obj, self.prop)))
         elif self.args_type == "MODULE":
             setattr(self.obj, LOCK, True)
             #for key, value in self.obj.__dict__.items():
@@ -111,7 +111,7 @@ class SinonBase(object):
             #       setattr(self.obj, key, Wrapper.wrap(value))
         elif self.args_type == "FUNCTION":
             self.orig_func = deepcopy(getattr(g, self.obj.__name__))
-            setattr(g, self.obj.__name__, Wrapper.wrap(getattr(g, self.obj.__name__)))
+            setattr(g, self.obj.__name__, Wrapper.wrapSpy(getattr(g, self.obj.__name__)))
         elif self.args_type == "PURE":
             pass
 
@@ -130,16 +130,29 @@ class SinonBase(object):
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
 
 
-    def addWrapStub(self, func):
+    def addWrapStub(self, customfunc, condition=None):
         if self.args_type == "MODULE_FUNCTION":
-            setattr(self.obj, self.prop, Wrapper.wrap_custom_func(getattr(self.obj, self.prop), func))
+            setattr(self.obj, self.prop, Wrapper.wrapStub(getattr(self.obj, self.prop), customfunc, condition))
         elif self.args_type == "MODULE":
-            setattr(g, self.obj.__name__, Wrapper.empty_class)
+            setattr(g, self.obj.__name__, Wrapper.EmptyClass)
         elif self.args_type == "FUNCTION":
-            setattr(g, self.obj.__name__, Wrapper.wrap_custom_func(getattr(g, self.obj.__name__), func))
+            setattr(g, self.obj.__name__, Wrapper.wrapStub(getattr(g, self.obj.__name__), customfunc, condition))
         elif self.args_type == "PURE":
             pass
+
 
     @property
     def g(self):
         return g
+
+
+    @property
+    def callCount(self):
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop).callCount
+        elif self.args_type == "MODULE":
+            return self.pure_count
+        elif self.args_type == "FUNCTION":
+            return getattr(self.g, self.obj.__name__).callCount
+        elif self.args_type == "PURE":
+            return self.pure_count

@@ -66,7 +66,14 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         stub.restore()
 
-    def test203_constructor_empty_library_function(self):
+    def test203_constructor_empty_outside_instance_function(self):
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        stub = SinonStub(fto, "func1")
+        self.assertEqual(fto.func1(), None)
+        stub.restore()
+
+    def test204_constructor_empty_library_function(self):
         def my_func(*args, **kwargs):
             return "my_func"
         self.assertEqual(os.system("cd"), 0)
@@ -75,4 +82,20 @@ class TestSinonBase(unittest.TestCase):
         stub.restore()
         self.assertEqual(os.system("cd"), 0)
 
-
+    def test205_constructor_custom_function(self):
+        def my_func(*args, **kwargs):
+            return "my_func"
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        stub = SinonStub(ForTestOnly, "func1", my_func)
+        stub.withArgs(1).returns("#")
+        self.assertEqual(fto.func1(1), "#")
+        stub.withArgs(b=1).returns("##")
+        self.assertEqual(fto.func1(b=1), "##")
+        stub.withArgs(1, b=1).returns("###")
+        self.assertEqual(fto.func1(1, b=1), "###")
+        stub.withArgs(1).onCall(3).returns("#####")
+        self.assertEqual(fto.func1(1), "#")
+        self.assertEqual(fto.func1(1), "#")
+        self.assertEqual(fto.func1(1), "#####")
+        stub.restore()
