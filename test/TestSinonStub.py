@@ -163,3 +163,36 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), "##")
         self.assertEqual(fto.func1(), "###")
         stub.restore()
+
+    def test230_onFirstCall(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.onFirstCall().returns("onFirstCall")
+        self.assertEqual(fto.func1(), "onFirstCall")
+        stub.restore()
+
+    def test231_onSecondCall(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.onSecondCall().returns("onSecondCall")
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(), "onSecondCall")
+        stub.restore()
+
+    def test232_onThirdCall(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.onThirdCall().returns("onThirdCall")
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(), "onThirdCall")
+        stub.restore()
+
+    def test233_onThirdCall_random_args(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.onThirdCall().returns("onThirdCall")
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(1), "onThirdCall")
+        stub.restore()

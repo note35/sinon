@@ -31,6 +31,18 @@ class SinonStub(SinonBase):
         self.oncall = n
         return self
 
+    def onFirstCall(self):
+        self.oncall = 1
+        return self
+
+    def onSecondCall(self):
+        self.oncall = 2
+        return self
+
+    def onThirdCall(self):
+        self.oncall = 3
+        return self
+
     def returns(self, obj):
         def returnFunction(*args, **kwargs):
             return obj
