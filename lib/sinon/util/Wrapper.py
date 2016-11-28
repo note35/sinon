@@ -69,6 +69,11 @@ def wrapStub(f, customfunc, condition):
                     for i in reversed(index_list):
                         if not condition["oncall"][i] or condition["oncall"][i] == fn.callCount:
                             return condition["action"][i](*args, **kwargs)
+            elif fn.callCount in condition["oncall"]:
+                index_list = [i for i, x in enumerate(condition["oncall"]) if x and not condition["args"][i] and not condition["kwargs"][i]]
+                for i in reversed(index_list):
+                    if fn.callCount == condition["oncall"][i]:
+                        return condition["action"][i](*args, **kwargs)
         return customfunc(*args, **kwargs)
     return fn
 
