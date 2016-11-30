@@ -15,13 +15,15 @@ This project is still under developing.
 
 The first release will include four basic features. The second release have not planned yet.
 
-spy[80%] - excluding "closure related function: calledOn, alwaysCalledOn"
+Because the concept of closure in JS and Python are different, I plan to skip all closure related functions.
 
-stub[0%]
+spy[80%] - excluding "JS-closure related function"
+
+stub[50%] - excluding "JS-closure related test"
 
 mock[0%]
 
-sandbox[0%]
+sandbox[10%]
 
 ## Installation
 

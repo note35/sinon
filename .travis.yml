@@ -7,4 +7,4 @@ env:
 script:
   - python -m doctest lib/sinon/util/CollectionHandler.py
   - cd $TEST_DIR
-  - python -m unittest TestSinonBase TestSinonSpy
+  - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox
