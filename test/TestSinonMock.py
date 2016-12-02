@@ -121,4 +121,49 @@ class TestSinonMock(unittest.TestCase):
         mock = SinonMock(ForTestOnly)
         self.assertTrue(mock.verify()) #no condition
 
+class TestSinonMockExpectation(unittest.TestCase):
 
+    """
+    Note: all functions in expectation will influence other functions, for testing them, you should
+        (1) put assertFalse in your last test because it will never True again
+        (2) separate all expectations test without any collision.
+    """
+
+    @sinontest
+    def test001_atMost(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        self.assertTrue(expectation.verify())
+        expectation.atMost(0)
+        self.assertTrue(expectation.verify())
+        expectation.atMost(1)
+        self.assertTrue(expectation.verify())
+        expectation.atMost(-1)
+        self.assertFalse(expectation.verify())
+
+    @sinontest
+    def test002_atMost(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        fto.func1()
+        expectation.atMost(1)
+        self.assertTrue(expectation.verify())
+        expectation.atMost(1).atMost(2).atMost(3)
+        self.assertTrue(expectation.verify())
+        expectation.atMost(0)
+        self.assertFalse(expectation.verify())
+
+    @sinontest
+    def test010_atLeast(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        self.assertTrue(expectation.verify())
+        expectation.atLeast(0)
+        self.assertTrue(expectation.verify())
+        expectation.atLeast(-1)
+        self.assertTrue(expectation.verify())
+        expectation.atLeast(1)
+        self.assertFalse(expectation.verify())
