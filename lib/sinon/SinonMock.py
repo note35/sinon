@@ -11,49 +11,70 @@ class SinonExpectation(SinonSpy):
 
     def __init__(self, obj=None, prop=None):
         super(SinonSpy, self).__init__(obj, prop)
-        self.valid = True
+        self.valid_list = []
 
     def atLeast(self, n):
-        self.valid = self.valid & (True if n >= super(SinonExpectation, self).callCount else False)
+        def fn():
+            return True if n <= super(SinonExpectation, self).callCount else False
+        self.valid_list.append(fn)
         return self
 
     def atMost(self, n):
-        self.valid = self.valid & (True if n <= super(SinonExpectation, self).callCount else False)
+        def fn():
+            return True if n >= super(SinonExpectation, self).callCount else False
+        self.valid_list.append(fn)
         return self
 
     def never(self):
-        self.valid = self.valid & (not super(SinonExpectation, self).called)
+        def fn():
+            return not super(SinonExpectation, self).called
+        self.valid_list.append(fn)
         return self
 
     def once(self):
-        self.valid = self.valid & (super(SinonExpectation, self).calledOnce)
+        def fn():
+            return super(SinonExpectation, self).calledOnce
+        self.valid_list.append(fn)
         return self
 
     def twice(self):
-        self.valid = self.valid & (super(SinonExpectation, self).calledTwice)
+        def fn():
+            return super(SinonExpectation, self).calledTwice
+        self.valid_list.append(fn)
         return self
 
     def thrice(self):
-        self.valid = self.valid & (super(SinonExpectation, self).calledThrice)
+        def fn():
+            return super(SinonExpectation, self).calledThrice
+        self.valid_list.append(fn)
         return self
 
     def exactly(self, n):
-        self.valid = self.valid & (True if n == super(SinonExpectation, self).callCount else False)
+        def fn():
+            return True if n == super(SinonExpectation, self).callCount else False
+        self.valid_list.append(fn)
         return self
 
     def withArgs(self, *args, **kwargs):
-        self.valid = self.valid & (super(SinonExpectation, self).calledWith(*args, **kwargs))
+        def fn():
+            return super(SinonExpectation, self).calledWith(*args, **kwargs)
+        self.valid_list.append(fn)
         return self
 
     def withExactArgs(self, *args, **kwargs):
-        self.valid = self.valid & (super(SinonExpectation, self).calledWithExactly(*args, **kwargs))
+        def fn():
+            return super(SinonExpectation, self).calledWithExactly(*args, **kwargs)
+        self.valid_list.append(fn)
         return self
 
     def on(self, obj):
         pass
 
     def verify(self):
-        return self.valid
+        valid = True
+        for fn in self.valid_list:
+            valid = valid & fn()
+        return valid
 
 
 class SinonMock(object):
@@ -77,11 +98,17 @@ class SinonMock(object):
 
     def verify(self):
         for expectation in self.exp_list:
-            if not expectation.valid:
-                return False
+            try:
+                if hasattr(expectation, "verify") and not expectation.verify():
+                    return False
+            except ReferenceError:
+                pass #ignore removed expectation
         return True
 
     def restore(self):
         for expectation in self.exp_list:
-            expectation.restore()
+            try:
+                expectation.restore()
+            except ReferenceError:
+                pass #ignore removed expectation
         self._queue.remove(self)

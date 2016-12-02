@@ -7,3 +7,8 @@ class ForTestOnly(object):
         if opt:
             return "func1+opt"
         return "func1"
+
+    def func2(self, opt=None):
+        if opt:
+            return "func2+opt"
+        return "func2"

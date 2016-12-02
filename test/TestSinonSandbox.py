@@ -76,7 +76,7 @@ class TestSinonSandbox(unittest.TestCase):
 
     def test002_test_stub_in_sinontest(self):
         base = SinonStub()
-        self.assertEqual(len(base._queue), 2)
+        self.assertEqual(len(base._queue), 1)
         TestSinonSandbox._stub_in_sinontest()
         exception = "weakly-referenced object no longer exists"
         with self.assertRaises(Exception) as context:

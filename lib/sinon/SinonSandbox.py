@@ -1,7 +1,7 @@
 properties = ["SinonSpy", "SinonStub", "SinonMock"]
 
 def _clear_item_in_queue(queue):
-    for item in queue:
+    for item in reversed(queue):
         item.restore()
 
 
