@@ -121,6 +121,26 @@ class TestSinonMock(unittest.TestCase):
         mock = SinonMock(ForTestOnly)
         self.assertTrue(mock.verify()) #no condition
 
+    @sinontest
+    def test015_verify_once_with_throws(self):
+        mock = SinonMock(ForTestOnly)
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        expectation = mock.expects("func1").once().throws() #spy + stub
+        with self.assertRaises(Exception) as context:
+            fto.func1()
+        self.assertTrue(mock.verify()) 
+
+    @sinontest
+    def test016_verify_once_with_returns(self):
+        mock = SinonMock(ForTestOnly)
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        expectation = mock.expects("func1").once().returns(None) #spy + stub
+        self.assertEqual(fto.func1(), None) 
+        self.assertTrue(mock.verify()) 
+
+
 class TestSinonMockExpectation(unittest.TestCase):
 
     """

@@ -3,12 +3,10 @@ sys.path.insert(0, '../')
 
 import weakref
 
-from lib.sinon.SinonBase import SinonBase
-from lib.sinon.SinonSpy import SinonSpy
 from lib.sinon.SinonStub import SinonStub
 from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
 
-class SinonExpectation(SinonSpy):
+class SinonExpectation(SinonStub):
 
     def __init__(self, obj=None, prop=None):
         super(SinonExpectation, self).__init__(obj, prop)
