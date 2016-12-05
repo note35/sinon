@@ -1,6 +1,4 @@
 import sys
-sys.path.insert(0, '../')
-
 import weakref
 import inspect
 from copy import deepcopy

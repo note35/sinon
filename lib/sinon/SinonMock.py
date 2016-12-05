@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, '../')
-
 import weakref
 
 from lib.sinon.SinonStub import SinonStub

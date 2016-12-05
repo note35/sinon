@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, '../')
-
 from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
 from lib.sinon.SinonSpy import SinonSpy
 

@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, '../')
-
 import unittest
 import lib.sinon.SinonBase as sinon
 from lib.sinon.SinonStub import SinonStub
