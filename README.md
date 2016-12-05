@@ -21,9 +21,9 @@ spy[80%] - excluding "JS-closure related function"
 
 stub[50%] - excluding "JS-closure related test"
 
-mock[0%]
+mock[99%]
 
-sandbox[10%]
+sandbox[20%] - may ignore sandbox feature, only keep decorator
 
 ## Installation
 
