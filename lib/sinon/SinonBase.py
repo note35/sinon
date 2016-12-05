@@ -20,6 +20,7 @@ def init(target_globals):
     funcs = [obj for obj in target_globals.values() if isinstance(obj, FunctionType)]
     for func in funcs:
         setattr(g, func.__name__, func)
+    return g
 
 class SinonBase(object):
 
@@ -55,6 +56,10 @@ class SinonBase(object):
 
 
     def setType(self, obj, prop):
+        python_version = sys.version_info.major
+        if python_version == 3:
+            unicode = str
+
         # pure
         if not prop and not obj:
             self.args_type = "PURE"

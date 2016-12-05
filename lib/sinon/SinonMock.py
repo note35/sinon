@@ -75,6 +75,10 @@ class SinonExpectation(SinonStub):
             valid = valid & fn()
         return valid
 
+    def restore(self):
+        self.delWrapSpy()
+
+
 
 class SinonMock(object):
 

@@ -5,6 +5,7 @@ python:
 env:
   - TEST_DIR=test
 script:
+  - python -m doctest test/ActualUseCases.py
   - python -m doctest lib/sinon/util/CollectionHandler.py
   - cd $TEST_DIR
   - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
