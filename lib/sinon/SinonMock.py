@@ -5,12 +5,13 @@ import weakref
 
 from lib.sinon.SinonBase import SinonBase
 from lib.sinon.SinonSpy import SinonSpy
+from lib.sinon.SinonStub import SinonStub
 from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
 
 class SinonExpectation(SinonSpy):
 
     def __init__(self, obj=None, prop=None):
-        super(SinonSpy, self).__init__(obj, prop)
+        super(SinonExpectation, self).__init__(obj, prop)
         self.valid_list = []
 
     def atLeast(self, n):

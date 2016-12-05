@@ -430,13 +430,23 @@ class TestSinonBase(unittest.TestCase):
     def test091_threw_with_err(self):
         class MyException(Exception):
             pass
+
         base = SinonSpy(D_func)
-        sinon.g.D_func(err=MyException)
+
+        try:
+            sinon.g.D_func(err=MyException)
+        except:
+            pass
         self.assertTrue(base.threw()) 
         self.assertTrue(base.threw(MyException))
         self.assertFalse(base.threw(ValueError))
-        sinon.g.D_func(err=ValueError)
+
+        try:
+            sinon.g.D_func(err=ValueError)
+        except:
+            pass
         self.assertTrue(base.threw(ValueError))
+
         base.restore()
 
     def test092_alwaysThrew_without_err(self):
@@ -449,13 +459,23 @@ class TestSinonBase(unittest.TestCase):
     def test093_alwaysThrew_with_same_err(self):
         class MyException(Exception):
             pass
+
         base = SinonSpy(D_func)
-        sinon.g.D_func(err=MyException)
-        sinon.g.D_func(err=MyException)
+
+        try:
+            sinon.g.D_func(err=MyException)
+            sinon.g.D_func(err=MyException)
+        except:
+            pass
         self.assertTrue(base.alwaysThrew()) 
         self.assertTrue(base.alwaysThrew(MyException))
-        sinon.g.D_func(err=ValueError)
+
+        try:
+            sinon.g.D_func(err=ValueError)
+        except:
+            pass
         self.assertFalse(base.alwaysThrew(MyException))
+
         base.restore()
 
     def test100_returned(self):
@@ -469,7 +489,11 @@ class TestSinonBase(unittest.TestCase):
     def test101_returned_exception(self):
         # exception will return a empty function with no return
         base = SinonSpy(D_func)
-        sinon.g.D_func(err=ValueError)
+
+        try:
+            sinon.g.D_func(err=ValueError)
+        except:
+            pass
         self.assertFalse(base.returned("test_local_D_func"))
         sinon.g.D_func()
         self.assertTrue(base.returned("test_local_D_func"))
@@ -525,10 +549,19 @@ class TestSinonBase(unittest.TestCase):
     def test122_exceptions(self):
         base = SinonSpy(D_func)
         self.assertEqual(base.exceptions, [])
-        sinon.g.D_func(ValueError)
+
+        try:
+            sinon.g.D_func(ValueError)
+        except:
+            pass
         self.assertEqual(base.exceptions, [ValueError])
-        sinon.g.D_func(TypeError)
+
+        try:
+            sinon.g.D_func(TypeError)
+        except:
+            pass
         self.assertEqual(base.exceptions, [ValueError, TypeError])
+
         base.restore()
 
     def test123_returnValues(self):

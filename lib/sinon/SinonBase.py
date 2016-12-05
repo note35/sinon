@@ -132,11 +132,11 @@ class SinonBase(object):
 
     def addWrapStub(self, customfunc, condition=None):
         if self.args_type == "MODULE_FUNCTION":
-            setattr(self.obj, self.prop, Wrapper.wrapStub(getattr(self.obj, self.prop), customfunc, condition))
+            setattr(self.obj, self.prop, Wrapper.wrapSpy(getattr(self.obj, self.prop), customfunc, condition))
         elif self.args_type == "MODULE":
             setattr(g, self.obj.__name__, Wrapper.EmptyClass)
         elif self.args_type == "FUNCTION":
-            setattr(g, self.obj.__name__, Wrapper.wrapStub(getattr(g, self.obj.__name__), customfunc, condition))
+            setattr(g, self.obj.__name__, Wrapper.wrapSpy(getattr(g, self.obj.__name__), customfunc, condition))
         elif self.args_type == "PURE":
             pass
 
