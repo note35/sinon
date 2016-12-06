@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
   name = 'sinon',
-  packages = ['sinon'],
+  packages = ['sinon', 'sinon.lib', 'sinon.lib.util'],
   version = '0.0.1',
   description = 'Standalone and test framework agnostic Python test spies, stubs and mocks (pronounced "sigh-non"). ',
   author = 'Kir Chou',
