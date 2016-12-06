@@ -1,5 +1,5 @@
 import unittest
-from lib.sinon.SinonMatcher import SinonMatcher
+from lib.SinonMatcher import SinonMatcher
 
 """
 ======================================================

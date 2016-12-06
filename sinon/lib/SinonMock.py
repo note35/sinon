@@ -1,7 +1,7 @@
 import weakref
 
-from lib.sinon.SinonStub import SinonStub
-from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
+from lib.SinonStub import SinonStub
+from lib.util import ErrorHandler, Wrapper, CollectionHandler
 
 class SinonExpectation(SinonStub):
 

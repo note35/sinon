@@ -1,8 +1,8 @@
 import unittest
-import lib.sinon.SinonBase as sinon
-from lib.sinon.SinonSpy import SinonSpy
-from lib.sinon.SinonStub import SinonStub
-from lib.sinon.SinonSandbox import sinontest
+import lib.SinonBase as sinon
+from lib.SinonSpy import SinonSpy
+from lib.SinonStub import SinonStub
+from lib.SinonSandbox import sinontest
 
 """
 ======================================================

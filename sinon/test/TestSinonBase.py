@@ -2,8 +2,8 @@ import sys
 sys.path.insert(0, '../')
 
 import unittest
-import lib.sinon.SinonBase as sinon
-from lib.sinon.SinonBase import SinonBase
+import lib.SinonBase as sinon
+from lib.SinonBase import SinonBase
 
 """
 ======================================================

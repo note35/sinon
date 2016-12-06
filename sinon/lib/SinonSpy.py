@@ -1,5 +1,5 @@
-from lib.sinon.util import ErrorHandler, Wrapper, CollectionHandler
-from lib.sinon.SinonBase import SinonBase
+from lib.util import ErrorHandler, Wrapper, CollectionHandler
+from lib.SinonBase import SinonBase
 
 class SinonSpy(SinonBase):
 

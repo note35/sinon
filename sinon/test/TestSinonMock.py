@@ -1,7 +1,7 @@
 import unittest
-import lib.sinon.SinonBase as sinon
-from lib.sinon.SinonMock import SinonMock
-from lib.sinon.SinonSandbox import sinontest
+import lib.SinonBase as sinon
+from lib.SinonMock import SinonMock
+from lib.SinonSandbox import sinontest
 
 """
 ======================================================

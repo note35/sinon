@@ -1,4 +1,4 @@
-from lib.sinon import SinonBase, SinonSpy, SinonStub, SinonMock, SinonSandbox
+from lib import SinonBase, SinonSpy, SinonStub, SinonMock, SinonSandbox
 
 init = SinonBase.init
 test = SinonSandbox.sinontest
