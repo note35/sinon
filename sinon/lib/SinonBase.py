@@ -4,7 +4,7 @@ import inspect
 from copy import deepcopy
 from types import ModuleType, FunctionType
 
-from lib.util import ErrorHandler, Wrapper, CollectionHandler
+from .util import ErrorHandler, Wrapper, CollectionHandler
 
 global LOCK
 LOCK = "__SINONLOCK__"
