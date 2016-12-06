@@ -147,15 +147,3 @@ class SinonBase(object):
     @property
     def g(self):
         return g
-
-
-    @property
-    def callCount(self):
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).callCount
-        elif self.args_type == "MODULE":
-            return self.pure_count
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).callCount
-        elif self.args_type == "PURE":
-            return self.pure_count
