@@ -20,6 +20,9 @@ def init(target_globals):
         setattr(g, func.__name__, func)
     return g
 
+class pure(object):
+    func = None
+
 class SinonBase(object):
 
     _queue = []
@@ -46,11 +49,15 @@ class SinonBase(object):
             self.checkLock()
             self.addWrapSpy()
             self.pure_count = 0
+            self.is_in_queue = False
 
 
-    def __call__(self):
-        Wrapper.CALLQUEUE.append(self)
+    def __call__(self, *args, **kwargs):
         self.pure_count = self.pure_count + 1
+        if self.args_type == "PURE":
+            getattr(self.pure, "func")(*args, **kwargs) 
+        else:
+            Wrapper.CALLQUEUE.append(self)
 
 
     def setType(self, obj, prop):
@@ -61,6 +68,9 @@ class SinonBase(object):
         # pure
         if not prop and not obj:
             self.args_type = "PURE"
+            self.pure = pure()
+            setattr(self.pure, "func", Wrapper.emptyFunction)
+            self.orig_func = None
 
         # object
         if obj and (isinstance(obj, ModuleType) or inspect.isclass(obj) or isinstance(obj, FunctionType)):
@@ -109,14 +119,12 @@ class SinonBase(object):
             setattr(self.obj, self.prop, Wrapper.wrapSpy(getattr(self.obj, self.prop)))
         elif self.args_type == "MODULE":
             setattr(self.obj, LOCK, True)
-            #for key, value in self.obj.__dict__.items():
-            #   if hasattr(value, '__call__'):
-            #       setattr(self.obj, key, Wrapper.wrap(value))
         elif self.args_type == "FUNCTION":
             self.orig_func = deepcopy(getattr(g, self.obj.__name__))
             setattr(g, self.obj.__name__, Wrapper.wrapSpy(getattr(g, self.obj.__name__)))
         elif self.args_type == "PURE":
-            pass
+            self.orig_func = deepcopy(getattr(self.pure, "func"))
+            setattr(self.pure, "func", Wrapper.wrapSpy(getattr(self.pure, "func")))
 
 
     def delWrapSpy(self):
@@ -130,7 +138,8 @@ class SinonBase(object):
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(g, self.obj.__name__)]
             setattr(g, self.obj.__name__, self.orig_func)
         elif self.args_type == "PURE":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.pure, "func")]
+            setattr(self.pure, "func", self.orig_func)
 
 
     def addWrapStub(self, customfunc, condition=None):
@@ -141,7 +150,7 @@ class SinonBase(object):
         elif self.args_type == "FUNCTION":
             setattr(g, self.obj.__name__, Wrapper.wrapSpy(getattr(g, self.obj.__name__), customfunc, condition))
         elif self.args_type == "PURE":
-            pass
+            setattr(self.pure, "func", Wrapper.wrapSpy(getattr(self.pure, "func"), customfunc, condition))
 
 
     @property

@@ -14,7 +14,7 @@ class SinonSpy(SinonBase):
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).args_list
         elif self.args_type == "PURE":
-            pass
+            return getattr(self.pure, "func").args_list
 
     def _kwargs_list(self):
         if self.args_type == "MODULE_FUNCTION":
@@ -24,7 +24,7 @@ class SinonSpy(SinonBase):
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).kwargs_list
         elif self.args_type == "PURE":
-            pass
+            return getattr(self.pure, "func").kwargs_list
 
     def _error_list(self): 
         if self.args_type == "MODULE_FUNCTION":
@@ -34,7 +34,7 @@ class SinonSpy(SinonBase):
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).error_list
         elif self.args_type == "PURE":
-            pass
+            return getattr(self.pure, "func").error_list
 
     def _ret_list(self):
         if self.args_type == "MODULE_FUNCTION":
@@ -44,7 +44,7 @@ class SinonSpy(SinonBase):
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).ret_list
         elif self.args_type == "PURE":
-            pass
+            return getattr(self.pure, "func").ret_list
 
     def _getCallQueueIndex(self):
         if self.args_type == "MODULE_FUNCTION":
@@ -54,7 +54,7 @@ class SinonSpy(SinonBase):
         elif self.args_type == "FUNCTION":
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.g, self.obj.__name__)]
         elif self.args_type == "PURE":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == self]
+            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == getattr(self.pure, "func")]
 
     @property
     def callCount(self):
