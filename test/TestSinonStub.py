@@ -1,6 +1,7 @@
 import unittest
 import lib.sinon.SinonBase as sinon
 from lib.sinon.SinonStub import SinonStub
+from lib.sinon.SinonSandbox import sinontest
 
 """
 ======================================================
@@ -46,32 +47,33 @@ class TestSinonBase(unittest.TestCase):
     def setUp(self):
         sinon.init(globals())
 
+    @sinontest
     def test200_constructor_object_method_with_replaced_method(self):
         a = A_object()
         stub = SinonStub(a, "A_func", TestSinonBase.my_func)
         self.assertEqual(a.A_func(), "my_func")
-        stub.restore()
 
+    @sinontest
     def test201_constructor_empty_object(self):
         stub = SinonStub(A_object)
         a = sinon.g.A_object()
         self.assertTrue("A_func" not in dir(a))
-        stub.restore()
 
+    @sinontest
     def test202_constructor_empty_outside_function(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
         self.assertEqual(fto.func1(), None)
-        stub.restore()
 
+    @sinontest
     def test203_constructor_empty_outside_instance_function(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(fto, "func1")
         self.assertEqual(fto.func1(), None)
-        stub.restore()
 
+    @sinontest
     def test204_constructor_empty_library_function(self):
         self.assertEqual(os.system("cd"), 0)
         stub = SinonStub(os, "system", TestSinonBase.my_func)
@@ -79,6 +81,7 @@ class TestSinonBase(unittest.TestCase):
         stub.restore()
         self.assertEqual(os.system("cd"), 0)
 
+    @sinontest
     def test220_returns(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
@@ -89,8 +92,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), {})
         stub.returns(TestSinonBase.my_func)
         self.assertEqual(fto.func1(), TestSinonBase.my_func)  
-        stub.restore()
 
+    @sinontest
     def test221_throws(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
@@ -101,8 +104,8 @@ class TestSinonBase(unittest.TestCase):
         stub.throws(TypeError)
         with self.assertRaises(TypeError) as context:
             fto.func1()
-        stub.restore()
 
+    @sinontest
     def test222_withArgs(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
@@ -113,8 +116,8 @@ class TestSinonBase(unittest.TestCase):
         stub.withArgs(1, b=1).returns("###")
         self.assertEqual(fto.func1(1, b=1), "###")
         self.assertEqual(fto.func1(2), None)
-        stub.restore()
 
+    @sinontest
     def test223_onCall(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
@@ -127,8 +130,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "oncall") #2 will return oncall
         self.assertEqual(fto.func1(), "oncall") #3 will still return oncall
-        stub.restore()
 
+    @sinontest
     def test224_onCall_withArgs(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
@@ -140,8 +143,8 @@ class TestSinonBase(unittest.TestCase):
         stub.withArgs(2).onCall(2).returns("oncall")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(2), "oncall")
-        stub.restore()
 
+    @sinontest
     def test225_onCall_plus_withArgs(self):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
@@ -159,23 +162,23 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "##")
         self.assertEqual(fto.func1(), "###")
-        stub.restore()
 
+    @sinontest
     def test230_onFirstCall(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
         stub.onFirstCall().returns("onFirstCall")
         self.assertEqual(fto.func1(), "onFirstCall")
-        stub.restore()
 
+    @sinontest
     def test231_onSecondCall(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
         stub.onSecondCall().returns("onSecondCall")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "onSecondCall")
-        stub.restore()
 
+    @sinontest
     def test232_onThirdCall(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
@@ -183,8 +186,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "onThirdCall")
-        stub.restore()
 
+    @sinontest
     def test233_onThirdCall_random_args(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
@@ -192,4 +195,3 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(1), "onThirdCall")
-        stub.restore()

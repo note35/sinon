@@ -1,6 +1,7 @@
 import unittest
 import lib.sinon.SinonBase as sinon
 from lib.sinon.SinonSpy import SinonSpy
+from lib.sinon.SinonSandbox import sinontest
 
 """
 ======================================================
@@ -40,75 +41,76 @@ class TestSinonBase(unittest.TestCase):
     def setUp(self):
         sinon.init(globals())
 
+    @sinontest
     def test040_called_method(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
         self.assertTrue(base.called)
-        base.restore()
 
+    @sinontest
     def test041_calledOnce_method(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
         self.assertTrue(base.calledOnce)
-        base.restore()
 
+    @sinontest
     def test042_calledTwice_method(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
         sinon.g.B_func()
         self.assertTrue(base.calledTwice)
-        base.restore()
 
+    @sinontest
     def test043_calledThrice_method(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
         sinon.g.B_func()
         sinon.g.B_func()
         self.assertTrue(base.calledThrice)
-        base.restore()
 
+    @sinontest
     def test044_calledOnce_module_method(self):
         base = SinonSpy(os, "system")
         os.system("cd")
         self.assertTrue(base.calledOnce)
-        base.restore()
 
+    @sinontest
     def test045_calledTwice_module_method(self):
         base = SinonSpy(os, "system")
         os.system("cd")
         os.system("cd")
         self.assertTrue(base.calledTwice)
-        base.restore()
 
+    @sinontest
     def test046_calledThrice_module_method(self):
         base = SinonSpy(os, "system")
         os.system("cd")
         os.system("cd")
         os.system("cd")
         self.assertTrue(base.calledThrice)
-        base.restore()
 
+    @sinontest
     def test047_calledOnce_empty(self):
         base = SinonSpy()
         base()
         self.assertTrue(base.calledOnce)
-        base.restore()
 
+    @sinontest
     def test048_calledTwice_empty(self):
         base = SinonSpy()
         base()
         base()
         self.assertTrue(base.calledTwice)
-        base.restore()
 
+    @sinontest
     def test049_calledThrice_empty(self):
         base = SinonSpy()
         base()
         base()
         base()
         self.assertTrue(base.calledThrice)
-        base.restore()
 
+    @sinontest
     def test050_firstCall_secondCall_thirdCall_lastCall(self):
         base1 = SinonSpy(os, "system")
         base2 = SinonSpy()
@@ -122,11 +124,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base2.secondCall)
         self.assertTrue(base3.thirdCall)
         self.assertTrue(base4.lastCall)
-        base1.restore()
-        base2.restore()
-        base3.restore()
-        base4.restore()
-
+ 
+    @sinontest
     def test051_calledBefore_calledAfter_normal(self):
         base1 = SinonSpy(os, "system")
         base2 = SinonSpy()
@@ -140,19 +139,16 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base2.calledAfter(base1))
         self.assertTrue(base3.calledAfter(base1))
         self.assertTrue(base3.calledAfter(base2))
-        base1.restore()
-        base2.restore()
-        base3.restore()
 
+    @sinontest
     def test052_calledBefore_nothing_called(self):
         base1 = SinonSpy(os, "system")
         base2 = SinonSpy()
         base3 = SinonSpy(B_func)
         self.assertFalse(base1.calledBefore(base2))
         self.assertFalse(base2.calledAfter(base1))
-        base1.restore()
-        base2.restore()
-
+ 
+    @sinontest
     def test053_calledBefore_calledAfter_recalled_method(self):
         base1 = SinonSpy(os, "system")
         base2 = SinonSpy()
@@ -163,9 +159,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base1.calledAfter(base2))
         self.assertTrue(base2.calledBefore(base1))
         self.assertTrue(base2.calledAfter(base1))
-        base1.restore()
-        base2.restore()
 
+    @sinontest
     def test054_calledBefore_calledAfter_called_restore_recalled(self):
         base1 = SinonSpy(os, "system")
         base2 = SinonSpy()
@@ -176,9 +171,8 @@ class TestSinonBase(unittest.TestCase):
         os.system("cd")
         self.assertTrue(base1.calledAfter(base2))
         self.assertTrue(base2.calledBefore(base1))
-        base1.restore()
-        base2.restore()
 
+    @sinontest
     def test070_calledWith_method_fullmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -196,8 +190,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.calledWith("a", "b", "c"))
         self.assertFalse(base.calledWith("a", "b", "d"))
         self.assertFalse(base.calledWith("a", "b", c="d"))
-        base.restore()
 
+    @sinontest
     def test071_calledWith_method_partialmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -230,8 +224,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.calledWith("wrong", b="b"))
         self.assertFalse(base.calledWith("a", b="wrong"))
         self.assertFalse(base.calledWith("a", c="wrong"))
-        base.restore()
 
+    @sinontest
     def test072_alwaysCalledWith_method_fullmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -258,6 +252,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysCalledWith("a", b="b", c="c"))
         base.restore()
 
+    @sinontest
     def test073_alwaysCalledWith_method_partialmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -284,6 +279,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysCalledWith("a", b="b"))
         base.restore()
 
+    @sinontest
     def test074_calledWithExactly_method_fullmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -298,8 +294,8 @@ class TestSinonBase(unittest.TestCase):
         sinon.g.C_func("a", b="b", c="c")
         self.assertTrue(base.calledWithExactly("a", b="b", c="c"))
         self.assertFalse(base.calledWithExactly("wrong", b="b", c="c"))
-        base.restore()
 
+    @sinontest
     def test075_calledWithExactly_method_partialmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -311,8 +307,8 @@ class TestSinonBase(unittest.TestCase):
         #combine kwargs and args
         sinon.g.C_func("a", b="b", c="c")
         self.assertFalse(base.calledWithExactly("a", b="b"))
-        base.restore()
 
+    @sinontest
     def test076_alwaysCalledWithExactly_method_fullmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -339,6 +335,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysCalledWithExactly("a", b="b", c="c"))
         base.restore()
 
+    @sinontest
     def test077_alwaysCalledWithExactly_method_partialmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -365,6 +362,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.alwaysCalledWithExactly("a", b="b"))
         base.restore()
 
+    @sinontest
     def test078_neverCalledWith_method_fullmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -382,8 +380,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.neverCalledWith("a", "b", "c"))
         self.assertTrue(base.neverCalledWith("a", "b", "d"))
         self.assertTrue(base.neverCalledWith("a", "b", c="d"))
-        base.restore()
 
+    @sinontest
     def test079_neverCalledWith_method_partialmatch(self):
         base = SinonSpy(C_func)
         #pure kwargs
@@ -416,14 +414,14 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.neverCalledWith("wrong", b="b"))
         self.assertTrue(base.neverCalledWith("a", b="wrong"))
         self.assertTrue(base.neverCalledWith("a", c="wrong"))
-        base.restore()
 
+    @sinontest
     def test090_threw_without_err(self):
         base = SinonSpy(D_func)
         sinon.g.D_func(err=False)
         self.assertFalse(base.threw()) 
-        base.restore()
 
+    @sinontest
     def test091_threw_with_err(self):
         class MyException(Exception):
             pass
@@ -444,15 +442,14 @@ class TestSinonBase(unittest.TestCase):
             pass
         self.assertTrue(base.threw(ValueError))
 
-        base.restore()
-
+    @sinontest
     def test092_alwaysThrew_without_err(self):
         base = SinonSpy(D_func)
         sinon.g.D_func(err=False)
         sinon.g.D_func(err=False)
         self.assertFalse(base.alwaysThrew()) 
-        base.restore()
 
+    @sinontest
     def test093_alwaysThrew_with_same_err(self):
         class MyException(Exception):
             pass
@@ -473,16 +470,15 @@ class TestSinonBase(unittest.TestCase):
             pass
         self.assertFalse(base.alwaysThrew(MyException))
 
-        base.restore()
-
+    @sinontest
     def test100_returned(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
         self.assertTrue(base.returned("test_local_B_func"))
         sinon.g.B_func(2)
         self.assertTrue(base.returned("test_local_B_func2"))
-        base.restore()
 
+    @sinontest
     def test101_returned_exception(self):
         # exception will return a empty function with no return
         base = SinonSpy(D_func)
@@ -494,8 +490,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertFalse(base.returned("test_local_D_func"))
         sinon.g.D_func()
         self.assertTrue(base.returned("test_local_D_func"))
-        base.restore()
 
+    @sinontest
     def test102_alwaysReturned(self):
         base = SinonSpy(B_func)
         sinon.g.B_func()
@@ -503,24 +499,24 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(base.alwaysReturned("test_local_B_func"))
         sinon.g.B_func(123)
         self.assertFalse(base.alwaysReturned("test_local_B_func"))
-        base.restore() 
 
+    @sinontest
     def test110_getCall(self):
         base1 = SinonSpy(B_func)
         base2 = SinonSpy(C_func)
         sinon.g.B_func()
-        call = SinonSpy.getCall(1)
+        call = SinonSpy.getCall(0)
         self.assertFalse(base2.called)  #C_func is never called
         self.assertTrue(call.called)    #B_func is called
-        base1.restore() 
-        base2.restore()
 
+    @sinontest
     def test111_getCall_wrongIndex(self):
-        exception = "The call queue only contains 1 calls"
+        exception = "The call queue only contains 0 calls"
         with self.assertRaises(Exception) as context:
             SinonSpy.getCall(100)
         self.assertTrue(exception in str(context.exception))
 
+    @sinontest
     def test120_kwargs(self):
         base = SinonSpy(C_func)
         self.assertEqual(base.kwargs, [])
@@ -530,8 +526,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(base.kwargs, [{"a":"a", "b":"b", "c":"c"}, {"a":"a", "b":"b", "c":"c"}])
         sinon.g.C_func("a", b="b", c="c")
         self.assertEqual(base.kwargs, [{"a":"a", "b":"b", "c":"c"}, {"a":"a", "b":"b", "c":"c"}, {"b": "b", "c": "c"}])
-        base.restore()
 
+    @sinontest
     def test121_args(self):
         base = SinonSpy(C_func)
         self.assertEqual(base.args, [])
@@ -541,8 +537,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(base.args, [("a", "b", "c"), ("a", "b", "c")])
         sinon.g.C_func("a", b="b", c="c")
         self.assertEqual(base.args, [("a", "b", "c"), ("a", "b", "c"), ("a",)])
-        base.restore()
 
+    @sinontest
     def test122_exceptions(self):
         base = SinonSpy(D_func)
         self.assertEqual(base.exceptions, [])
@@ -559,8 +555,7 @@ class TestSinonBase(unittest.TestCase):
             pass
         self.assertEqual(base.exceptions, [ValueError, TypeError])
 
-        base.restore()
-
+    @sinontest
     def test123_returnValues(self):
         base = SinonSpy(B_func)
         self.assertEqual(base.exceptions, [])
@@ -568,8 +563,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(base.returnValues, ["test_local_B_func"])
         sinon.g.B_func(2)
         self.assertEqual(base.returnValues, ["test_local_B_func", "test_local_B_func2"])
-        base.restore()
 
+    @sinontest
     def test130_reset(self):
         base = SinonSpy(B_func)
         sinon.g.B_func(2)
@@ -578,4 +573,12 @@ class TestSinonBase(unittest.TestCase):
         base.reset()
         self.assertFalse(base.called)
         self.assertFalse(base.args)
-        base.restore()
+
+    @sinontest
+    def test140_spy_as_callback(self):
+        def func(f):
+            f()
+        spy = SinonSpy()
+        func(spy) 
+        self.assertTrue(spy.called)      
+        self.assertTrue(spy.calledOnce)
