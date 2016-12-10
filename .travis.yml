@@ -17,4 +17,5 @@ script:
   - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
 after_success:
   - coverage run --source=../lib/ -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
+  - coverage report -m
   - coveralls
