@@ -1,6 +1,8 @@
-.. image:: https://travis-ci.org/note35/python-sinon.svg?branch=dev
+.. image:: https://badge.fury.io/py/sinon.svg
+    :target: https://badge.fury.io/py/sinon
+.. image:: https://travis-ci.org/note35/sinon.svg?branch=dev
    :alt: dev-branch-ci-status
-   :target: https://travis-ci.org/note35/python-sinon
+   :target: https://travis-ci.org/note35/sinon
 
 :Version: 0.0.4
 :Download: http://pypi.python.org/pypi/sinon
