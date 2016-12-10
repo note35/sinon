@@ -4,9 +4,17 @@ python:
   - "3.5"
 env:
   - MAIN_DIR=sinon
+install:
+  - pip install -U pip
+  - pip install -r requirements.txt
+  - pip install coverage
+  - pip install coveralls
 script:
   - python -m doctest example/ActualUseCases.py
   - cd $MAIN_DIR
   - python -m doctest lib/util/CollectionHandler.py
   - cd test
   - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
+after_success:
+  - coverage run --source=../lib/ -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
+  - coveralls
