@@ -75,15 +75,15 @@ Basic Usage
 Spy
 ---
 
-Spy contains same functions which are mentioned in `spies`
+Spy contains same functions which are mentioned in `spies`_
 
 .. _spies: http://sinonjs.org/docs/#spies
 
 Declaration:
 
-- spy = sinon.spy();
-- spy = sinon.spy(myFunc); #The usage is modified, please see example2 below
-- spy = sinon.spy(object, "method");
+- spy = sinon.spy()
+- spy = sinon.spy(myFunc) #please see example2 below
+- spy = sinon.spy(object, "method")
 - spy.restore()
 
 Feature:
@@ -134,7 +134,7 @@ Feature:
     def func():
         pass
 
-    g.sinon.init(globals())
+    g = sinon.init(globals())
 
     def some_test_func():
         spy_func = sinon.spy(func)
@@ -201,7 +201,7 @@ Feature:
     def func():
         pass
 
-    g.sinon.init(globals())
+    g = sinon.init(globals())
 
     def some_test_func():
         stub_func = sinon.stub(func)
@@ -237,7 +237,7 @@ Feature of expectation:
 - expectation.exactly()
 - expectation.withArgs(\*args, \*\*kwargs)
 - expectation.withExactArgs(\*args, \*\*kwargs)
-- expectation.verify()
+- expectation.verify() #return boolean instead of raise exception
 
 *Example1: mock single function of module*
 
