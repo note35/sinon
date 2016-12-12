@@ -1,3 +1,5 @@
+import os
+
 class ForTestOnly(object):
 
     def __init__(self):
@@ -12,3 +14,6 @@ class ForTestOnly(object):
         if opt:
             return "func2+opt"
         return "func2"
+
+    def func3(self):
+        return os.system("cd")

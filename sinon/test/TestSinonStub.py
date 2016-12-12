@@ -195,3 +195,10 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(1), "onThirdCall")
+
+    @sinontest
+    def test300_cross_module_stub(self):
+        fto = ForTestOnly()
+        stub = SinonStub(os, "system") #in func3 of fto, it calls os.system
+        stub.returns("it's a stub function")
+        self.assertEqual(fto.func3(), "it's a stub function")
