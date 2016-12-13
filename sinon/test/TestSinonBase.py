@@ -111,3 +111,9 @@ class TestSinonBase(unittest.TestCase):
         A = A_object()
         base = SinonBase(A, "A_func")
         base.restore()
+
+    def test022_constructor_module_variable(self):
+        exception = "[{}] is an invalid property, it should be a method in [{}]".format("path", "os")
+        with self.assertRaises(Exception) as context:
+            base = SinonBase(os, "path") 
+        self.assertTrue(exception in str(context.exception))

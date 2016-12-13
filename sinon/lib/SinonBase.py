@@ -2,7 +2,7 @@ import sys
 import weakref
 import inspect
 from copy import deepcopy
-from types import ModuleType, FunctionType
+from types import ModuleType, FunctionType, BuiltinFunctionType
 
 from .util import ErrorHandler, Wrapper, CollectionHandler
 
@@ -89,8 +89,13 @@ class SinonBase(object):
         # property
         if prop and (isinstance(prop, str) or isinstance(prop, unicode)):
             if prop in dir(obj):
-                self.args_type = "MODULE_FUNCTION"
-                self.orig_func = None
+                if isinstance(getattr(obj, prop), FunctionType) or isinstance(getattr(obj, prop), BuiltinFunctionType) or inspect.ismethod(getattr(obj, prop)):
+                #inspect.ismethod for python2.7
+                #isinstance(getattr(obj, prop), FunctionType) for python3.x
+                    self.args_type = "MODULE_FUNCTION"
+                    self.orig_func = None
+                else:
+                    ErrorHandler.propIsNotAFuncError(obj, prop)
             else:
                 ErrorHandler.propInObjError(obj, prop)
         elif prop:

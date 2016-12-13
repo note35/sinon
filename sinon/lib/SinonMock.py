@@ -1,4 +1,6 @@
 import weakref
+import inspect
+from types import ModuleType, FunctionType
 
 from .SinonStub import SinonStub
 from .util import ErrorHandler, Wrapper, CollectionHandler
@@ -82,6 +84,8 @@ class SinonMock(object):
     _queue = []
 
     def __new__(self, obj=None):
+        if obj and (not isinstance(obj, ModuleType) and not inspect.isclass(obj) and isinstance(obj, FunctionType)):
+            ErrorHandler.mockTypeError(obj)
         new = super(SinonMock, self).__new__(self)
         self._queue.append(new)
         new.__init__(obj)

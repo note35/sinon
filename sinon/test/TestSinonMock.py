@@ -51,8 +51,10 @@ class TestSinonMock(unittest.TestCase):
 
     @sinontest
     def test003_constructor_function(self):
-        mock = SinonMock(B_func)
-        expectation = mock.expects("__doc__")
+        exception = "[{}] is an invalid module/class".format(B_func)
+        with self.assertRaises(Exception) as context:
+            mock = SinonMock(B_func)
+        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test004_constructor_empty(self):
