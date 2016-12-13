@@ -91,7 +91,7 @@ class SinonBase(object):
             if prop in dir(obj):
                 if isinstance(getattr(obj, prop), FunctionType) or isinstance(getattr(obj, prop), BuiltinFunctionType) or inspect.ismethod(getattr(obj, prop)):
                 #inspect.ismethod for python2.7
-                #isinstance(getattr(obj, prop), FunctionType) for python3.x
+                #isinstance(...) for python3.x
                     self.args_type = "MODULE_FUNCTION"
                     self.orig_func = None
                 else:
