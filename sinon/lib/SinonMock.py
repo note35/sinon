@@ -84,12 +84,15 @@ class SinonMock(object):
     _queue = []
 
     def __new__(self, obj=None):
-        if obj and (not isinstance(obj, ModuleType) and not inspect.isclass(obj) and (isinstance(obj, FunctionType) or inspect.ismethod(obj))):
+        if not obj or \
+           obj and (isinstance(obj, ModuleType) or inspect.isclass(obj)) or \
+           obj and not isinstance(obj, FunctionType): 
+            new = super(SinonMock, self).__new__(self)
+            self._queue.append(new)
+            new.__init__(obj)
+            return weakref.proxy(new)
+        else:
             ErrorHandler.mockTypeError(obj)
-        new = super(SinonMock, self).__new__(self)
-        self._queue.append(new)
-        new.__init__(obj)
-        return weakref.proxy(new)
 
     def __init__(self, obj=None):
         self.obj = obj
