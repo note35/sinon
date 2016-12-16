@@ -58,7 +58,7 @@ class SinonAssertion(object):
             if val != args[0] and not val.calledAfter(args[idx-1]):
                 raise cls.failException(cls.message)
             if val != args[-1] and not val.calledBefore(args[idx+1]):
-                    raise cls.failException(cls.message)
+                raise cls.failException(cls.message)
 
     @classmethod
     def calledWith(cls, spy, *args, **kwargs):

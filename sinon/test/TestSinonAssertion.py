@@ -65,10 +65,20 @@ class TestSinonAssertion(unittest.TestCase):
     @sinontest
     def test040_callOrder_only_one_arg(self):
         spy = SinonSpy()
+        spy()
         SinonAssertion.callOrder(spy)
 
     @sinontest
-    def test040_callOrder_two_unique_args(self):
+    def test041_callOrder_two_unique_args_without_call(self):
+        spy1 = SinonSpy()
+        stub1 = SinonStub()
+        exception = "_getCallQueueIndex(): the call queue is empty"
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.callOrder(spy1, stub1)
+        self.assertTrue(exception in str(context.exception))
+
+    @sinontest
+    def test042_callOrder_two_unique_args(self):
         spy1 = SinonSpy()
         stub1 = SinonStub()
         spy1()
@@ -76,7 +86,7 @@ class TestSinonAssertion(unittest.TestCase):
         SinonAssertion.callOrder(spy1, stub1)
 
     @sinontest
-    def test040_callOrder_three_unique_args_call_repeated(self):
+    def test043_callOrder_three_unique_args_call_repeated(self):
         spy1 = SinonSpy()
         stub1 = SinonStub()
         spy2 = SinonSpy()

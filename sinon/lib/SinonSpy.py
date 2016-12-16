@@ -100,12 +100,16 @@ class SinonSpy(SinonBase):
         return True if len(Wrapper.CALLQUEUE)-1 in self._getCallQueueIndex() else False
 
     def calledBefore(self, another_obj):
+        if len(self._getCallQueueIndex()) == 0:
+            ErrorHandler.CallQueueIsEmptyError() 
         if Wrapper.CALLQUEUE:
             return True if min(self._getCallQueueIndex()) < max(another_obj._getCallQueueIndex()) else False
         else:
             return False
 
     def calledAfter(self, another_obj):
+        if len(self._getCallQueueIndex()) == 0:
+            ErrorHandler.CallQueueIsEmptyError() 
         if Wrapper.CALLQUEUE:
             return True if max(self._getCallQueueIndex()) > min(another_obj._getCallQueueIndex()) else False
         else:

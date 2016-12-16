@@ -148,8 +148,13 @@ class TestSinonSpy(unittest.TestCase):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
         spy3 = SinonSpy(B_func)
-        self.assertFalse(spy1.calledBefore(spy2))
-        self.assertFalse(spy2.calledAfter(spy1))
+        exception = "_getCallQueueIndex(): the call queue is empty"
+        with self.assertRaises(Exception) as context:
+            self.assertFalse(spy1.calledBefore(spy2))
+        self.assertTrue(exception in str(context.exception))
+        with self.assertRaises(Exception) as context:
+            self.assertFalse(spy2.calledAfter(spy1))
+        self.assertTrue(exception in str(context.exception))
  
     @sinontest
     def test053_calledBefore_calledAfter_recalled_method(self):

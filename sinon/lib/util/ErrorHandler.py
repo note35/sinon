@@ -32,3 +32,6 @@ def getCallIndexError(n):
 
 def assertionIsNotSpyError(obj):
     return exceptionHelper("[{}] is an invalid spy".format(str(obj)))
+
+def CallQueueIsEmptyError():
+    return exceptionHelper("_getCallQueueIndex(): the call queue is empty")
