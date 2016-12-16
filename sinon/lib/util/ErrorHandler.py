@@ -29,3 +29,6 @@ def calledWithEmptyError():
 
 def getCallIndexError(n):
     return exceptionHelper("The call queue only contains {} calls".format(str(n)), exception=IndexError)
+
+def assertionIsNotSpyError(obj):
+    return exceptionHelper("[{}] is an invalid spy".format(str(obj)))
