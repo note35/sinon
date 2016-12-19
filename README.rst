@@ -32,10 +32,9 @@ but rewriting in python.
 Progress
 ========
 
-This project is still under developing.
+This project is still under developing, here shows the plan of v1.0.0..
 
-The first release will include four basic features. The second release
-have not planned yet.
+In release v1.0.0, it will include four basic features. 
 
 Because the concept of closure in JS and Python are different, I plan to
 skip all closure related functions.
@@ -51,7 +50,13 @@ skip all closure related functions.
   v1.0.0: contains all features that spy/stub have
 
 *sandbox[20%]*
-  v1.0.0: only decorator feature
+  v1.0.0: only decorator feature, no plan currently
+
+*assertion[90%]*
+  v1.0.0: same as spy, no doc currently
+
+*matcher[0%]*
+  v1.0.0: plan to implement
 
 Installation
 ============
