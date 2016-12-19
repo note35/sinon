@@ -183,6 +183,8 @@ class SinonSpy(SinonBase):
             return CollectionHandler.objInList(self._error_list(), error_type)
 
     def alwaysThrew(self, error_type=None):
+        if self.callCount == 0:
+            return False
         if not error_type:
             return True if len(self._error_list()) == self.callCount else False
         else:

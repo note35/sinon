@@ -1,14 +1,20 @@
 from .util import ErrorHandler, Wrapper, CollectionHandler
 from .SinonSpy import SinonSpy
 
-def checkSpyType(spy):
-    if not isinstance(spy, SinonSpy):
-        ErrorHandler.assertionIsNotSpyError(spy)
-
 class SinonAssertion(object):
 
     failException = AssertionError
     message = ""
+
+    @classmethod
+    def _checkSpyType(cls, spy):
+        if not isinstance(spy, SinonSpy):
+            ErrorHandler.assertionIsNotSpyError(spy)
+
+    @classmethod
+    def _isSatisfied(cls, condition):
+        if not condition:
+            raise cls.failException(cls.message)
 
     @classmethod
     def fail(cls, message):
@@ -16,69 +22,68 @@ class SinonAssertion(object):
 
     @classmethod
     def notCalled(cls, spy):
-        checkSpyType(spy)
-        if spy.called:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(not spy.called)
 
     @classmethod
     def called(cls, spy):
-        checkSpyType(spy)
-        if not spy.called:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.called)
 
     @classmethod
     def calledOnce(cls, spy):
-        checkSpyType(spy)
-        if not spy.calledOnce:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledOnce)
 
     @classmethod
     def calledTwice(cls, spy):
-        checkSpyType(spy)
-        if not spy.calledTwice:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledTwice)
 
     @classmethod
     def calledThrice(cls, spy):
-        checkSpyType(spy)
-        if not spy.calledThrice:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledThrice)
 
     @classmethod
     def callCount(cls, spy, n):
-        checkSpyType(spy)
-        if spy.callCount != n:
-            raise cls.failException(cls.message)
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.callCount == n)
 
     @classmethod
     def callOrder(cls, *args):
         for spy in args:
-            checkSpyType(spy)
+            cls._checkSpyType(spy)
         for idx, val in enumerate(args):
-            if val != args[0] and not val.calledAfter(args[idx-1]):
-                raise cls.failException(cls.message)
-            if val != args[-1] and not val.calledBefore(args[idx+1]):
-                raise cls.failException(cls.message)
+            if val != args[0]:
+                cls._isSatisfied(val.calledAfter(args[idx-1]))
+            if val != args[-1]:
+                cls._isSatisfied(val.calledBefore(args[idx+1]))
 
     @classmethod
     def calledWith(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledWith(*args, **kwargs))
 
     @classmethod
     def alwaysCalledWith(cls, spy, *args, **kwargs):
-        pass
-
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.alwaysCalledWith(*args, **kwargs))
+       
     @classmethod
     def neverCalledWith(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.neverCalledWith(*args, **kwargs))
 
     @classmethod
     def calledWithExactly(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledWithExactly(*args, **kwargs))
 
     @classmethod
     def alwaysCalledWithExactly(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.alwaysCalledWithExactly(*args, **kwargs))
 
     @classmethod
     def calledWithMatch(cls, spy, *args, **kwargs):
@@ -93,9 +98,11 @@ class SinonAssertion(object):
         pass
 
     @classmethod
-    def threw(cls, spy, error_type):
-        pass
+    def threw(cls, spy, error_type=None):
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.threw(error_type))
 
     @classmethod
-    def alwaysThrew(cls, spy, error_type):
-        pass
+    def alwaysThrew(cls, spy, error_type=None):
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.alwaysThrew(error_type))
