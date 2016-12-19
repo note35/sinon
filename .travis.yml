@@ -1,6 +1,9 @@
 language: python
 python:
+  - "2.6"
   - "2.7"
+  - "3.3"
+  - "3.4"
   - "3.5"
 env:
   - MAIN_DIR=sinon
@@ -14,8 +17,8 @@ script:
   - cd $MAIN_DIR
   - python -m doctest lib/util/CollectionHandler.py
   - cd test
-  - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
+  - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock TestSinonAssertion
 after_success:
-  - coverage run --source=../lib/ -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock
+  - coverage run --source=../lib/ -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock TestSinonAssertion
   - coverage report -m
   - coveralls
