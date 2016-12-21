@@ -93,3 +93,18 @@ def wrapSpy(f, customfunc=None, condition=None):
         def fn(*args, **kwargs):
             return f(*args, **kwargs)
     return fn
+
+
+class ClassPropertyDescriptor(object):   
+    def __init__(self, f):
+        self.f = f
+    def __get__(self, obj, klass=None):
+        if klass is None:
+            klass = type(obj)
+        return self.f.__get__(obj, klass)()
+
+
+def classproperty(func):
+    if not isinstance(func, (classmethod, staticmethod)):
+        func = classmethod(func)    
+    return ClassPropertyDescriptor(func)
