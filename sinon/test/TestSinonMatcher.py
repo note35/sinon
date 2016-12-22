@@ -55,6 +55,13 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertTrue(m.test("match string++"))
         self.assertTrue(m.test("match strig"))
 
+    def test004_constructor_func(self):
+        def custom_test_func(a, b, c):
+            return a+b+c
+        m = SinonMatcher(custom_test_func)
+        self.assertEqual(m.test(1,2,3), 6)
+        SinonMatcher.reset()
+
     def test020_any(self):
         m = SinonMatcher.any
         self.assertTrue(m.test())
@@ -101,7 +108,8 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertTrue(m.test(100000**10))
         self.assertFalse(m.test("1"))
 
-    def test026_string(self):
+
+    def test028_string(self):
         m = SinonMatcher.string
         self.assertFalse(m.test())
         self.assertFalse(m.test(1))
@@ -110,8 +118,4 @@ class TestSinonMatcher(unittest.TestCase):
     def test027_object(self):
         pass
 
-    def test999_constructor_func(self):
-        def custom_test_func(a, b, c):
-            return a+b+c
-        m = SinonMatcher(custom_test_func)
-        self.assertEqual(m.test(1,2,3), 6)
+

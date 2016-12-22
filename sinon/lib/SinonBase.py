@@ -61,7 +61,7 @@ class SinonBase(object):
 
 
     def setType(self, obj, prop):
-        python_version = sys.version_info.major
+        python_version = sys.version_info[0]
         if python_version == 3:
             unicode = str
 

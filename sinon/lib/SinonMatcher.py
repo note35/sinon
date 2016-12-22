@@ -7,7 +7,7 @@ from types import FunctionType, BuiltinFunctionType
 
 from .util import ErrorHandler, Wrapper, CollectionHandler
 
-python_version = sys.version_info.major
+python_version = sys.version_info[0]
 if python_version == 3:
     unicode = str
 
@@ -57,6 +57,8 @@ class Matcher(object):
             return True if target == self.expectation else False
 
 
+original_matcher_test = Matcher.test
+
 class SinonMatcher(object):
 
     def __new__(self, expectation=None, is_regex=False):
@@ -70,6 +72,11 @@ class SinonMatcher(object):
         else:
             self.m = Matcher(expectation)
         return self.m
+
+    @classmethod
+    def reset(cls):
+        global original_matcher_test
+        Matcher.test = original_matcher_test
 
     @Wrapper.classproperty
     def any(cls):
