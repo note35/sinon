@@ -142,7 +142,11 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertTrue(m.test(stub))
 
     def test060_and(self):
-        pass
+        spy = SinonSpy()
+        stub = SinonStub()
+        m = SinonMatcher.instanceOf(spy)._and(SinonMatcher.instanceOf(stub))
+        self.assertFalse(m.test(spy))
+        self.assertTrue(m.test(stub))
 
     def test061_or(self):
         m = SinonMatcher.typeOf(int)._or(SinonMatcher.typeOf(str))

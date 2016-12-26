@@ -145,7 +145,3 @@ class SinonMatcher(object):
             cls.m = Matcher("__INSTANCE__", expected_instance=expectation)
             return cls.m
         ErrorHandler.matcherInstanceError(expectation)
-
-    @classmethod
-    def has(cls, prop, *expectation):
-        pass
