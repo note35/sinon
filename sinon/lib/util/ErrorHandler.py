@@ -35,3 +35,9 @@ def assertionIsNotSpyError(obj):
 
 def CallQueueIsEmptyError():
     return exceptionHelper("_getCallQueueIndex(): the call queue is empty")
+
+def matcherTypeError(prop):
+    return exceptionHelper("[{}] is an invalid property, it should be a type".format(prop), exception=TypeError)
+
+def matcherInstanceError(prop):
+    return exceptionHelper("[{}] is an invalid property, it should be an instance".format(prop), exception=TypeError)

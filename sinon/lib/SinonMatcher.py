@@ -1,9 +1,7 @@
 import sys
 import re
-from numbers import Number
-from decimal import Decimal
-from fractions import Fraction
-from types import FunctionType, BuiltinFunctionType
+import inspect
+from types import FunctionType, BuiltinFunctionType, MethodType
 
 from .util import ErrorHandler, Wrapper, CollectionHandler
 
@@ -13,9 +11,13 @@ if python_version == 3:
 
 class Matcher(object):
 
-    def __init__(self, expectation, is_custom_func=False, is_substring=False, is_regex=False):
+    def __init__(self, expectation, is_custom_func=False, is_substring=False, is_regex=False, expected_type=None, expected_instance=None):
         self.message = ""
+        self.another_matcher = None
+        self.another_compare = None
         self.expectation = expectation
+        self.expected_type = expected_type
+        self.expected_instance = expected_instance
         if is_custom_func:
             self.arg_type = "CUSTOMFUNC"
             setattr(Matcher, "test", staticmethod(expectation))
@@ -37,24 +39,46 @@ class Matcher(object):
     def setExpectation(self, expectation):
         self.expectation = expectation
 
-    def test(self, target=None):
+    def test(self, target=None, checked=False):
+        ret = False
         if self.arg_type == "TYPE":
-            return True if isinstance(target, self.expectation) else False
+            ret = True if isinstance(target, self.expectation) else False
         elif self.arg_type == "SUBSTRING":
-            return True if target in self.expectation else False
+            ret = True if target in self.expectation else False
         elif self.arg_type == "REGEX":
             pattern = re.compile(self.expectation)
-            return pattern.match(target)
+            ret = pattern.match(target)
         elif self.arg_type == "VALUE":
             if self.expectation == "__ANY__":
-                return True
+                ret = True
             elif self.expectation == "__DEFINED__":
-                return True if target is not None else False
-            elif self.expectation == "__NUMBER__":
-                return True if isinstance(target, (Number, Decimal, Fraction)) else False
-            elif self.expectation == "__STRING__":
-                return True if isinstance(target, (str, unicode)) else False
-            return True if target == self.expectation else False
+                ret = True if target is not None else False
+            elif self.expectation == "__TYPE__":
+                ret = True if type(target) == self.expected_type else False
+            elif self.expectation == "__INSTANCE__":
+                ret = True if isinstance(target, self.expected_instance.__class__) else False
+            else:
+                ret = True if target == self.expectation else False
+
+        if self.another_matcher and not checked:
+            ret2 = self.another_matcher.test(target, checked=True)
+
+        if self.another_compare == "__AND__":
+            return ret and ret2
+        elif self.another_compare == "__OR__":
+            return ret or ret2
+        else:
+            return ret
+
+    def _and(self, another_matcher):
+        self.another_compare = "__AND__"
+        self.another_matcher = another_matcher
+        return self
+
+    def _or(self, another_matcher):
+        self.another_compare = "__OR__"
+        self.another_matcher = another_matcher
+        return self
 
 
 original_matcher_test = Matcher.test
@@ -62,7 +86,7 @@ original_matcher_test = Matcher.test
 class SinonMatcher(object):
 
     def __new__(self, expectation=None, is_regex=False):
-        if isinstance(expectation, FunctionType):
+        if isinstance(expectation, (FunctionType, BuiltinFunctionType, MethodType)):
             self.m = Matcher(expectation, is_custom_func=True)
         elif isinstance(expectation, (str, unicode)):
             if is_regex:
@@ -103,22 +127,25 @@ class SinonMatcher(object):
         cls.m = Matcher(bool)
         return cls.m
 
-    @Wrapper.classproperty
-    def number(cls):
-        cls.m = Matcher("__NUMBER__")
+    @classmethod
+    def same(cls, expectation):
+        cls.m = Matcher(expectation)
         return cls.m
 
-    @Wrapper.classproperty
-    def string(cls):
-        cls.m = Matcher("__STRING__")
-        return cls.m
+    @classmethod
+    def typeOf(cls, expectation):
+        if isinstance(expectation, type):
+            cls.m = Matcher("__TYPE__", expected_type=expectation)
+            return cls.m
+        ErrorHandler.matcherTypeError(expectation)
 
-    @Wrapper.classproperty
-    def object(cls):
+    @classmethod
+    def instanceOf(cls, expectation):
+        if not inspect.isclass(expectation):
+            cls.m = Matcher("__INSTANCE__", expected_instance=expectation)
+            return cls.m
+        ErrorHandler.matcherInstanceError(expectation)
+
+    @classmethod
+    def has(cls, prop, *expectation):
         pass
-
-    @Wrapper.classproperty
-    def func(cls):
-        cls.m = Matcher("__FUNC__")
-        return cls.m
-

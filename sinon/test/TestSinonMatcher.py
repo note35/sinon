@@ -4,6 +4,8 @@ sys.path.insert(0, '../')
 import unittest
 import lib.SinonBase as sinon
 from lib.SinonMatcher import SinonMatcher
+from lib.SinonSpy import SinonSpy
+from lib.SinonStub import SinonStub
 
 """
 ======================================================
@@ -99,23 +101,52 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertTrue(m.test(False))
         self.assertFalse(m.test("asd"))
 
-    def test025_number(self):
-        m = SinonMatcher.number
-        self.assertFalse(m.test())
-        self.assertTrue(m.test(1))
-        self.assertTrue(m.test(100000000000000000000))
-        self.assertTrue(m.test(1.123))
-        self.assertTrue(m.test(100000**10))
-        self.assertFalse(m.test("1"))
+    def test30_same(self):
+        m = SinonMatcher.same("100")
+        self.assertTrue(m.test("100"))
+        m = SinonMatcher.same(100)
+        self.assertTrue(m.test(100))
+        m = SinonMatcher.same(os.system)
+        self.assertTrue(m.test(os.system))
 
+    def test40_typeOf_class(self):
+        # This is a silly test, normal condition will not use this kinda cases.
+        fto = ForTestOnly()
+        m = SinonMatcher.typeOf(type)
+        self.assertTrue(m.test(ForTestOnly)) # class is a type
+        self.assertFalse(m.test(fto))        # instance is not a type
 
-    def test028_string(self):
-        m = SinonMatcher.string
-        self.assertFalse(m.test())
-        self.assertFalse(m.test(1))
-        self.assertTrue(m.test("1"))
+    def test41_typeOf_instance(self):
+        fto = ForTestOnly()
+        m = SinonMatcher.typeOf(ForTestOnly)
+        self.assertFalse(m.test(ForTestOnly))
+        self.assertTrue(m.test(fto))
 
-    def test027_object(self):
+    def test42_typeOf_value(self):
+        m = SinonMatcher.typeOf(int)
+        self.assertFalse(m.test("1"))       # string is not a number
+        self.assertTrue(m.test(1))          # number is a number
+
+    def test50_instanceOf_class(self):
+        fto = ForTestOnly()
+        exception = "[{}] is an invalid property, it should be an instance".format(ForTestOnly)
+        with self.assertRaises(Exception) as context:
+            m = SinonMatcher.instanceOf(ForTestOnly)
+        self.assertTrue(exception in str(context.exception))
+
+    def test51_instanceOf_instance(self):
+        spy = SinonSpy()
+        stub = SinonStub()
+        m = SinonMatcher.instanceOf(spy)
+        self.assertTrue(m.test(spy))
+        self.assertTrue(m.test(stub))
+
+    def test060_and(self):
         pass
 
-
+    def test061_or(self):
+        m = SinonMatcher.typeOf(int)._or(SinonMatcher.typeOf(str))
+        self.assertTrue(m.test("1"))
+        self.assertTrue(m.test(1))
+        self.assertFalse(m.test())
+        self.assertFalse(m.test([1, "1"]))
