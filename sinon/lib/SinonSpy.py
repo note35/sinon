@@ -1,5 +1,6 @@
 from .util import ErrorHandler, Wrapper, CollectionHandler
 from .SinonBase import SinonBase
+from .SinonMatcher import SinonMatcher, Matcher
 
 class SinonSpy(SinonBase):
 
@@ -123,11 +124,11 @@ class SinonSpy(SinonBase):
 
     def calledWith(self, *args, **kwargs):
         if args and kwargs:
-            return True if CollectionHandler.partialTupleInTupleList(self._args_list(), args) and CollectionHandler.partialDictInDictList(self._kwargs_list(), kwargs) else False
+            return self.argsPartialCompare(args, self._args_list()) and self.kwargsPartialCompare(kwargs, self._kwargs_list())
         elif args:
-            return True if CollectionHandler.partialTupleInTupleList(self._args_list(), args) else False
+            return self.argsPartialCompare(args, self._args_list())
         elif kwargs:
-            return True if CollectionHandler.partialDictInDictList(self._kwargs_list(), kwargs) else False
+            return self.kwargsPartialCompare(kwargs, self._kwargs_list())
         else:
             ErrorHandler.calledWithEmptyError()
 
@@ -161,8 +162,69 @@ class SinonSpy(SinonBase):
         else:
             ErrorHandler.calledWithEmptyError()
 
+    def dtArgs(self, args):
+        """
+        inspect args as a duck type
+        1. return itself       ,if it is a SinonMatcher
+        2. return SinonMatcher ,if it is not a SinonMatcher
+        """
+        if isinstance(args, Matcher):
+            return args
+        else:
+            return SinonMatcher(args)
+
+    def kwargsPartialCompare(self, kwargs, kwargs_list):
+        for called_kwargs in kwargs_list:
+            # ignore invalid test case
+            if len(kwargs) <= len(called_kwargs):
+                for part_kwargs in kwargs:
+                    # get the intersection of two dicts
+                    intersection = {x:kwargs[x] for x in kwargs if x in called_kwargs and self.dtArgs(kwargs[x]).test(called_kwargs[x])}
+                    if intersection == kwargs:
+                        return True
+        # if no any arguments matched to called_args, return False
+        return False
+
+    def argsPartialCompare(self, args, args_list):
+        for called_args in args_list:
+            # ignore invalid test case
+            if len(args) <= len(called_args):
+                # loop all argument from "current arguments" (it could only be partial of full args)
+                dst = len(args)
+                for idx, part_args in enumerate(args):
+                    # test current argument one by one, if matched to previous record, counter-1
+                    if self.dtArgs(part_args).test(called_args[idx]):
+                        dst = dst - 1
+                # if counter==0 which means arguments is partial matched to called_args, return True
+                if not dst:
+                    return True
+        # if no any arguments matched to called_args, return False
+        return False
+
     def calledWithMatch(self, *args, **kwargs):
-        pass
+        """
+        Note: sinon.js have no definition of combination case, here is current implementation:
+
+            for args or kwargs, it should be matched in each individual call
+            eg. func(1,2,3) -> func(4,5,6)
+                spy.calledWithMatch(1,5) is not valid
+            eg. func(a=1,b=2,c=3) -> func(a=4,b=5,c=6)
+                spy.calledWithMatch(a=1,b=5,c=6) is not valid
+
+            however, for combination case, it should be matched separated
+            eg. func(1,2,c=3) -> func(2,b=5,c=6)
+                spy.calledWithMatch(1,2,c=3) is valid, because spy.calledWithMatch(1,2) and spy.calledWithMatch(c=3) is valid
+                spy.calledWithMatch(1,c=6) is valid  , because spy.calledWithMatch(1)   and spy.calledWithMatch(c=6) is valid
+                spy.calledWithMatch(1,2,c=6) is valid, because spy.calledWithMatch(1,2) and spy.calledWithMatch(c=6) is valid
+        """
+        if args and kwargs:
+            return self.argsPartialCompare(args, self._args_list()) and self.kwargsPartialCompare(kwargs, self._kwargs_list())
+        elif args:
+            return self.argsPartialCompare(args, self._args_list())
+        elif kwargs:
+            return self.kwargsPartialCompare(kwargs, self._kwargs_list())
+        else:
+            ErrorHandler.calledWithEmptyError()
 
     def alwaysCalledWithMatch(self, *args, **kwargs):
         pass
