@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../')
+
 import unittest
 import lib.SinonBase as sinon
 from lib.SinonSpy import SinonSpy
@@ -53,7 +56,7 @@ class TestSinonSandbox(unittest.TestCase):
         base1 = SinonSpy(ForTestOnly)
         base2 = SinonSpy(D_func)
         base3 = SinonSpy(A_object)
-   
+
     @classmethod
     @sinontest
     def _stub_in_sinontest(self):
@@ -65,16 +68,12 @@ class TestSinonSandbox(unittest.TestCase):
         base = SinonSpy()
         self.assertEqual(len(base._queue), 1)
         TestSinonSandbox._spy_in_sinontest()
-        exception = "weakly-referenced object no longer exists"
-        with self.assertRaises(Exception) as context:
-            base.called
-        self.assertTrue(exception in str(context.exception))
+        self.assertEqual(len(base._queue), 1)
+        base.restore()
 
     def test002_test_stub_in_sinontest(self):
         base = SinonStub()
         self.assertEqual(len(base._queue), 1)
         TestSinonSandbox._stub_in_sinontest()
-        exception = "weakly-referenced object no longer exists"
-        with self.assertRaises(Exception) as context:
-            base.called
-        self.assertTrue(exception in str(context.exception))
+        self.assertEqual(len(base._queue), 1)
+        base.restore()
