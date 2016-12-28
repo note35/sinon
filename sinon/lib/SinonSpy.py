@@ -179,7 +179,10 @@ class SinonSpy(SinonBase):
             if len(kwargs) <= len(called_kwargs):
                 for part_kwargs in kwargs:
                     # get the intersection of two dicts
-                    intersection = {x:kwargs[x] for x in kwargs if x in called_kwargs and self.dtArgs(kwargs[x]).test(called_kwargs[x])}
+                    intersection = {}
+                    for x in kwargs:
+                        if x in called_kwargs and self.dtArgs(kwargs[x]).test(called_kwargs[x]):
+                            intersection[x] = kwargs[x]
                     if intersection == kwargs:
                         return True
         # if no any arguments matched to called_args, return False
