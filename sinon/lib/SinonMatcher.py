@@ -20,7 +20,7 @@ class Matcher(object):
         self.expected_instance = expected_instance
         if is_custom_func:
             self.arg_type = "CUSTOMFUNC"
-            setattr(Matcher, "test", staticmethod(expectation))
+            setattr(Matcher, "sinonMatcherTest", staticmethod(expectation))
         elif is_substring:
             self.arg_type = "SUBSTRING"
         elif is_regex:
@@ -39,7 +39,7 @@ class Matcher(object):
     def setExpectation(self, expectation):
         self.expectation = expectation
 
-    def test(self, target=None, checked=False):
+    def sinonMatcherTest(self, target=None, checked=False):
         ret = False
         if self.arg_type == "TYPE":
             ret = True if isinstance(target, self.expectation) else False
@@ -61,7 +61,7 @@ class Matcher(object):
                 ret = True if target == self.expectation else False
 
         if self.another_matcher and not checked:
-            ret2 = self.another_matcher.test(target, checked=True)
+            ret2 = self.another_matcher.sinonMatcherTest(target, checked=True)
 
         if self.another_compare == "__AND__":
             return ret and ret2
@@ -81,7 +81,7 @@ class Matcher(object):
         return self
 
 
-original_matcher_test = Matcher.test
+original_matcher_test = Matcher.sinonMatcherTest
 
 class SinonMatcher(object):
 
@@ -100,7 +100,7 @@ class SinonMatcher(object):
     @classmethod
     def reset(cls):
         global original_matcher_test
-        Matcher.test = original_matcher_test
+        Matcher.sinonMatcherTest = original_matcher_test
 
     @Wrapper.classproperty
     def any(cls):
