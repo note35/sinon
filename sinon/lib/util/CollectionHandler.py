@@ -203,3 +203,61 @@ def objInListAlways(l, obj):
         if item is not obj:
             return False
     return True
+
+def kwargsPartialCompare(kwargs, kwargs_list, ducktype, always=False):
+    res = []
+    for called_kwargs in kwargs_list:
+        # ignore invalid test case
+        if len(kwargs) > len(called_kwargs):
+            continue
+        for part_kwargs in kwargs:
+            # get the intersection of two dicts
+            intersection = {}
+            for x in kwargs:
+                dt = ducktype(kwargs[x])
+                if hasattr(dt, "sinonMatcherTest"):
+                    if x in called_kwargs and dt.sinonMatcherTest(called_kwargs[x]):
+                        intersection[x] = kwargs[x]
+                else:
+                    if x in called_kwargs and dt == called_kwargs[x]:
+                        intersection[x] = kwargs[x]
+            if not always and intersection == kwargs:
+                return True
+            if always and intersection == kwargs:
+                res.append(True)
+            if always and intersection != kwargs:
+                res.append(False)
+    if always and res and False not in res:
+        return True
+    # if no any arguments matched to called_args, return False
+    return False
+
+def argsPartialCompare(args, args_list, ducktype, always=False):
+    res = []
+    for called_args in args_list:
+        # ignore invalid test case
+        if len(args) > len(called_args):
+            continue
+        # loop all argument from "current arguments" (it could only be partial of full args)
+        dst = len(args)
+        for idx, part_args in enumerate(args):
+            # test current argument one by one, if matched to previous record, counter-1
+            dt = ducktype(part_args)
+            if hasattr(dt, "sinonMatcherTest"):
+                if dt.sinonMatcherTest(called_args[idx]):
+                    dst = dst - 1
+            else:
+                if dt == called_args[idx]:
+                    dst = dst - 1
+        # if counter is zero which means arguments is partial matched to called_args, return True
+        if not always and not dst:
+            return True
+        if always and not dst:
+            res.append(True)
+        if always and dst:
+            res.append(False)
+    if always and res and False not in res:
+        return True
+    # if no any arguments matched to called_args, return False
+    return False
+

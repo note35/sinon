@@ -622,6 +622,13 @@ class TestSinonSpy(unittest.TestCase):
         self.assertFalse(spy.calledWithMatch("d", "e", "c")) #it's a combination
 
     @sinontest
+    def test201_calledWith_matcher(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        self.assertFalse(spy.calledWith(str))
+        self.assertTrue(spy.calledWith(SinonMatcher(str)))
+
+    @sinontest
     def test203_calledWithMatch_kwargs(self):
         spy = SinonSpy(C_func)
         sinon.g.C_func(a="a", b="b", c="c")
@@ -671,7 +678,7 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.calledWith(SinonMatcher(str), SinonMatcher(str), "c"))
 
     @sinontest
-    def test203_calledWith_Match_kwargs(self):
+    def test213_calledWith_Match_kwargs(self):
         spy = SinonSpy(C_func)
         sinon.g.C_func(a="a", b="b", c="c")
         self.assertTrue(spy.calledWith(a=SinonMatcher(str)))
@@ -680,10 +687,123 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.calledWith(a=SinonMatcher(str), b=SinonMatcher(str), c="c"))
 
     @sinontest
-    def test206_calledWith_Match_combination(self):
+    def test216_calledWith_Match_combination(self):
         spy = SinonSpy(C_func)
         sinon.g.C_func("a", "b", c="c")
         self.assertTrue(spy.calledWith(SinonMatcher(str)))
         self.assertFalse(spy.calledWith(SinonMatcher(str), SinonMatcher(int)))
         self.assertFalse(spy.calledWith(SinonMatcher(str), b=SinonMatcher(str)))
         self.assertTrue(spy.calledWith(SinonMatcher(str), SinonMatcher(str), c="c"))
+
+    @sinontest
+    def test220_alwaysCalledWithMatch_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(spy.alwaysCalledWithMatch("a"))
+        self.assertTrue(spy.alwaysCalledWithMatch("a", "b"))
+        self.assertTrue(spy.alwaysCalledWithMatch("a", "b", "c"))
+        self.assertFalse(spy.alwaysCalledWithMatch("a", "b", "c", "d"))
+        self.assertFalse(spy.alwaysCalledWithMatch("a", "c"))
+        self.assertTrue(spy.alwaysCalledWithMatch(str))
+        self.assertFalse(spy.alwaysCalledWithMatch(str, int))
+        self.assertTrue(spy.alwaysCalledWithMatch(str, str))
+        self.assertTrue(spy.alwaysCalledWithMatch(str, str, str))
+        sinon.g.C_func("d", "e")
+        self.assertFalse(spy.alwaysCalledWithMatch("a", "b"))
+        self.assertFalse(spy.alwaysCalledWithMatch("d", "e"))
+        self.assertFalse(spy.alwaysCalledWithMatch("a", "e"))
+        self.assertFalse(spy.alwaysCalledWithMatch("d", "e", "c")) #it's a combination
+
+    @sinontest
+    def test221_alwaysCalledWith_matcher(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        self.assertFalse(spy.alwaysCalledWith(str))
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str)))
+
+    @sinontest
+    def test223_alwaysCalledWithMatch_kwargs(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(spy.alwaysCalledWithMatch(a="a"))
+        self.assertTrue(spy.alwaysCalledWithMatch(a="a", b="b"))
+        self.assertFalse(spy.alwaysCalledWithMatch(a="d", b="e"))
+        self.assertTrue(spy.alwaysCalledWithMatch(a="a", b="b", c="c"))
+        self.assertTrue(spy.alwaysCalledWithMatch(a="a", c="c")) # dict is not rely on order of arguments
+        self.assertTrue(spy.alwaysCalledWithMatch(a=str))
+        self.assertFalse(spy.alwaysCalledWithMatch(a=str, b=int))
+        self.assertTrue(spy.alwaysCalledWithMatch(a=str, b=str))
+        self.assertTrue(spy.alwaysCalledWithMatch(a=str, b=str, c=str))
+        sinon.g.C_func(a="d", b="e")
+        self.assertFalse(spy.alwaysCalledWithMatch(a="a", b="b"))
+        self.assertFalse(spy.alwaysCalledWithMatch(a="d", b="e"))
+        self.assertFalse(spy.alwaysCalledWithMatch(a="a", b="e"))
+        self.assertFalse(spy.alwaysCalledWithMatch(a="d", b="e", c="c")) #it's a combination
+
+    @sinontest
+    def test226_alwaysCalledWithMatch_combination(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", c="c")
+        self.assertTrue(spy.alwaysCalledWithMatch("a"))
+        self.assertTrue(spy.alwaysCalledWithMatch("a", "b"))
+        self.assertFalse(spy.alwaysCalledWithMatch("d", "e"))
+        self.assertTrue(spy.alwaysCalledWithMatch("a", "b", c="c"))
+        self.assertTrue(spy.alwaysCalledWithMatch("a", c="c")) # dict is not rely on order of arguments
+        self.assertTrue(spy.alwaysCalledWithMatch(str))
+        self.assertFalse(spy.alwaysCalledWithMatch(str, int))
+        self.assertTrue(spy.alwaysCalledWithMatch(str, str))
+        self.assertTrue(spy.alwaysCalledWithMatch(str, str, c=str))
+        sinon.g.C_func("d", b="e")
+        self.assertFalse(spy.alwaysCalledWithMatch("a", b="b"))
+        self.assertFalse(spy.alwaysCalledWithMatch("d", b="e"))
+        self.assertFalse(spy.alwaysCalledWithMatch("a", b="e"))       #it's a combination
+        self.assertFalse(spy.alwaysCalledWithMatch("d", "e", c="c")) #it's a combination
+        sinon.g.C_func(c="f")
+        self.assertFalse(spy.alwaysCalledWithMatch("a", "b", c="f")) #it's a combination but called
+
+    @sinontest
+    def test230_alwaysCalledWith_Match_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str)))
+        self.assertFalse(spy.alwaysCalledWith(SinonMatcher(str), SinonMatcher(int)))
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str), SinonMatcher(str)))
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str), SinonMatcher(str), "c"))
+
+    @sinontest
+    def test233_alwaysCalledWith_Match_kwargs(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func(a="a", b="b", c="c")
+        self.assertTrue(spy.alwaysCalledWith(a=SinonMatcher(str)))
+        self.assertFalse(spy.alwaysCalledWith(a=SinonMatcher(str), b=SinonMatcher(int)))
+        self.assertTrue(spy.alwaysCalledWith(a=SinonMatcher(str), b=SinonMatcher(str)))
+        self.assertTrue(spy.alwaysCalledWith(a=SinonMatcher(str), b=SinonMatcher(str), c="c"))
+
+    @sinontest
+    def test236_alwaysCalledWith_Match_combination(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", c="c")
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str)))
+        self.assertFalse(spy.alwaysCalledWith(SinonMatcher(str), SinonMatcher(int)))
+        self.assertFalse(spy.alwaysCalledWith(SinonMatcher(str), b=SinonMatcher(str)))
+        self.assertTrue(spy.alwaysCalledWith(SinonMatcher(str), SinonMatcher(str), c="c"))
+
+    @sinontest
+    def test240_neverCalledWithMatch_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        self.assertFalse(spy.neverCalledWithMatch("a"))
+        self.assertFalse(spy.neverCalledWithMatch("a", "b"))
+        self.assertFalse(spy.neverCalledWithMatch("a", "b", "c"))
+        self.assertTrue(spy.neverCalledWithMatch("a", "b", "c", "d"))
+        self.assertTrue(spy.neverCalledWithMatch("a", "c"))
+        self.assertFalse(spy.neverCalledWithMatch(str))
+        self.assertTrue(spy.neverCalledWithMatch(str, int))
+        self.assertFalse(spy.neverCalledWithMatch(str, str))
+        self.assertFalse(spy.neverCalledWithMatch(str, str, str))
+        sinon.g.C_func("d", "e")
+        self.assertFalse(spy.neverCalledWithMatch("a", "b"))
+        self.assertFalse(spy.neverCalledWithMatch("d", "e"))
+        self.assertTrue(spy.neverCalledWithMatch("a", "e"))
+        self.assertTrue(spy.neverCalledWithMatch("d", "e", "c")) #it's a combination
+

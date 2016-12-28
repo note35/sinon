@@ -6,6 +6,21 @@ class SinonSpy(SinonBase):
 
     def __init__(self, obj=None, prop=None):
         super(SinonSpy, self).__init__(obj, prop)
+        self._dtArgs = self._dtArgsOn
+
+    def _dtArgsOn(self, args):
+        """
+        inspect args as a duck type
+        1. return itself       ,if it is a SinonMatcher
+        2. return SinonMatcher ,if it is not a SinonMatcher
+        """
+        if not isinstance(args, Matcher):
+            return SinonMatcher(args)
+        else:
+            return args
+
+    def _dtArgsOff(self, args):
+        return args
 
     def _args_list(self):
         if self.args_type == "MODULE_FUNCTION":
@@ -116,31 +131,19 @@ class SinonSpy(SinonBase):
         else:
             return False
 
-    def calledOn(obj):
-        pass
+    #def calledOn(obj):
+    #    pass
 
-    def alwaysCalledOn(obj):
-        pass
+    #def alwaysCalledOn(obj):
+    #    pass
 
     def calledWith(self, *args, **kwargs):
-        if args and kwargs:
-            return self.argsPartialCompare(args, self._args_list()) and self.kwargsPartialCompare(kwargs, self._kwargs_list())
-        elif args:
-            return self.argsPartialCompare(args, self._args_list())
-        elif kwargs:
-            return self.kwargsPartialCompare(kwargs, self._kwargs_list())
-        else:
-            ErrorHandler.calledWithEmptyError()
+        self._dtArgs = self._dtArgsOff
+        return self.calledWithMatch(*args, **kwargs)
 
     def alwaysCalledWith(self, *args, **kwargs):
-        if args and kwargs:
-            return True if CollectionHandler.partialTupleInTupleListAlways(self._args_list(), args) and CollectionHandler.partialDictInDictListAlways(self._kwargs_list(), kwargs) else False
-        elif args:
-            return True if CollectionHandler.partialTupleInTupleListAlways(self._args_list(), args) else False
-        elif kwargs:
-            return True if CollectionHandler.partialDictInDictListAlways(self._kwargs_list(), kwargs) else False
-        else:
-            ErrorHandler.calledWithEmptyError()
+        self._dtArgs = self._dtArgsOff
+        return self.alwaysCalledWithMatch(*args, **kwargs)
 
     def calledWithExactly(self, *args, **kwargs):
         if args and kwargs:
@@ -162,48 +165,6 @@ class SinonSpy(SinonBase):
         else:
             ErrorHandler.calledWithEmptyError()
 
-    def dtArgs(self, args):
-        """
-        inspect args as a duck type
-        1. return itself       ,if it is a SinonMatcher
-        2. return SinonMatcher ,if it is not a SinonMatcher
-        """
-        if isinstance(args, Matcher):
-            return args
-        else:
-            return SinonMatcher(args)
-
-    def kwargsPartialCompare(self, kwargs, kwargs_list):
-        for called_kwargs in kwargs_list:
-            # ignore invalid test case
-            if len(kwargs) <= len(called_kwargs):
-                for part_kwargs in kwargs:
-                    # get the intersection of two dicts
-                    intersection = {}
-                    for x in kwargs:
-                        if x in called_kwargs and self.dtArgs(kwargs[x]).test(called_kwargs[x]):
-                            intersection[x] = kwargs[x]
-                    if intersection == kwargs:
-                        return True
-        # if no any arguments matched to called_args, return False
-        return False
-
-    def argsPartialCompare(self, args, args_list):
-        for called_args in args_list:
-            # ignore invalid test case
-            if len(args) <= len(called_args):
-                # loop all argument from "current arguments" (it could only be partial of full args)
-                dst = len(args)
-                for idx, part_args in enumerate(args):
-                    # test current argument one by one, if matched to previous record, counter-1
-                    if self.dtArgs(part_args).test(called_args[idx]):
-                        dst = dst - 1
-                # if counter==0 which means arguments is partial matched to called_args, return True
-                if not dst:
-                    return True
-        # if no any arguments matched to called_args, return False
-        return False
-
     def calledWithMatch(self, *args, **kwargs):
         """
         Note: sinon.js have no definition of combination case, here is current implementation:
@@ -221,25 +182,34 @@ class SinonSpy(SinonBase):
                 spy.calledWithMatch(1,2,c=6) is valid, because spy.calledWithMatch(1,2) and spy.calledWithMatch(c=6) is valid
         """
         if args and kwargs:
-            return self.argsPartialCompare(args, self._args_list()) and self.kwargsPartialCompare(kwargs, self._kwargs_list())
+            return CollectionHandler.argsPartialCompare(args, self._args_list(), self._dtArgs) and CollectionHandler.kwargsPartialCompare(kwargs, self._kwargs_list(), self._dtArgs)
         elif args:
-            return self.argsPartialCompare(args, self._args_list())
+            return CollectionHandler.argsPartialCompare(args, self._args_list(), self._dtArgs)
         elif kwargs:
-            return self.kwargsPartialCompare(kwargs, self._kwargs_list())
+            return CollectionHandler.kwargsPartialCompare(kwargs, self._kwargs_list(), self._dtArgs)
         else:
             ErrorHandler.calledWithEmptyError()
+        self._dtArgs = self._dtArgsOn
 
     def alwaysCalledWithMatch(self, *args, **kwargs):
-        pass
+        if args and kwargs:
+            return CollectionHandler.argsPartialCompare(args, self._args_list(), self._dtArgs, always=True) and CollectionHandler.kwargsPartialCompare(kwargs, self._kwargs_list(), self._dtArgs, always=True)
+        elif args:
+            return CollectionHandler.argsPartialCompare(args, self._args_list(), self._dtArgs, always=True)
+        elif kwargs:
+            return CollectionHandler.kwargsPartialCompare(kwargs, self._kwargs_list(), self._dtArgs, always=True)
+        else:
+            ErrorHandler.calledWithEmptyError()
+        self._dtArgs = self._dtArgsOn
 
-    def calledWithNew():
-        pass
+    #def calledWithNew():
+    #    pass
 
     def neverCalledWith(self, *args, **kwargs):
         return not self.calledWith(*args, **kwargs)
 
     def neverCalledWithMatch(self, *args, **kwargs):
-        pass
+        return not self.calledWithMatch(*args, **kwargs)
 
     def threw(self, error_type=None):
         if not error_type:
@@ -268,8 +238,8 @@ class SinonSpy(SinonBase):
         except IndexError:
             ErrorHandler.getCallIndexError(len(self._queue))
 
-    def thisValues(self):
-        pass
+    #def thisValues(self):
+    #    pass
 
     @property
     def args(self):
