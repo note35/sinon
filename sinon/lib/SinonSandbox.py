@@ -15,6 +15,7 @@ def sinontest(f):
 
     def fn(*args, **kwargs):
 
+        # store original _queue
         original_queue = []
         for item in SinonBase._queue:
             original_queue.append(item)
@@ -28,6 +29,7 @@ def sinontest(f):
                     _clear_assertion_message(getattr(f.__globals__["sinon"], prop))
                 else:
                     _clear_item_in_queue(getattr(f.__globals__["sinon"], prop)._queue)
+
         # handle unittest (direct use)
         for prop in properties:
             if prop in f.__globals__.keys():
@@ -36,6 +38,7 @@ def sinontest(f):
                 else:
                     _clear_item_in_queue(f.__globals__[prop]._queue)
 
+        # set original _queue value back
         SinonBase._queue = original_queue
 
         return ret
