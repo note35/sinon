@@ -75,7 +75,7 @@ class SinonExpectation(SinonStub):
         return valid
 
     def restore(self):
-        self.delWrapSpy()
+        self.unwrap()
 
 
 

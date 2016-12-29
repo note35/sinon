@@ -258,5 +258,5 @@ class SinonSpy(SinonBase):
         return self._ret_list()
 
     def reset(self):
-        super(SinonSpy, self).delWrapSpy()
-        super(SinonSpy, self).addWrapSpy()
+        super(SinonSpy, self).unwrap()
+        super(SinonSpy, self).wrap2spy()

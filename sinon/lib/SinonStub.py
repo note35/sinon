@@ -9,7 +9,7 @@ class SinonStub(SinonSpy):
 
     def _prepare(self, func):
         self.stubfunc = func if func else Wrapper.emptyFunction
-        super(SinonStub, self).addWrapStub(self.stubfunc)
+        super(SinonStub, self).wrap2stub(self.stubfunc)
         self.condition = {"args":[], "kwargs":[], "action": [], "oncall":[]}
         self.cond_args = self.cond_kwargs = self.oncall = None
 
@@ -48,9 +48,9 @@ class SinonStub(SinonSpy):
             return obj
         if self.cond_args or self.cond_kwargs or self.oncall:
             self._appendCondition(returnFunction)
-            super(SinonStub, self).addWrapStub(self.stubfunc, self.condition)
+            super(SinonStub, self).wrap2stub(self.stubfunc, self.condition)
         else:
-            super(SinonStub, self).addWrapStub(returnFunction)
+            super(SinonStub, self).wrap2stub(returnFunction)
         return self
 
     def throws(self, exceptions=Exception):
@@ -58,7 +58,7 @@ class SinonStub(SinonSpy):
             raise exceptions
         if self.cond_args or self.cond_kwargs or self.oncall:
             self._appendCondition(exceptionFunction)
-            super(SinonStub, self).addWrapStub(self.stubfunc, self.condition)
+            super(SinonStub, self).wrap2stub(self.stubfunc, self.condition)
         else:
-            super(SinonStub, self).addWrapStub(exceptionFunction)
+            super(SinonStub, self).wrap2stub(exceptionFunction)
         return self

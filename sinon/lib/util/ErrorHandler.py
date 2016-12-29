@@ -15,7 +15,7 @@ def mockTypeError(obj):
 def propTypeError(prop):
     return exceptionHelper("[{}] is an invalid property, it should be a string".format(prop)) 
 
-def propIsNotAFuncError(obj, prop):
+def propIsFuncError(obj, prop):
     return exceptionHelper("[{}] is an invalid property, it should be a method in [{}]".format(prop, obj.__name__))
 
 def propInObjError(obj, prop):
