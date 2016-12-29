@@ -21,7 +21,8 @@ def propIsFuncError(obj, prop):
 def propInObjError(obj, prop):
     return exceptionHelper("[{}] is not exist in [{}]".format(prop, obj.__name__))
 
-def lockError(name):
+def lockError(obj):
+    name = obj.__name__ if hasattr(obj, "__name__") else obj
     return exceptionHelper("[{}] have already been declared".format(name))
 
 def calledWithEmptyError():

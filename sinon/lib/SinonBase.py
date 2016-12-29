@@ -121,9 +121,6 @@ class SinonBase(object):
         self.pure_count = self.pure_count + 1
         if self.args_type == "PURE":
             getattr(self.pure, "func")(*args, **kwargs)
-        else:
-            Wrapper.CALLQUEUE.append(self)
-
 
     def __set_type(self, obj, prop):
         """
@@ -160,16 +157,14 @@ class SinonBase(object):
             lockError: when inspector has been wrapped
         """
         if self.args_type == "MODULE_FUNCTION":
-            if hasattr(self.obj, "__SINONLOCK__"):
-                ErrorHandler.lockError(self.obj.__name__)
             if hasattr(getattr(self.obj, self.prop), "LOCK"):
                 ErrorHandler.lockError(self.prop)
         elif self.args_type == "MODULE":
             if hasattr(self.obj, "__SINONLOCK__"):
-                ErrorHandler.lockError(self.obj.__name__)
+                ErrorHandler.lockError(self.obj)
         elif self.args_type == "FUNCTION":
             if hasattr(getattr(CPSCOPE, self.obj.__name__), "LOCK"):
-                ErrorHandler.lockError(self.obj.__name__)
+                ErrorHandler.lockError(self.obj)
 
     def wrap2spy(self):
         """

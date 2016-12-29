@@ -32,6 +32,8 @@ def D_func(err=False):
         raise err
     else:
         return "test_local_D_func"
+
+from TestClass import ForTestOnly
 """
 ======================================================
                  FOR TEST ONLY END
@@ -117,3 +119,29 @@ class TestSinonBase(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             base = SinonBase(os, "path") 
         self.assertTrue(exception in str(context.exception))
+
+    def test023_constructor_module_repeated(self):
+        base = SinonBase(os)
+        exception = "[{}] have already been declared".format(os.__name__)
+        with self.assertRaises(Exception) as context:
+            base = SinonBase(os)
+        self.assertTrue(exception in str(context.exception))
+        base.restore()
+
+    def test024_constructor_outside_class(self):
+        base = SinonBase(ForTestOnly)
+        base.restore()
+
+    def test025_constructor_outside_instance(self):
+        fto = ForTestOnly()
+        base = SinonBase(fto)
+        base.restore()
+
+    def test026_constructor_outside_class_and_instance(self):
+        fto = ForTestOnly()
+        base1 = SinonBase(ForTestOnly)
+        exception = "[{}] have already been declared".format(fto)
+        with self.assertRaises(Exception) as context:
+            base2 = SinonBase(fto)
+        self.assertTrue(exception in str(context.exception))
+        base1.restore()
