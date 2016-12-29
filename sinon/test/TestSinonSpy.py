@@ -43,7 +43,7 @@ def D_func(err=False):
 class TestSinonSpy(unittest.TestCase):
 
     def setUp(self):
-        sinon.init(globals())
+        sinon.g = sinon.init(globals())
 
     @sinontest
     def test040_called_method(self):

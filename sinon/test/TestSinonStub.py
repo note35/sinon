@@ -45,7 +45,7 @@ class TestSinonBase(unittest.TestCase):
         return "my_func"
 
     def setUp(self):
-        sinon.init(globals())
+        sinon.g = sinon.init(globals())
 
     @sinontest
     def test200_constructor_object_method_with_replaced_method(self):

@@ -34,7 +34,7 @@ from TestClass import ForTestOnly
 class TestSinonMatcher(unittest.TestCase):
 
     def setUp(self):
-        sinon.init(globals())
+        sinon.g = sinon.init(globals())
 
     def test001_constructor_number(self):
         m = SinonMatcher(1)

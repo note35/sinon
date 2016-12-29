@@ -35,7 +35,7 @@ def D_func(err=False):
 class TestSinonAssertion(unittest.TestCase):
 
     def setUp(self):
-        sinon.init(globals())
+        sinon.g = sinon.init(globals())
 
     @sinontest
     def test001_arg_spy(self):

@@ -1,6 +1,6 @@
 '''
 Copyright (c) 2016-2017, Kir Chou
-https://github.com/note35/sinon/blob/dev/LICENSE
+https://github.com/note35/sinon/blob/master/LICENSE
 
 sinon_base is the base of sinon_spy, it has three the major tasks
 (1) when adding new spy/stub, it will determine the constructor of spy is valid or not
@@ -12,38 +12,29 @@ from copy import deepcopy
 from types import FunctionType
 from .util import ErrorHandler, Wrapper, TypeHandler
 
-
-class SinonGlobals(object):
-    """
-    A fully empty class
-    External can push the whole `scope` into this class through global function init()
-    Please see the usage of init()
-    """
-    pass
-
-
-class Pure(object):
-    """
-    A fully empty class with a func variable
-    Pure class will make a function as a class/module
-    """
-    func = None
-
+CPSCOPE = None
 
 def init(scope):
     """
-    Copy all values of scope into the global class SinonGlobals
+    Copy all values of scope into the class SinonGlobals
     Args:
         scope (eg. locals() or globals())
     Return:
         SinonGlobals instance
     """
-    global g
-    g = SinonGlobals()
+    class SinonGlobals(object): #pylint: disable=too-few-public-methods
+        """
+        A fully empty class
+        External can push the whole `scope` into this class through global function init()
+        """
+        pass
+
+    global CPSCOPE #pylint: disable=global-statement
+    CPSCOPE = SinonGlobals()
     funcs = [obj for obj in scope.values() if isinstance(obj, FunctionType)]
     for func in funcs:
-        setattr(g, func.__name__, func)
-    return g
+        setattr(CPSCOPE, func.__name__, func)
+    return CPSCOPE
 
 
 class SinonBase(object):
@@ -52,6 +43,13 @@ class SinonBase(object):
     Generally, external will not use this directly
     because it does NOT provide any useful external function
     """
+
+    class Pure(object): #pylint: disable=too-few-public-methods
+        """
+        A fully empty class with a func variable
+        Pure class will make a function as a class/module
+        """
+        func = None
 
     _queue = [] # class-level variables for storing any inspector
 
@@ -137,7 +135,7 @@ class SinonBase(object):
         """
         if TypeHandler.is_pure(obj, prop):
             self.args_type = "PURE"
-            self.pure = Pure()
+            self.pure = SinonBase.Pure()
             setattr(self.pure, "func", Wrapper.emptyFunction)
             self.orig_func = None
         elif TypeHandler.is_module_function(obj, prop):
@@ -170,7 +168,7 @@ class SinonBase(object):
             if hasattr(self.obj, "__SINONLOCK__"):
                 ErrorHandler.lockError(self.obj.__name__)
         elif self.args_type == "FUNCTION":
-            if hasattr(getattr(g, self.obj.__name__), "LOCK"):
+            if hasattr(getattr(CPSCOPE, self.obj.__name__), "LOCK"):
                 ErrorHandler.lockError(self.obj.__name__)
 
     def wrap2spy(self):
@@ -183,8 +181,9 @@ class SinonBase(object):
         elif self.args_type == "MODULE":
             setattr(self.obj, "__SINONLOCK__", True)
         elif self.args_type == "FUNCTION":
-            self.orig_func = deepcopy(getattr(g, self.obj.__name__))
-            setattr(g, self.obj.__name__, Wrapper.wrapSpy(getattr(g, self.obj.__name__)))
+            self.orig_func = deepcopy(getattr(CPSCOPE, self.obj.__name__))
+            setattr(CPSCOPE, self.obj.__name__,
+                    Wrapper.wrapSpy(getattr(CPSCOPE, self.obj.__name__)))
         elif self.args_type == "PURE":
             self.orig_func = deepcopy(getattr(self.pure, "func"))
             setattr(self.pure, "func", Wrapper.wrapSpy(getattr(self.pure, "func")))
@@ -200,8 +199,8 @@ class SinonBase(object):
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
             delattr(self.obj, "__SINONLOCK__")
         elif self.args_type == "FUNCTION":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(g, self.obj.__name__)]
-            setattr(g, self.obj.__name__, self.orig_func)
+            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(CPSCOPE, self.obj.__name__)] #pylint: disable=line-too-long
+            setattr(CPSCOPE, self.obj.__name__, self.orig_func)
         elif self.args_type == "PURE":
             Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.pure, "func")]
             setattr(self.pure, "func", self.orig_func)
@@ -209,22 +208,26 @@ class SinonBase(object):
     def wrap2stub(self, customfunc, condition=None):
         """
         Wrapping the inspector as a stub based on the type
+        Args:
+            customfunc: function
+            condition: dict
         """
         if self.args_type == "MODULE_FUNCTION":
             setattr(self.obj, self.prop,
                     Wrapper.wrapSpy(getattr(self.obj, self.prop), customfunc, condition))
         elif self.args_type == "MODULE":
-            setattr(g, self.obj.__name__, Wrapper.EmptyClass)
+            setattr(CPSCOPE, self.obj.__name__, Wrapper.EmptyClass)
         elif self.args_type == "FUNCTION":
-            setattr(g, self.obj.__name__,
-                    Wrapper.wrapSpy(getattr(g, self.obj.__name__), customfunc, condition))
+            setattr(CPSCOPE, self.obj.__name__,
+                    Wrapper.wrapSpy(getattr(CPSCOPE, self.obj.__name__), customfunc, condition))
         elif self.args_type == "PURE":
             setattr(self.pure, "func",
                     Wrapper.wrapSpy(getattr(self.pure, "func"), customfunc, condition))
 
     @property
-    def g(self):
+    def g(self): #pylint: disable=invalid-name
         """
-        Return instance SinonGlobals
+        Return:
+            SinonGlobals instance
         """
-        return g
+        return CPSCOPE
