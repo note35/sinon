@@ -127,6 +127,12 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertFalse(m.sinonMatcherTest("1"))       # string is not a number
         self.assertTrue(m.sinonMatcherTest(1))          # number is a number
 
+    def test43_typeOf_invalid_type(self):
+        exception = "[{}] is an invalid property, it should be a type".format(123)
+        with self.assertRaises(Exception) as context:
+            m = SinonMatcher.typeOf(123)
+        self.assertTrue(exception in str(context.exception))
+
     def test50_instanceOf_class(self):
         fto = ForTestOnly()
         exception = "[{}] is an invalid property, it should be an instance".format(ForTestOnly)

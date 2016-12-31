@@ -30,15 +30,6 @@ class Matcher(object):
         else:
             self.arg_type = "VALUE"
 
-    def __str__(self):
-        return self.message 
-
-    def setMessage(self, message):
-        self.message = message
-
-    def setExpectation(self, expectation):
-        self.expectation = expectation
-
     def sinonMatcherTest(self, target=None, checked=False):
         ret = False
         if self.arg_type == "TYPE":
