@@ -314,7 +314,106 @@ class TestSinonAssertion(unittest.TestCase):
             SinonAssertion.alwaysCalledWithExactly(spy, "a", b="b", c="c")
 
     @sinontest
-    def test100_threw_default_type(self):
+    def test100_calledWithMatch_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        SinonAssertion.calledWithMatch(spy, str, str, "c")
+        SinonAssertion.calledWithMatch(spy, str, str)
+        SinonAssertion.calledWithMatch(spy, str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, "a", "wrong", "c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, int, "b", "c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, str, int)
+
+    @sinontest
+    def test101_calledWithMatch_kwargs(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func(a="a", b="b", c="c")
+        SinonAssertion.calledWithMatch(spy, a=str, b=str, c="c")
+        SinonAssertion.calledWithMatch(spy, a=str, b=str)
+        SinonAssertion.calledWithMatch(spy, a=str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, a="wrong", b="b", c="c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, a=int, b=int, c=int)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, a=str, b=int)
+
+    @sinontest
+    def test0102_calledWithMatch_both(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", b="b", c="c")
+        SinonAssertion.calledWithMatch(spy, str, b=str, c=str)
+        SinonAssertion.calledWithMatch(spy, str, b=str)
+        SinonAssertion.calledWithMatch(spy, str, c=str)
+        SinonAssertion.calledWithMatch(spy, b=str, c=str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, str, str, c=str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.calledWithMatch(spy, str, str, str)
+
+    @sinontest
+    def test110_alwaysCalledWithMatch_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        sinon.g.C_func("a", "b", "xxxx")
+        SinonAssertion.alwaysCalledWithMatch(spy, str, str, str)
+        sinon.g.C_func("d", "e", 123)
+        SinonAssertion.alwaysCalledWithMatch(spy, str, str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.alwaysCalledWithMatch(spy, str, str, str)
+
+    @sinontest
+    def test111_alwaysCalledWithMatch_kwargs(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func(a="a", b="b", c="c")
+        sinon.g.C_func(a="xxxx", b="b", c="c")
+        SinonAssertion.alwaysCalledWithMatch(spy, b=str, c=str)
+        sinon.g.C_func(a="d", b="e", c=123)
+        SinonAssertion.alwaysCalledWithMatch(spy, a=str, b=str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.alwaysCalledWithMatch(spy, b=str, c=str)
+
+    @sinontest
+    def test112_alwaysCalledWithMatch_both(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", b="b", c="c")
+        sinon.g.C_func("a", b="b")
+        SinonAssertion.alwaysCalledWithMatch(spy, str, b=str)
+        sinon.g.C_func("b", b="b", c=123)
+        SinonAssertion.alwaysCalledWithMatch(spy, str, b=str)
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.alwaysCalledWithMatch(spy, str, c=str)
+
+    @sinontest
+    def test120_neverCalledWithMatch_args(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", "b", "c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.neverCalledWithMatch(spy, str, str, str)
+        SinonAssertion.neverCalledWithMatch(spy, int, int, int)
+
+    @sinontest
+    def test121_neverCalledWithMatch_kwargs(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func(a="a", b="b", c="c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.neverCalledWithMatch(spy, a=str, b=str, c=str)
+        SinonAssertion.neverCalledWithMatch(spy, a=int, b=str, c=str)
+
+    @sinontest
+    def test122_neverCalledWithMatch_both(self):
+        spy = SinonSpy(C_func)
+        sinon.g.C_func("a", b="b", c="c")
+        with self.assertRaises(Exception) as context:
+            SinonAssertion.neverCalledWithMatch(spy, str, b=str, c=str)
+        SinonAssertion.neverCalledWithMatch(spy, int, int, c=int)
+        SinonAssertion.neverCalledWithMatch(spy, int, int, int)
+
+    @sinontest
+    def test130_threw_default_type(self):
         spy = SinonSpy(D_func)
 
         # Without any exception
@@ -329,7 +428,7 @@ class TestSinonAssertion(unittest.TestCase):
             SinonAssertion.threw(spy, ValueError)
 
     @sinontest
-    def test101_threw_custom_type(self):
+    def test131_threw_custom_type(self):
         class MyException(Exception):
             pass
         spy = SinonSpy(D_func)
@@ -346,14 +445,14 @@ class TestSinonAssertion(unittest.TestCase):
             SinonAssertion.threw(spy, MyException)
 
     @sinontest
-    def test101_threw_no_error(self):
+    def test132_threw_no_error(self):
         spy = SinonSpy(D_func)
         sinon.g.D_func(err=False)
         with self.assertRaises(Exception) as context:
             SinonAssertion.threw(spy) 
 
     @sinontest
-    def test110_alwaysThrew_default_type(self):
+    def test140_alwaysThrew_default_type(self):
         spy = SinonSpy(D_func)
 
         with self.assertRaises(Exception) as context:

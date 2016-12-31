@@ -87,15 +87,18 @@ class SinonAssertion(object):
 
     @classmethod
     def calledWithMatch(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.calledWithMatch(*args, **kwargs))
 
     @classmethod
     def alwaysCalledWithMatch(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.alwaysCalledWithMatch(*args, **kwargs))
    
     @classmethod
     def neverCalledWithMatch(cls, spy, *args, **kwargs):
-        pass
+        cls._checkSpyType(spy)
+        cls._isSatisfied(spy.neverCalledWithMatch(*args, **kwargs))
 
     @classmethod
     def threw(cls, spy, error_type=None):
