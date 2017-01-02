@@ -142,7 +142,7 @@ class TestSinonAssertion(unittest.TestCase):
     def test041_callOrder_two_unique_args_without_call(self):
         spy1 = SinonSpy()
         stub1 = SinonStub()
-        exception = "_getCallQueueIndex(): the call queue is empty"
+        exception = "CALLQUEUE is empty"
         with self.assertRaises(Exception) as context:
             SinonAssertion.callOrder(spy1, stub1)
         self.assertTrue(exception in str(context.exception))

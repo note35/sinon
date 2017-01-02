@@ -149,7 +149,7 @@ class TestSinonSpy(unittest.TestCase):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
         spy3 = SinonSpy(B_func)
-        exception = "_getCallQueueIndex(): the call queue is empty"
+        exception = "CALLQUEUE is empty"
         with self.assertRaises(Exception) as context:
             self.assertFalse(spy1.calledBefore(spy2))
         self.assertTrue(exception in str(context.exception))
