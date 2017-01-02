@@ -77,7 +77,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             return getattr(self.obj, self.prop).error_list
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).error_list
-        elif self.args_type == "PURE":
+        elif self.args_type == "PURE": #TODO: consider to remove this condition
             return getattr(self.pure, "func").error_list
 
     def _ret_list(self):
@@ -88,7 +88,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             return getattr(self.obj, self.prop).ret_list
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).ret_list
-        elif self.args_type == "PURE":
+        elif self.args_type == "PURE": #TODO: consider to remove this condition
             return getattr(self.pure, "func").ret_list
 
     def get_callqueue_idx(self):
@@ -98,7 +98,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         if self.args_type == "MODULE_FUNCTION":
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
                     if val == getattr(self.obj, self.prop)]
-        elif self.args_type == "MODULE":
+        elif self.args_type == "MODULE": #TODO: consider to remove this condition
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
                     if val == self]
         elif self.args_type == "FUNCTION":
@@ -116,7 +116,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         if self.args_type == "MODULE_FUNCTION":
             return getattr(self.obj, self.prop).callCount
-        elif self.args_type == "MODULE":
+        elif self.args_type == "MODULE": #TODO: consider to remove this condition
             return self.pure_count
         elif self.args_type == "FUNCTION":
             return getattr(self.g, self.obj.__name__).callCount
@@ -173,8 +173,6 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             ErrorHandler.callQueueIsEmptyError()
         if Wrapper.CALLQUEUE:
             return True if min(idx) < max(idx2) else False
-        else:
-            return False
 
     def calledAfter(self, obj): #pylint: disable=invalid-name
         """
@@ -187,8 +185,6 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             ErrorHandler.callQueueIsEmptyError()
         if Wrapper.CALLQUEUE:
             return True if max(idx) > min(idx2) else False
-        else:
-            return False
 
     def calledWith(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -301,7 +297,6 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Handle each arg/kwarg as a SinonMatcher
         Return: Boolean
         """
-
         alist, klist, gfunc = self._args_list(), self._kwargs_list(), self.__get_func
         if args and kwargs:
             return (uch.argsPartialCompare(args, alist, gfunc, always=True) and

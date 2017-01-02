@@ -304,6 +304,11 @@ class TestSinonSpy(unittest.TestCase):
         sinon.g.C_func("a", b="b", c="c")
         self.assertTrue(spy.calledWithExactly("a", b="b", c="c"))
         self.assertFalse(spy.calledWithExactly("wrong", b="b", c="c"))
+        #Exception
+        exception = "There is no argument"
+        with self.assertRaises(Exception) as context:
+            spy.calledWithExactly()
+        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test075_calledWithExactly_method_partialmatch(self):
@@ -344,6 +349,13 @@ class TestSinonSpy(unittest.TestCase):
         sinon.g.C_func("b", b="b", c="c")
         self.assertFalse(spy.alwaysCalledWithExactly("a", b="b", c="c"))
         spy.restore()
+        spy = SinonSpy(C_func)
+        #Exception
+        exception = "There is no argument"
+        with self.assertRaises(Exception) as context:
+            spy.alwaysCalledWithExactly()
+        self.assertTrue(exception in str(context.exception))
+
 
     @sinontest
     def test077_alwaysCalledWithExactly_method_partialmatch(self):
@@ -569,11 +581,39 @@ class TestSinonSpy(unittest.TestCase):
     @sinontest
     def test123_returnValues(self):
         spy = SinonSpy(B_func)
-        self.assertEqual(spy.exceptions, [])
+        self.assertEqual(spy.returnValues, [])
         sinon.g.B_func()
         self.assertEqual(spy.returnValues, ["test_local_B_func"])
         sinon.g.B_func(2)
         self.assertEqual(spy.returnValues, ["test_local_B_func", "test_local_B_func2"])
+
+    @sinontest
+    def test124_args_module_function(self):
+        spy = SinonSpy(os, "system")
+        self.assertEqual(spy.args, [])
+        os.system("cd")
+        self.assertEqual(spy.args, [("cd", )])
+
+    @sinontest
+    def test125_kwargs_module_function(self):
+        spy = SinonSpy(os, "walk")
+        self.assertEqual(spy.kwargs, [])
+        os.walk(".", topdown=False)
+        self.assertEqual(spy.kwargs, [{"topdown": False}])
+
+    @sinontest
+    def test126_kwargs_pure(self):
+        spy = SinonSpy()
+        self.assertEqual(spy.kwargs, [])
+        spy(a="a")
+        self.assertEqual(spy.kwargs, [{"a": "a"}])
+
+    @sinontest
+    def test127_returnValues_module_function(self):
+        spy = SinonSpy(os, "system")
+        self.assertEqual(spy.returnValues, [])
+        os.system("cd")
+        self.assertEqual(spy.returnValues, [0])
 
     @sinontest
     def test130_reset(self):
@@ -696,6 +736,14 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.calledWith(SinonMatcher(str), SinonMatcher(str), c="c"))
 
     @sinontest
+    def test219_calledWithMatch_exception(self):
+        spy = SinonSpy(C_func)
+        exception = "There is no argument"
+        with self.assertRaises(Exception) as context:
+            spy.calledWithMatch()
+        self.assertTrue(exception in str(context.exception))
+
+    @sinontest
     def test220_alwaysCalledWithMatch_args(self):
         spy = SinonSpy(C_func)
         sinon.g.C_func("a", "b", "c")
@@ -760,6 +808,14 @@ class TestSinonSpy(unittest.TestCase):
         self.assertFalse(spy.alwaysCalledWithMatch("d", "e", c="c")) #it's a combination
         sinon.g.C_func(c="f")
         self.assertFalse(spy.alwaysCalledWithMatch("a", "b", c="f")) #it's a combination but called
+
+    @sinontest
+    def test229_alwaysCalledWithMatch_exception(self):
+        spy = SinonSpy(C_func)
+        exception = "There is no argument"
+        with self.assertRaises(Exception) as context:
+            spy.alwaysCalledWithMatch()
+        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test230_alwaysCalledWith_Match_args(self):

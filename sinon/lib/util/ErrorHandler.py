@@ -26,7 +26,7 @@ def lockError(obj):
     return exceptionHelper("[{}] have already been declared".format(name))
 
 def calledWithEmptyError():
-    return exceptionHelper("calledWith() have no argument")
+    return exceptionHelper("There is no argument")
 
 def getCallIndexError(n):
     return exceptionHelper("The call queue only contains {} calls".format(str(n)), exception=IndexError)
