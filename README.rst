@@ -32,31 +32,32 @@ but rewriting in python.
 Progress
 ========
 
-This project is still under developing, here shows the plan of v1.0.0..
+This project is still under developing.
 
-In release v1.0.0, it will include four basic features. 
+The concept of closure in JS and Python are different,  All features which
+are related to Excluding “JS-closure related function” will be ignored.
 
-Because the concept of closure in JS and Python are different, I plan to
-skip all closure related functions.
 
+*base[90%]*
+  Todo: better init() feature
 
 *spy[90%]*
-  v1.0.0: excluding “JS-closure related function”
+  Todo: _comb_list feature
 
 *stub[50%]*
-  v1.0.0: excluding “JS-closure related function”, callsArgs/yield feature
+  Todo: callsArgs/yield feature
 
-*mock[100%]*
-  v1.0.0: contains all features that spy/stub have
+*mock[99%]*
 
 *sandbox[20%]*
-  v1.0.0: only decorator feature, no plan currently
 
-*assertion[90%]*
-  v1.0.0: same as spy, no doc currently
+*assertion[99%]*
 
-*matcher[0%]*
-  v1.0.0: plan to implement
+*matcher[99%]*
+
+*comment of testcases[0%]*
+
+*Documentation[0%]*
 
 Installation
 ============
