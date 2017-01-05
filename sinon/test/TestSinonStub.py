@@ -164,6 +164,16 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), "###")
 
     @sinontest
+    def test226_throws_with_condition(self):
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.onCall(2).throws()
+        fto.func1()
+        with self.assertRaises(Exception) as context:
+            fto.func1()
+
+    @sinontest
     def test230_onFirstCall(self):
         fto = ForTestOnly()
         stub = SinonStub(ForTestOnly, "func1")
