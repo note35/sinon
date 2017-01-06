@@ -47,6 +47,18 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         return arg
 
+    def _set_args_list(self, new_args_list):
+        """
+        For solving special case of mock
+        Args: List (new argument list)
+        """
+        if self.args_type == "MODULE_FUNCTION":
+            getattr(self.obj, self.prop).__set__("args_list", new_args_list)
+        elif self.args_type == "FUNCTION":
+            getattr(self.g, self.obj.__name__).__set__("args_list", new_args_list)
+        elif self.args_type == "PURE":
+            getattr(self.pure, "func").__set__("args_list", new_args_list)
+
     def _args_list(self):
         """
         Return: List (arguments which are called)
