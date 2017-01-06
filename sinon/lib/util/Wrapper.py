@@ -11,6 +11,12 @@ def emptyFunction(*args, **kwargs):
 
 
 def addSpy(f):
+    def __set__(value, new_list):
+        """
+        For python 2.x compatibility
+        """
+        setattr(wrapped, value, new_list)
+
     def wrapped(*args, **kwargs):
         wrapped.callCount += 1
         CALLQUEUE.append(wrapped)
@@ -25,6 +31,7 @@ def addSpy(f):
             # Todo: make sure e.__class__ is enough for all purpose or not
             wrapped.error_list.append(e.__class__)
             return f(*args, **kwargs)
+    wrapped.__set__ = __set__
     wrapped.callCount = 0
     wrapped.args_list = []
     wrapped.kwargs_list = []
