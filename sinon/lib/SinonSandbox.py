@@ -8,7 +8,13 @@ def _clear_assertion_message(obj):
 
 def _clear_item_in_queue(queue):
     for item in reversed(queue):
-        item.restore()
+        try:
+            item.restore()
+        except:
+            """
+            ignore if the item is been destroyed before here
+            """
+            pass
 
 def sinontest(f):
 
