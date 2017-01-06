@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../')
+
 import unittest
 import lib.SinonBase as sinon
 from lib.SinonMock import SinonMock
@@ -139,6 +142,23 @@ class TestSinonMock(unittest.TestCase):
         self.assertEqual(fto.func1(), None) 
         self.assertTrue(mock.verify()) 
 
+    @sinontest
+    def test030_verify_false(self):
+        mock = SinonMock(ForTestOnly)
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        expectation = mock.expects("func1").once().returns(None) #spy + stub
+        self.assertFalse(mock.verify()) 
+
+    @sinontest
+    def test040_verify_reference_error(self):
+        mock = SinonMock(ForTestOnly)
+        fto = ForTestOnly()
+        self.assertEqual(fto.func1(), "func1")
+        expectation = mock.expects("func1").once().returns(None) #spy + stub
+        expectation.restore()
+        self.assertFalse(mock.verify()) 
+
 
 class TestSinonMockExpectation(unittest.TestCase):
 
@@ -186,3 +206,82 @@ class TestSinonMockExpectation(unittest.TestCase):
         self.assertTrue(expectation.verify())
         expectation.atLeast(1)
         self.assertFalse(expectation.verify())
+
+    @sinontest
+    def test020_never_exactly(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.never().exactly(0)
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test021_once_exactly(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.once().exactly(1)
+        self.assertFalse(expectation.verify())
+        fto.func1()
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test022_twice_exactly(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.twice().exactly(2)
+        self.assertFalse(expectation.verify())
+        fto.func1()
+        fto.func1()
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test023_thrice_exactly(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.thrice().exactly(3)
+        self.assertFalse(expectation.verify())
+        fto.func1()
+        fto.func1()
+        fto.func1()
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test030_withArgs_args(self):
+        # Todo: source code use a dirty to pass this case, it should be fixed in the future
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.withArgs("1")
+        fto.func1("1")
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test033_withArgs_kwargs(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.withExactArgs(opt="1")
+        fto.func1(opt="1")
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test040_withExactArgs_args(self):
+        # Todo: source code use a dirty to pass this case, it should be fixed in the future
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.withExactArgs("1")
+        fto.func1("1")
+        self.assertTrue(expectation.verify())
+
+    @sinontest
+    def test033_withExactArgs_kwargs(self):
+        mock = SinonMock(ForTestOnly)
+        expectation = mock.expects("func1")
+        fto = ForTestOnly()
+        expectation.withArgs(opt="1")
+        fto.func1(opt="1")
+        self.assertTrue(expectation.verify())
