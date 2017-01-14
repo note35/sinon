@@ -1,138 +1,147 @@
+"""
+Copyright (c) 2016-2017, Kir Chou
+https://github.com/note35/sinon/blob/master/LICENSE
+"""
 import sys
 import re
 import inspect
 from types import FunctionType, BuiltinFunctionType, MethodType
 
-from .util import ErrorHandler, Wrapper, CollectionHandler
+from .util import ErrorHandler, Wrapper
 
-python_version = sys.version_info[0]
-if python_version == 3:
+if sys.version_info[0] == 3:
     unicode = str
 
 class Matcher(object):
 
-    def __init__(self, expectation, is_custom_func=False, is_substring=False, is_regex=False, expected_type=None, expected_instance=None):
-        self.message = ""
-        self.another_matcher = None
-        self.another_compare = None
-        self.expectation = expectation
-        self.expected_type = expected_type
-        self.expected_instance = expected_instance
-        if is_custom_func:
-            self.arg_type = "CUSTOMFUNC"
-            setattr(Matcher, "sinonMatcherTest", staticmethod(expectation))
-        elif is_substring:
-            self.arg_type = "SUBSTRING"
-        elif is_regex:
-            self.arg_type = "REGEX"
+    def __get_type(self, expectation, options):
+        if "is_custom_func" in options.keys():
+            setattr(self, "mtest", expectation)
+            return "CUSTOMFUNC"
+        elif "is_substring" in options.keys():
+            return "SUBSTRING"
+        elif "is_regex" in options.keys():
+            return "REGEX"
         elif isinstance(expectation, type):
-            self.arg_type = "TYPE"
+            return "TYPE"
         else:
-            self.arg_type = "VALUE"
+            return "VALUE"
 
-    def sinonMatcherTest(self, target=None, checked=False):
-        ret = False
-        if self.arg_type == "TYPE":
-            ret = True if isinstance(target, self.expectation) else False
-        elif self.arg_type == "SUBSTRING":
-            ret = True if target in self.expectation else False
+    def __init__(self, expectation, options=None):
+        if not options:
+            options = {}
+        self.another_matcher, self.another_compare = None, None
+        self.expectation = expectation
+        self.target_type = options["target_type"] if "target_type" in options.keys() else None
+        self.arg_type = self.__get_type(expectation, options)
+
+    def __value_compare(self, target):
+        if self.expectation == "__ANY__":
+            return True
+        elif self.expectation == "__DEFINED__":
+            return True if target is not None else False
+        elif self.expectation == "__TYPE__":
+            return True if type(target) == self.target_type else False #pylint:disable=unidiomatic-typecheck
+        elif self.expectation == "__INSTANCE__":
+            return True if isinstance(target, self.target_type.__class__) else False
+        else:
+            return True if target == self.expectation else False
+
+    def __get_test_return(self, target):
+        if self.arg_type == "SUBSTRING":
+            return True if target in self.expectation else False
         elif self.arg_type == "REGEX":
             pattern = re.compile(self.expectation)
-            ret = pattern.match(target)
+            return pattern.match(target)
+        elif self.arg_type == "TYPE":
+            return True if isinstance(target, self.expectation) else False
         elif self.arg_type == "VALUE":
-            if self.expectation == "__ANY__":
-                ret = True
-            elif self.expectation == "__DEFINED__":
-                ret = True if target is not None else False
-            elif self.expectation == "__TYPE__":
-                ret = True if type(target) == self.expected_type else False
-            elif self.expectation == "__INSTANCE__":
-                ret = True if isinstance(target, self.expected_instance.__class__) else False
-            else:
-                ret = True if target == self.expectation else False
+            return self.__value_compare(target)
 
-        if self.another_matcher and not checked:
-            ret2 = self.another_matcher.sinonMatcherTest(target, checked=True)
-
-        if self.another_compare == "__AND__":
+    def __get_match_result(self, ret, ret2):
+        if self.another_compare == "__MATCH_AND__":
             return ret and ret2
-        elif self.another_compare == "__OR__":
+        elif self.another_compare == "__MATCH_OR__":
             return ret or ret2
-        else:
-            return ret
+        return ret
 
-    def _and(self, another_matcher):
-        self.another_compare = "__AND__"
+    def __matcher_test(self, target, checked):
+        ret = self.__get_test_return(target)
+        ret2 = False
+        if self.another_matcher and not checked:
+            ret2 = self.another_matcher.mtest(target, checked=True)
+        return self.__get_match_result(ret, ret2)
+
+    def mtest(self, target=None, checked=False):
+        return self.__matcher_test(target, checked)
+
+    def and_match(self, another_matcher):
+        self.another_compare = "__MATCH_AND__"
         self.another_matcher = another_matcher
         return self
 
-    def _or(self, another_matcher):
-        self.another_compare = "__OR__"
+    def or_match(self, another_matcher):
+        self.another_compare = "__MATCH_OR__"
         self.another_matcher = another_matcher
         return self
 
-
-original_matcher_test = Matcher.sinonMatcherTest
 
 class SinonMatcher(object):
 
-    def __new__(self, expectation=None, is_regex=False):
-        if isinstance(expectation, (FunctionType, BuiltinFunctionType, MethodType)):
-            self.m = Matcher(expectation, is_custom_func=True)
-        elif isinstance(expectation, (str, unicode)):
-            if is_regex:
-                self.m = Matcher(expectation, is_regex=True)
+    def __new__(cls, expectation=None, strcmp=None, is_custom_func=False):
+        options = {}
+        if is_custom_func:
+            if isinstance(expectation, (FunctionType, BuiltinFunctionType, MethodType)):
+                options["is_custom_func"] = True
             else:
-                self.m = Matcher(expectation, is_substring=True)
-        else:
-            self.m = Matcher(expectation)
-        return self.m
+                # Todo: customized error exception
+                raise TypeError("[{}] is not callable".format(expectation))
+        if strcmp:
+            if isinstance(expectation, (str, unicode)):
+                if strcmp.upper() == "DEFAULT" or strcmp.upper() == "SUBSTRING":
+                    options["is_substring"] = True
+                elif strcmp.upper() == "REGEX":
+                    options["is_regex"] = True
+            else:
+                raise TypeError("[{}] is not a string".format(expectation))
+        return Matcher(expectation, options)
+
+    @Wrapper.classproperty
+    def any(cls): #pylint: disable=no-self-argument,no-self-use
+        return Matcher("__ANY__")
+
+    @Wrapper.classproperty
+    def defined(cls): #pylint: disable=no-self-argument,no-self-use
+        return Matcher("__DEFINED__")
+
+    @Wrapper.classproperty
+    def truthy(cls): #pylint: disable=no-self-argument,no-self-use
+        return Matcher(True)
+
+    @Wrapper.classproperty
+    def falsy(cls): #pylint: disable=no-self-argument,no-self-use
+        return Matcher(False)
+
+    @Wrapper.classproperty
+    def bool(cls): #pylint: disable=no-self-argument,no-self-use
+        return Matcher(bool)
 
     @classmethod
-    def reset(cls):
-        global original_matcher_test
-        Matcher.sinonMatcherTest = original_matcher_test
-
-    @Wrapper.classproperty
-    def any(cls):
-        cls.m = Matcher("__ANY__")
-        return cls.m
-
-    @Wrapper.classproperty
-    def defined(cls):
-        cls.m = Matcher("__DEFINED__")
-        return cls.m
-
-    @Wrapper.classproperty
-    def truthy(cls):
-        cls.m = Matcher(True)
-        return cls.m
-
-    @Wrapper.classproperty
-    def falsy(cls):
-        cls.m = Matcher(False)
-        return cls.m
-
-    @Wrapper.classproperty
-    def bool(cls):
-        cls.m = Matcher(bool)
-        return cls.m
+    def same(cls, expectation): #pylint: disable=no-self-argument,no-self-use
+        return Matcher(expectation)
 
     @classmethod
-    def same(cls, expectation):
-        cls.m = Matcher(expectation)
-        return cls.m
+    def typeOf(cls, expected_type): #pylint: disable=no-self-argument,invalid-name,no-self-use
+        if isinstance(expected_type, type):
+            options = {}
+            options["target_type"] = expected_type
+            return Matcher("__TYPE__", options)
+        ErrorHandler.matcherTypeError(expected_type)
 
     @classmethod
-    def typeOf(cls, expectation):
-        if isinstance(expectation, type):
-            cls.m = Matcher("__TYPE__", expected_type=expectation)
-            return cls.m
-        ErrorHandler.matcherTypeError(expectation)
-
-    @classmethod
-    def instanceOf(cls, expectation):
-        if not inspect.isclass(expectation):
-            cls.m = Matcher("__INSTANCE__", expected_instance=expectation)
-            return cls.m
-        ErrorHandler.matcherInstanceError(expectation)
+    def instanceOf(cls, expected_instance): #pylint: disable=no-self-argument,invalid-name,no-self-use
+        if not inspect.isclass(expected_instance):
+            options = {}
+            options["target_type"] = expected_instance
+            return Matcher("__INSTANCE__", options)
+        ErrorHandler.matcherInstanceError(expected_instance)

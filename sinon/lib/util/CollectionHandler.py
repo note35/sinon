@@ -215,8 +215,8 @@ def kwargsPartialCompare(kwargs, kwargs_list, ducktype, always=False):
             intersection = {}
             for x in kwargs:
                 dt = ducktype(kwargs[x])
-                if hasattr(dt, "sinonMatcherTest"):
-                    if x in called_kwargs and dt.sinonMatcherTest(called_kwargs[x]):
+                if hasattr(dt, "mtest"):
+                    if x in called_kwargs and dt.mtest(called_kwargs[x]):
                         intersection[x] = kwargs[x]
                 else:
                     if x in called_kwargs and dt == called_kwargs[x]:
@@ -243,8 +243,8 @@ def argsPartialCompare(args, args_list, ducktype, always=False):
         for idx, part_args in enumerate(args):
             # test current argument one by one, if matched to previous record, counter-1
             dt = ducktype(part_args)
-            if hasattr(dt, "sinonMatcherTest"):
-                if dt.sinonMatcherTest(called_args[idx]):
+            if hasattr(dt, "mtest"):
+                if dt.mtest(called_args[idx]):
                     dst = dst - 1
             else:
                 if dt == called_args[idx]:
