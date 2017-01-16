@@ -9,12 +9,20 @@ from types import FunctionType, BuiltinFunctionType, MethodType
 
 from .util import ErrorHandler, Wrapper
 
+# compatible with python2.x
 if sys.version_info[0] == 3:
-    unicode = str
+    unicode = str #pylint: disable=invalid-name
 
 class Matcher(object):
+    """
+    For various comparision, matcher provides different methods
+    """
 
     def __get_type(self, expectation, options):
+        """
+        Determining the type of Matcher
+        Return: string
+        """
         if "is_custom_func" in options.keys():
             setattr(self, "mtest", expectation)
             return "CUSTOMFUNC"
@@ -36,6 +44,11 @@ class Matcher(object):
         self.arg_type = self.__get_type(expectation, options)
 
     def __value_compare(self, target):
+        """
+        Comparing result based on expectation if arg_type is "VALUE"
+        Args: Anything
+        Return: Boolean
+        """
         if self.expectation == "__ANY__":
             return True
         elif self.expectation == "__DEFINED__":
@@ -48,6 +61,9 @@ class Matcher(object):
             return True if target == self.expectation else False
 
     def __get_test_return(self, target):
+        """
+        Getting different comparsions based on arg_type
+        """
         if self.arg_type == "SUBSTRING":
             return True if target in self.expectation else False
         elif self.arg_type == "REGEX":
@@ -59,6 +75,9 @@ class Matcher(object):
             return self.__value_compare(target)
 
     def __get_match_result(self, ret, ret2):
+        """
+        Getting match result
+        """
         if self.another_compare == "__MATCH_AND__":
             return ret and ret2
         elif self.another_compare == "__MATCH_OR__":
@@ -66,6 +85,9 @@ class Matcher(object):
         return ret
 
     def __matcher_test(self, target, checked):
+        """
+        Internal function of mtest
+        """
         ret = self.__get_test_return(target)
         ret2 = False
         if self.another_matcher and not checked:
@@ -73,22 +95,52 @@ class Matcher(object):
         return self.__get_match_result(ret, ret2)
 
     def mtest(self, target=None, checked=False):
+        """
+        Comparing target and expectation of Matcher
+        Args:
+            Anything (target)
+            Boolead (checked or not, default is not)
+        Return:
+            Boolead (Return of __matcher_test -> __get_match_result)
+        """
         return self.__matcher_test(target, checked)
 
     def and_match(self, another_matcher):
+        """
+        Adding one additional matching condition (max is 2) for AND comparsion
+        mtest must match to original matcher AND this new matcher
+        Args: Matcher
+        Return: self
+        """
         self.another_compare = "__MATCH_AND__"
         self.another_matcher = another_matcher
         return self
 
     def or_match(self, another_matcher):
+        """
+        Adding one additional matching condition (max is 2) for OR comparsion
+        mtest only need to match to original matcher OR this new matcher
+        Args: Matcher
+        Return: self
+        """
         self.another_compare = "__MATCH_OR__"
         self.another_matcher = another_matcher
         return self
 
 
 class SinonMatcher(object):
-
+    """
+    SinonMatcher is an external interface of Matcher
+    """
     def __new__(cls, expectation=None, strcmp=None, is_custom_func=False):
+        """
+        Args:
+            anything (expectation: the object you want to compare)
+            "substring", "regex" (strcmp: the type of string comparsion)
+            Boolean (is_custom_func: set True is object is a test function of Matcher
+        Return:
+            Matcher
+        """
         options = {}
         if is_custom_func:
             if isinstance(expectation, (FunctionType, BuiltinFunctionType, MethodType)):
@@ -108,30 +160,60 @@ class SinonMatcher(object):
 
     @Wrapper.classproperty
     def any(cls): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will always return True
+        Return: Matcher
+        """
         return Matcher("__ANY__")
 
     @Wrapper.classproperty
     def defined(cls): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will return True if ... is defined
+        Return: Matcher
+        """
         return Matcher("__DEFINED__")
 
     @Wrapper.classproperty
     def truthy(cls): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will return True if ... is True
+        Return: Matcher
+        """
         return Matcher(True)
 
     @Wrapper.classproperty
     def falsy(cls): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will return False if ... is True
+        Return: Matcher
+        """
         return Matcher(False)
 
     @Wrapper.classproperty
     def bool(cls): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will return True if ... is True
+        Return: Matcher
+        """
         return Matcher(bool)
 
     @classmethod
     def same(cls, expectation): #pylint: disable=no-self-argument,no-self-use
+        """
+        Matcher.mtest(...) will return True if ... == expectation
+        Return: Matcher
+        """
         return Matcher(expectation)
 
     @classmethod
     def typeOf(cls, expected_type): #pylint: disable=no-self-argument,invalid-name,no-self-use
+        """
+        (*Type does NOT consider inherited class)
+        Matcher.mtest(...) will return True if type(...) == expected_type
+        Return: Matcher
+        Raise: matcherTypeError
+        """
         if isinstance(expected_type, type):
             options = {}
             options["target_type"] = expected_type
@@ -140,6 +222,12 @@ class SinonMatcher(object):
 
     @classmethod
     def instanceOf(cls, expected_instance): #pylint: disable=no-self-argument,invalid-name,no-self-use
+        """
+        (*Instance consider inherited class)
+        Matcher.mtest(...) will return True if instance(...) == expected_instance
+        Return: Matcher
+        Raise: matcherInstanceError
+        """
         if not inspect.isclass(expected_instance):
             options = {}
             options["target_type"] = expected_instance
