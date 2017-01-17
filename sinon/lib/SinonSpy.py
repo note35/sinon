@@ -236,12 +236,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Return: Boolean
         """
         if args and kwargs:
-            return True if (uch.tupleInTupleList(self._args_list(), args) and
-                            uch.dictInDictList(self._kwargs_list(), kwargs)) else False
+            return True if (uch.tuple_in_list(self._args_list(), args) and
+                            uch.dict_in_list(self._kwargs_list(), kwargs)) else False
         elif args:
-            return True if uch.tupleInTupleList(self._args_list(), args) else False
+            return True if uch.tuple_in_list(self._args_list(), args) else False
         elif kwargs:
-            return True if uch.dictInDictList(self._kwargs_list(), kwargs) else False
+            return True if uch.dict_in_list(self._kwargs_list(), kwargs) else False
         else:
             ErrorHandler.calledWithEmptyError()
 
@@ -256,12 +256,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Return: Boolean
         """
         if args and kwargs:
-            return True if (uch.tupleInTupleListAlways(self._args_list(), args) and
-                            uch.dictInDictListAlways(self._kwargs_list(), kwargs)) else False
+            return True if (uch.tuple_in_list_always(self._args_list(), args) and
+                            uch.dict_in_list_always(self._kwargs_list(), kwargs)) else False
         elif args:
-            return True if uch.tupleInTupleListAlways(self._args_list(), args) else False
+            return True if uch.tuple_in_list_always(self._args_list(), args) else False
         elif kwargs:
-            return True if uch.dictInDictListAlways(self._kwargs_list(), kwargs) else False
+            return True if uch.dict_in_list_always(self._kwargs_list(), kwargs) else False
         else:
             ErrorHandler.calledWithEmptyError()
 
@@ -293,12 +293,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
                     because spy.calledWithMatch(1,2) and spy.calledWithMatch(c=6) are valid
         """
         if args and kwargs:
-            return (uch.argsPartialCompare(args, self._args_list(), self.__get_func) and
-                    uch.kwargsPartialCompare(kwargs, self._kwargs_list(), self.__get_func))
+            return (uch.tuple_partial_cmp(args, self._args_list(), self.__get_func) and
+                    uch.dict_partial_cmp(kwargs, self._kwargs_list(), self.__get_func))
         elif args:
-            return uch.argsPartialCompare(args, self._args_list(), self.__get_func)
+            return uch.tuple_partial_cmp(args, self._args_list(), self.__get_func)
         elif kwargs:
-            return uch.kwargsPartialCompare(kwargs, self._kwargs_list(), self.__get_func)
+            return uch.dict_partial_cmp(kwargs, self._kwargs_list(), self.__get_func)
         else:
             ErrorHandler.calledWithEmptyError()
         self.__get_func = SinonSpy.__get_by_matcher
@@ -311,12 +311,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         alist, klist, gfunc = self._args_list(), self._kwargs_list(), self.__get_func
         if args and kwargs:
-            return (uch.argsPartialCompare(args, alist, gfunc, always=True) and
-                    uch.kwargsPartialCompare(kwargs, klist, gfunc, always=True))
+            return (uch.tuple_partial_cmp_always(args, alist, gfunc) and
+                    uch.dict_partial_cmp_always(kwargs, klist, gfunc))
         elif args:
-            return uch.argsPartialCompare(args, alist, gfunc, always=True)
+            return uch.tuple_partial_cmp_always(args, alist, gfunc)
         elif kwargs:
-            return uch.kwargsPartialCompare(kwargs, klist, gfunc, always=True)
+            return uch.dict_partial_cmp_always(kwargs, klist, gfunc)
         else:
             ErrorHandler.calledWithEmptyError()
         self.__get_func = SinonSpy.__get_by_matcher
@@ -339,7 +339,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         if not error_type:
             return True if len(self._error_list()) > 0 else False
         else:
-            return uch.objInList(self._error_list(), error_type)
+            return uch.obj_in_list(self._error_list(), error_type)
 
     def alwaysThrew(self, error_type=None): #pylint: disable=invalid-name
         """
@@ -355,7 +355,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         if not error_type:
             return True if len(self._error_list()) == self.callCount else False
         else:
-            return uch.objInListAlways(self._error_list(), error_type)
+            return uch.obj_in_list_always(self._error_list(), error_type)
 
     def returned(self, obj):
         """
@@ -363,7 +363,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Args: Anything
         Return: Boolean
         """
-        return uch.objInList(self._ret_list(), obj)
+        return uch.obj_in_list(self._ret_list(), obj)
 
     def alwaysReturned(self, obj): #pylint: disable=invalid-name
         """
@@ -371,7 +371,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Args: Anything
         Return: Boolean
         """
-        return uch.objInListAlways(self._ret_list(), obj)
+        return uch.obj_in_list_always(self._ret_list(), obj)
 
     @property
     def args(self): #pylint: disable=invalid-name,missing-docstring
