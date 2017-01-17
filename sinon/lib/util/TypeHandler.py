@@ -1,7 +1,17 @@
+"""
+Copyright (c) 2016-2017, Kir Chou
+https://github.com/note35/sinon/blob/master/LICENSE
+
+A set of functions for handling
+(1) SinonBase's constructor
+(2) Other type-checking related modules
+"""
+
 import sys
 import inspect
-from . import ErrorHandler
 from types import ModuleType, FunctionType, BuiltinFunctionType
+
+from . import ErrorHandler
 
 def is_pure(obj, prop):
     """
@@ -64,16 +74,19 @@ def is_module(obj):
     Checking and setting type to MODULE
     Args:
         obj: ModuleType / class
-        Note: a Instance will be treated as a MODULE
+        Note: An instance will be treated as a Class
     Return:
         Boolean
-    Raise:
-        objTypeError: When obj is not valid
     """
     return True if obj and isinstance(obj, ModuleType) or inspect.isclass(obj) else False
 
 def is_instance(obj):
-    if obj:
-        return True if hasattr(obj, "__class__") else False
-    else:
-        ErrorHandler.objTypeError(obj)
+    """
+    Checking and setting instance to MODULE
+    Args:
+        obj: ModuleType / class
+        Note: An instance will be treated as a Class
+    Return:
+        Boolean
+    """
+    return True if obj and hasattr(obj, "__class__") else False
