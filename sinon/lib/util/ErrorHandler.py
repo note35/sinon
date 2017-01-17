@@ -19,7 +19,8 @@ def propIsFuncError(obj, prop):
     return exceptionHelper("[{}] is an invalid property, it should be a method in [{}]".format(prop, obj.__name__))
 
 def propInObjError(obj, prop):
-    return exceptionHelper("[{}] is not exist in [{}]".format(prop, obj.__name__))
+    name = obj.__name__ if hasattr(obj, "__name__") else obj
+    return exceptionHelper("[{}] is not exist in [{}]".format(prop, obj))
 
 def lockError(obj):
     name = obj.__name__ if hasattr(obj, "__name__") else obj

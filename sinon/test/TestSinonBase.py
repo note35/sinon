@@ -109,7 +109,7 @@ class TestSinonBase(unittest.TestCase):
         self.assertTrue(exception in str(context.exception))
         base.restore()
 
-    def test021_constructor_instance(self):
+    def test021_constructor_instance_method(self):
         A = A_object()
         base = SinonBase(A, "A_func")
         base.restore()
@@ -145,3 +145,22 @@ class TestSinonBase(unittest.TestCase):
             base2 = SinonBase(fto)
         self.assertTrue(exception in str(context.exception))
         base1.restore()
+
+    def test027_constructor_instance(self):
+        A = A_object()
+        base = SinonBase(A)
+        base.restore()
+
+    def test028_constructor_instance_wrong_method(self):
+        A = A_object()
+        exception = "[{}] is not exist in [{}]".format("not_exist_function", A)
+        with self.assertRaises(Exception) as context:
+            base = SinonBase(A, "not_exist_function")
+        self.assertTrue(exception in str(context.exception))
+
+    def test029_constructor_invalid_method_type(self):
+        A = A_object()
+        exception = "[{}] is an invalid property, it should be a string".format(str(123))
+        with self.assertRaises(Exception) as context:
+            base = SinonBase(A, 123)
+        self.assertTrue(exception in str(context.exception))
