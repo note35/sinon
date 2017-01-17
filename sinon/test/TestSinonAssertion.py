@@ -55,17 +55,13 @@ class TestSinonAssertion(unittest.TestCase):
 
     @sinontest
     def test004_arg_string(self):
-        exception = "[{}] is an invalid spy".format("1234")
         with self.assertRaises(Exception) as context:
             SinonAssertion.notCalled("1234")
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test005_arg_bool(self):
-        exception = "[{}] is an invalid spy".format(True)
         with self.assertRaises(Exception) as context:
             SinonAssertion.notCalled(True)
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test006_fail_new_message(self):
@@ -74,7 +70,7 @@ class TestSinonAssertion(unittest.TestCase):
         SinonAssertion.fail(exception_msg)
         with self.assertRaises(Exception) as context:
             SinonAssertion.called(spy)
-        self.assertTrue(exception_msg in str(context.exception))
+        self.assertTrue(exception_msg in str(context.exception)) #test new errmsg
 
     @sinontest
     def test010_notCalled(self):
@@ -142,10 +138,8 @@ class TestSinonAssertion(unittest.TestCase):
     def test041_callOrder_two_unique_args_without_call(self):
         spy1 = SinonSpy()
         stub1 = SinonStub()
-        exception = "CALLQUEUE is empty"
         with self.assertRaises(Exception) as context:
             SinonAssertion.callOrder(spy1, stub1)
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test042_callOrder_two_unique_args(self):

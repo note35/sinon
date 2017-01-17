@@ -67,17 +67,13 @@ class TestSinonMatcher(unittest.TestCase):
 
     def test005_constructor_func_invalid(self):
         something = "Not Function"
-        exception = "[{}] is not callable".format(something)
         with self.assertRaises(Exception) as context:
             m = SinonMatcher(something, is_custom_func=True)
-        self.assertTrue(exception in str(context.exception))
 
     def test006_constructor_strcmp_invalid(self):
         something = 123
-        exception = "[{}] is not a string".format(something)
         with self.assertRaises(Exception) as context:
             m = SinonMatcher(something, strcmp="default")
-        self.assertTrue(exception in str(context.exception))
 
     def test020_any(self):
         m = SinonMatcher.any
@@ -143,17 +139,13 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertTrue(m.mtest(1))          # number is a number
 
     def test43_typeOf_invalid_type(self):
-        exception = "[{}] is an invalid property, it should be a type".format(123)
         with self.assertRaises(Exception) as context:
             m = SinonMatcher.typeOf(123)
-        self.assertTrue(exception in str(context.exception))
 
     def test50_instanceOf_class(self):
         fto = ForTestOnly()
-        exception = "[{}] is an invalid property, it should be an instance".format(ForTestOnly)
         with self.assertRaises(Exception) as context:
             m = SinonMatcher.instanceOf(ForTestOnly)
-        self.assertTrue(exception in str(context.exception))
 
     def test51_instanceOf_instance(self):
         spy = SinonSpy()

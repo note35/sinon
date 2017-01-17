@@ -149,13 +149,10 @@ class TestSinonSpy(unittest.TestCase):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
         spy3 = SinonSpy(B_func)
-        exception = "CALLQUEUE is empty"
         with self.assertRaises(Exception) as context:
             self.assertFalse(spy1.calledBefore(spy2))
-        self.assertTrue(exception in str(context.exception))
         with self.assertRaises(Exception) as context:
             self.assertFalse(spy2.calledAfter(spy1))
-        self.assertTrue(exception in str(context.exception))
  
     @sinontest
     def test053_calledBefore_calledAfter_recalled_method(self):
@@ -305,10 +302,8 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.calledWithExactly("a", b="b", c="c"))
         self.assertFalse(spy.calledWithExactly("wrong", b="b", c="c"))
         #Exception
-        exception = "There is no argument"
         with self.assertRaises(Exception) as context:
             spy.calledWithExactly()
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test075_calledWithExactly_method_partialmatch(self):
@@ -351,10 +346,8 @@ class TestSinonSpy(unittest.TestCase):
         spy.restore()
         spy = SinonSpy(C_func)
         #Exception
-        exception = "There is no argument"
         with self.assertRaises(Exception) as context:
             spy.alwaysCalledWithExactly()
-        self.assertTrue(exception in str(context.exception))
 
 
     @sinontest
@@ -534,10 +527,10 @@ class TestSinonSpy(unittest.TestCase):
 
     @sinontest
     def test111_getCall_wrongIndex(self):
-        exception = "The call queue only contains 0 calls"
+        exception = "0"
         with self.assertRaises(Exception) as context:
             SinonSpy.getCall(100)
-        self.assertTrue(exception in str(context.exception))
+        self.assertTrue(exception in str(context.exception)) # test args of errmsg
 
     @sinontest
     def test120_kwargs(self):
@@ -738,10 +731,8 @@ class TestSinonSpy(unittest.TestCase):
     @sinontest
     def test219_calledWithMatch_exception(self):
         spy = SinonSpy(C_func)
-        exception = "There is no argument"
         with self.assertRaises(Exception) as context:
             spy.calledWithMatch()
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test220_alwaysCalledWithMatch_args(self):
@@ -812,10 +803,8 @@ class TestSinonSpy(unittest.TestCase):
     @sinontest
     def test229_alwaysCalledWithMatch_exception(self):
         spy = SinonSpy(C_func)
-        exception = "There is no argument"
         with self.assertRaises(Exception) as context:
             spy.alwaysCalledWithMatch()
-        self.assertTrue(exception in str(context.exception))
 
     @sinontest
     def test230_alwaysCalledWith_Match_args(self):

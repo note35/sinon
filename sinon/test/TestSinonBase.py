@@ -51,7 +51,7 @@ class TestSinonBase(unittest.TestCase):
         exception = "weakly-referenced object no longer exists"
         with self.assertRaises(Exception) as context:
             base.called
-        self.assertTrue(exception in str(context.exception))
+        self.assertTrue(exception in str(context.exception)) # test weakref errmsg
 
     def test011_constructor_custom_module(self):
         base = SinonBase(A_object)
@@ -63,18 +63,14 @@ class TestSinonBase(unittest.TestCase):
 
     def test013_constructor_module_repeated(self):
         base1 = SinonBase(os)
-        exception = "[{}] have already been declared".format(os.__name__)
         with self.assertRaises(Exception) as context:
             base2 = SinonBase(os)
-        self.assertTrue(exception in str(context.exception))
         base1.restore()
 
     def test014_constructor_module_reassigned(self):
         base = SinonBase(os)
-        exception = "[{}] have already been declared".format(os.__name__)
         with self.assertRaises(Exception) as context:
             base = SinonBase(os)
-        self.assertTrue(exception in str(context.exception))
         base.restore()
 
     def test015_constructor_custom_module_method(self):
@@ -87,10 +83,8 @@ class TestSinonBase(unittest.TestCase):
 
     def test017_constructor_module_method_repeated(self):
         base = SinonBase(os, "system")
-        exception = "[{}] have already been declared".format("system")
         with self.assertRaises(Exception) as context:
             base = SinonBase(os, "system")
-        self.assertTrue(exception in str(context.exception))
         base.restore()
 
     def test018_constructor_empty(self):
@@ -103,10 +97,8 @@ class TestSinonBase(unittest.TestCase):
 
     def test020_constructor_method_repeated(self):
         base = SinonBase(B_func)
-        exception = "[{}] have already been declared".format(B_func.__name__)
         with self.assertRaises(Exception) as context:
             base = SinonBase(B_func)
-        self.assertTrue(exception in str(context.exception))
         base.restore()
 
     def test021_constructor_instance_method(self):
@@ -115,17 +107,13 @@ class TestSinonBase(unittest.TestCase):
         base.restore()
 
     def test022_constructor_module_variable(self):
-        exception = "[{}] is an invalid property, it should be a method in [{}]".format("path", "os")
         with self.assertRaises(Exception) as context:
             base = SinonBase(os, "path") 
-        self.assertTrue(exception in str(context.exception))
 
     def test023_constructor_module_repeated(self):
         base = SinonBase(os)
-        exception = "[{}] have already been declared".format(os.__name__)
         with self.assertRaises(Exception) as context:
             base = SinonBase(os)
-        self.assertTrue(exception in str(context.exception))
         base.restore()
 
     def test024_constructor_outside_class(self):
@@ -140,10 +128,8 @@ class TestSinonBase(unittest.TestCase):
     def test026_constructor_outside_class_and_instance(self):
         fto = ForTestOnly()
         base1 = SinonBase(ForTestOnly)
-        exception = "[{}] have already been declared".format(fto)
         with self.assertRaises(Exception) as context:
             base2 = SinonBase(fto)
-        self.assertTrue(exception in str(context.exception))
         base1.restore()
 
     def test027_constructor_instance(self):
@@ -153,14 +139,10 @@ class TestSinonBase(unittest.TestCase):
 
     def test028_constructor_instance_wrong_method(self):
         A = A_object()
-        exception = "[{}] is not exist in [{}]".format("not_exist_function", A)
         with self.assertRaises(Exception) as context:
             base = SinonBase(A, "not_exist_function")
-        self.assertTrue(exception in str(context.exception))
 
     def test029_constructor_invalid_method_type(self):
         A = A_object()
-        exception = "[{}] is an invalid property, it should be a string".format(str(123))
         with self.assertRaises(Exception) as context:
             base = SinonBase(A, 123)
-        self.assertTrue(exception in str(context.exception))
