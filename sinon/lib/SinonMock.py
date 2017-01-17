@@ -173,7 +173,7 @@ class SinonMock(object):
             new.__init__(obj)
             return weakref.proxy(new)
         else:
-            ErrorHandler.mockTypeError(obj)
+            ErrorHandler.mock_type_error(obj)
 
     def __init__(self, obj=None):
         """

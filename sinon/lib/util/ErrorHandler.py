@@ -1,45 +1,54 @@
-def exceptionHelper(msg, debug=False, exception=Exception):
-    if debug:
-        print (msg)
-        return msg
-    else:
-        raise exception(msg)
-        return None
+"""
+Copyright (c) 2016-2017, Kir Chou
+https://github.com/note35/sinon/blob/master/LICENSE
 
-def objTypeError(obj):
-    return exceptionHelper("[{}] is an invalid module/class/function".format(str(obj)))
+A set of functions for handling known error
+"""
 
-def mockTypeError(obj):
-    return exceptionHelper("[{}] is an invalid module/class".format(str(obj)))
+def __exception_helper(msg, exception=Exception):
+    raise exception(msg)
 
-def propTypeError(prop):
-    return exceptionHelper("[{}] is an invalid property, it should be a string".format(prop)) 
+def mock_type_error(obj):
+    error_msg = "[{}] is an invalid module/class".format(str(obj))
+    return __exception_helper(error_msg)
 
-def propIsFuncError(obj, prop):
-    return exceptionHelper("[{}] is an invalid property, it should be a method in [{}]".format(prop, obj.__name__))
+def prop_type_error(prop):
+    error_msg = "[{}] is an invalid property, it should be a string".format(prop)
+    return __exception_helper(error_msg)
 
-def propInObjError(obj, prop):
+def prop_is_func_error(obj, prop):
+    error_msg = "[{}] is an invalid property, it should be a method in [{}]".format(prop, obj.__name__)
+    return __exception_helper(error_msg)
+
+def prop_in_obj_error(obj, prop):
+    error_msg = "[{}] is not exist in [{}]".format(prop, obj)
+    return __exception_helper(error_msg)
+
+def lock_error(obj):
     name = obj.__name__ if hasattr(obj, "__name__") else obj
-    return exceptionHelper("[{}] is not exist in [{}]".format(prop, obj))
+    error_msg = "[{}] have already been declared".format(name)
+    return __exception_helper(error_msg)
 
-def lockError(obj):
-    name = obj.__name__ if hasattr(obj, "__name__") else obj
-    return exceptionHelper("[{}] have already been declared".format(name))
+def called_with_empty_error():
+    error_msg = "There is no argument"
+    return __exception_helper(error_msg)
 
-def calledWithEmptyError():
-    return exceptionHelper("There is no argument")
+def get_callqueue_index_error(number):
+    error_msg = "The call queue only contains {} calls".format(str(number))
+    return __exception_helper(error_msg, exception=IndexError)
 
-def getCallIndexError(n):
-    return exceptionHelper("The call queue only contains {} calls".format(str(n)), exception=IndexError)
+def is_not_spy_error(obj):
+    error_msg = "[{}] is an invalid spy".format(str(obj))
+    return __exception_helper(error_msg)
 
-def assertionIsNotSpyError(obj):
-    return exceptionHelper("[{}] is an invalid spy".format(str(obj)))
+def callqueue_is_empty_error():
+    error_msg = "CALLQUEUE is empty"
+    return __exception_helper(error_msg)
 
-def callQueueIsEmptyError():
-    return exceptionHelper("CALLQUEUE is empty")
+def matcher_type_error(prop):
+    error_msg = "[{}] is an invalid property, it should be a type".format(prop)
+    return __exception_helper(error_msg, exception=TypeError)
 
-def matcherTypeError(prop):
-    return exceptionHelper("[{}] is an invalid property, it should be a type".format(prop), exception=TypeError)
-
-def matcherInstanceError(prop):
-    return exceptionHelper("[{}] is an invalid property, it should be an instance".format(prop), exception=TypeError)
+def matcher_instance_error(prop):
+    error_msg = "[{}] is an invalid property, it should be an instance".format(prop)
+    return __exception_helper(error_msg, exception=TypeError)

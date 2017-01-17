@@ -182,7 +182,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         idx2 = obj.get_callqueue_idx()
 
         if len(idx) == 0:
-            ErrorHandler.callQueueIsEmptyError()
+            ErrorHandler.callqueue_is_empty_error()
         if Wrapper.CALLQUEUE:
             return True if min(idx) < max(idx2) else False
 
@@ -194,7 +194,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         idx2 = obj.get_callqueue_idx()
 
         if len(idx) == 0:
-            ErrorHandler.callQueueIsEmptyError()
+            ErrorHandler.callqueue_is_empty_error()
         if Wrapper.CALLQUEUE:
             return True if max(idx) > min(idx2) else False
 
@@ -243,7 +243,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         elif kwargs:
             return True if uch.dict_in_list(self._kwargs_list(), kwargs) else False
         else:
-            ErrorHandler.calledWithEmptyError()
+            ErrorHandler.called_with_empty_error()
 
     def alwaysCalledWithExactly(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -263,7 +263,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         elif kwargs:
             return True if uch.dict_in_list_always(self._kwargs_list(), kwargs) else False
         else:
-            ErrorHandler.calledWithEmptyError()
+            ErrorHandler.called_with_empty_error()
 
     def calledWithMatch(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -300,7 +300,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         elif kwargs:
             return uch.dict_partial_cmp(kwargs, self._kwargs_list(), self.__get_func)
         else:
-            ErrorHandler.calledWithEmptyError()
+            ErrorHandler.called_with_empty_error()
         self.__get_func = SinonSpy.__get_by_matcher
 
     def alwaysCalledWithMatch(self, *args, **kwargs): #pylint: disable=invalid-name
@@ -318,7 +318,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         elif kwargs:
             return uch.dict_partial_cmp_always(kwargs, klist, gfunc)
         else:
-            ErrorHandler.calledWithEmptyError()
+            ErrorHandler.called_with_empty_error()
         self.__get_func = SinonSpy.__get_by_matcher
 
     def neverCalledWith(self, *args, **kwargs): #pylint: disable=invalid-name,missing-docstring

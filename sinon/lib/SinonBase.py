@@ -154,17 +154,17 @@ class SinonBase(object):
         (2) MODULE:          Check whether obj has __SINONLOCK__ or not
         (3) FUNCTION:        Check whether function(mock as a class) has LOCK or not
         Raise:
-            lockError: when inspector has been wrapped
+            lock_error: when inspector has been wrapped
         """
         if self.args_type == "MODULE_FUNCTION":
             if hasattr(getattr(self.obj, self.prop), "LOCK"):
-                ErrorHandler.lockError(self.prop)
+                ErrorHandler.lock_error(self.prop)
         elif self.args_type == "MODULE":
             if hasattr(self.obj, "__SINONLOCK__"):
-                ErrorHandler.lockError(self.obj)
+                ErrorHandler.lock_error(self.obj)
         elif self.args_type == "FUNCTION":
             if hasattr(getattr(CPSCOPE, self.obj.__name__), "LOCK"):
-                ErrorHandler.lockError(self.obj)
+                ErrorHandler.lock_error(self.obj)
 
     def wrap2spy(self):
         """
@@ -227,12 +227,12 @@ class SinonBase(object):
         Return:
             inspector of certain called
         Raise:
-            getCallIndexError if n is not valid index of queue
+            get_callqueue_index_error if n is not valid index of queue
         """
         try:
             return cls._queue[n]
         except IndexError:
-            ErrorHandler.getCallIndexError(len(cls._queue))
+            ErrorHandler.get_callqueue_index_error(len(cls._queue))
 
     @property
     def g(self): #pylint: disable=invalid-name

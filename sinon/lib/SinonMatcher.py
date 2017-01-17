@@ -212,13 +212,13 @@ class SinonMatcher(object):
         (*Type does NOT consider inherited class)
         Matcher.mtest(...) will return True if type(...) == expected_type
         Return: Matcher
-        Raise: matcherTypeError
+        Raise: matcher_type_error
         """
         if isinstance(expected_type, type):
             options = {}
             options["target_type"] = expected_type
             return Matcher("__TYPE__", options)
-        ErrorHandler.matcherTypeError(expected_type)
+        ErrorHandler.matcher_type_error(expected_type)
 
     @classmethod
     def instanceOf(cls, expected_instance): #pylint: disable=no-self-argument,invalid-name,no-self-use
@@ -226,10 +226,10 @@ class SinonMatcher(object):
         (*Instance consider inherited class)
         Matcher.mtest(...) will return True if instance(...) == expected_instance
         Return: Matcher
-        Raise: matcherInstanceError
+        Raise: matcher_instance_error
         """
         if not inspect.isclass(expected_instance):
             options = {}
             options["target_type"] = expected_instance
             return Matcher("__INSTANCE__", options)
-        ErrorHandler.matcherInstanceError(expected_instance)
+        ErrorHandler.matcher_instance_error(expected_instance)

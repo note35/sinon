@@ -18,10 +18,10 @@ class SinonAssertion(object):
         """
         checking the argument is spy
         Args: SinonSpy
-        Raised: assertionIsNotSpyError (if argument is not spy/stub/expectation)
+        Raised: is_not_spy_error (if argument is not spy/stub/expectation)
         """
         if not isinstance(spy, SinonSpy):
-            ErrorHandler.assertionIsNotSpyError(spy)
+            ErrorHandler.is_not_spy_error(spy)
 
     @classmethod
     def __is_satisfied(cls, condition):

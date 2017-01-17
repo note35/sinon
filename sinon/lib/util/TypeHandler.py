@@ -33,9 +33,9 @@ def is_module_function(obj, prop):
     Return:
         Boolean
     Raise:
-        propTypeError: When the type of prop is not valid
-        propInObjError: When prop is not in the obj(module/class)
-        propIsFuncError: When prop is not a callable stuff
+        prop_type_error: When the type of prop is not valid
+        prop_in_obj_error: When prop is not in the obj(module/class)
+        prop_is_func_error: When prop is not a callable stuff
     """
     python_version = sys.version_info[0]
     if python_version == 3:
@@ -52,11 +52,11 @@ def is_module_function(obj, prop):
             #isinstance(...) for python3.x
                 return True
             else:
-                ErrorHandler.propIsFuncError(obj, prop)
+                ErrorHandler.prop_is_func_error(obj, prop)
         else:
-            ErrorHandler.propInObjError(obj, prop)
+            ErrorHandler.prop_in_obj_error(obj, prop)
     elif prop:
-        ErrorHandler.propTypeError(prop)
+        ErrorHandler.prop_type_error(prop)
     return False
 
 def is_function(obj):
