@@ -133,7 +133,7 @@ class SinonBase(object):
         if TypeHandler.is_pure(obj, prop):
             self.args_type = "PURE"
             self.pure = SinonBase.Pure()
-            setattr(self.pure, "func", Wrapper.emptyFunction)
+            setattr(self.pure, "func", Wrapper.empty_function)
             self.orig_func = None
         elif TypeHandler.is_module_function(obj, prop):
             self.args_type = "MODULE_FUNCTION"
@@ -172,16 +172,16 @@ class SinonBase(object):
         """
         if self.args_type == "MODULE_FUNCTION":
             self.orig_func = deepcopy(getattr(self.obj, self.prop))
-            setattr(self.obj, self.prop, Wrapper.wrapSpy(getattr(self.obj, self.prop)))
+            setattr(self.obj, self.prop, Wrapper.wrapspy(getattr(self.obj, self.prop)))
         elif self.args_type == "MODULE":
             setattr(self.obj, "__SINONLOCK__", True)
         elif self.args_type == "FUNCTION":
             self.orig_func = deepcopy(getattr(CPSCOPE, self.obj.__name__))
             setattr(CPSCOPE, self.obj.__name__,
-                    Wrapper.wrapSpy(getattr(CPSCOPE, self.obj.__name__)))
+                    Wrapper.wrapspy(getattr(CPSCOPE, self.obj.__name__)))
         elif self.args_type == "PURE":
             self.orig_func = deepcopy(getattr(self.pure, "func"))
-            setattr(self.pure, "func", Wrapper.wrapSpy(getattr(self.pure, "func")))
+            setattr(self.pure, "func", Wrapper.wrapspy(getattr(self.pure, "func")))
 
     def unwrap(self):
         """
@@ -209,15 +209,15 @@ class SinonBase(object):
         """
         if self.args_type == "MODULE_FUNCTION":
             setattr(self.obj, self.prop,
-                    Wrapper.wrapSpy(getattr(self.obj, self.prop), customfunc, condition))
+                    Wrapper.wrapspy(getattr(self.obj, self.prop), customfunc, condition))
         elif self.args_type == "MODULE":
             setattr(CPSCOPE, self.obj.__name__, Wrapper.EmptyClass)
         elif self.args_type == "FUNCTION":
             setattr(CPSCOPE, self.obj.__name__,
-                    Wrapper.wrapSpy(getattr(CPSCOPE, self.obj.__name__), customfunc, condition))
+                    Wrapper.wrapspy(getattr(CPSCOPE, self.obj.__name__), customfunc, condition))
         elif self.args_type == "PURE":
             setattr(self.pure, "func",
-                    Wrapper.wrapSpy(getattr(self.pure, "func"), customfunc, condition))
+                    Wrapper.wrapspy(getattr(self.pure, "func"), customfunc, condition))
 
     @classmethod
     def getCall(cls, n): #pylint: disable=invalid-name

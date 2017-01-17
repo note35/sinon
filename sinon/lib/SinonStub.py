@@ -22,7 +22,7 @@ class SinonStub(SinonSpy):
 
     def __init__(self, obj=None, prop=None, func=None):
         super(SinonStub, self).__init__(obj, prop)
-        self.stubfunc = func if func else Wrapper.emptyFunction
+        self.stubfunc = func if func else Wrapper.empty_function
         super(SinonStub, self).wrap2stub(self.stubfunc)
         self.condition = {"args":[], "kwargs":[], "action": [], "oncall":[]}
         self.cond_args = self.cond_kwargs = self.oncall = None
