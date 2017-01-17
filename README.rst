@@ -7,7 +7,7 @@
     :target: https://coveralls.io/github/note35/sinon
 
 
-:Version: 0.0.4
+:Version: 0.0.5
 :Download: http://pypi.python.org/pypi/sinon
 :Source: https://github.com/note35/sinon
 :Keywords: python, unittest, spy, stub, mock, sandbox, unittest2, pytest, sinon, doctest
@@ -38,22 +38,23 @@ The concept of closure in JS and Python are different,  All features which
 are related to Excluding “JS-closure related function” will be ignored.
 
 
-*base[90%]*
-  Todo: better init() feature
+*base[100%]*
+  future: better init() feature
 
-*spy[90%]*
-  Todo: _comb_list feature
+*spy[100%]*
+  future: _comb_list feature
 
-*stub[50%]*
-  Todo: callsArgs/yield feature
+*stub[100%]*
+  future: callsArgs/yield feature
 
-*mock[99%]*
+*mock[100%]*
 
 *sandbox[20%]*
+  future: fully sandbox feature
 
-*assertion[99%]*
+*assertion[100%]*
 
-*matcher[99%]*
+*matcher[100%]*
 
 *comment of testcases[0%]*
 
@@ -67,14 +68,14 @@ Installation
 Usage
 =====
 
-    import sinon.sinon as sinon 
+    import sinon
 
 Basic Usage
 -----------
 
 .. code:: python
 
-    import sinon.sinon as sinon
+    import sinon
     g = sinon.init(globals()) #after all global functions in test cases
     g = sinon.init(locals())  #after all local functions in test cases
 
@@ -291,10 +292,12 @@ Test example with unittest framework
 
 sinon can be used with any test framework, here is a full example.
 
+    python -m unittest [test_file_name]
+
 .. code:: python
 
     import unittest
-    import sinon.sinon as sinon
+    import sinon
 
     class GlobalCls(object):
         def clsFunc(self):
