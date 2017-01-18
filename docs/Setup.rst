@@ -6,28 +6,26 @@ Installation
 
 You can get lastest Sinon.PY from pypi:
 
-    pip install sinon
+    $ pip install sinon
 
 Install manually:
 
-    git clone https://github.com/note35/sinon.git
-    cd sinon/
-    python setup.py install
+    $ git clone https://github.com/note35/sinon.git
+    $ cd sinon/
+    $ python setup.py install
 
 Since Sinon.PY is a library for unittest, It would be good if using virtualenv
 in development environment by following command below:
 
-    pip install virtualenv
-    virtualenv env
-    . env/bin/activate   
-    pip install sinon
+    $ pip install virtualenv
+    $ virtualenv env
+    $ . env/bin/activate   
+    $ pip install sinon
 
-Getting Start
+Getting Started
 -------------
 
 *Spies*
-
-A demo case of spy will be like below:
 
     >>> import sinon
     >>> import os
@@ -42,11 +40,9 @@ A demo case of spy will be like below:
     True 
     >>> spy.calledOnce
     True
-    >>> spy.restore
+    >>> spy.restore()
 
 *Stubs*
-
-A demo case of stub will be like below:
 
     >>> import sinon
     >>> import os
