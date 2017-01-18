@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '../')
 
 import unittest
-import sinon.sinon as sinon
+import sinon
 from TestClass import ForTestOnly
 
 def A_func():
