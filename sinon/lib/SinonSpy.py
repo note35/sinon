@@ -120,6 +120,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
                     if val == getattr(self.pure, "func")]
 
+    def withArgs(self, *args, **kwargs):
+        """
+        Todo: feature in the future
+        """
+        return self
+
     @property
     def callCount(self): #pylint: disable=invalid-name
         """
