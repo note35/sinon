@@ -24,7 +24,8 @@ class SinonStub(SinonSpy):
         super(SinonStub, self).__init__(obj, prop)
         self.stubfunc = func if func else Wrapper.empty_function
         super(SinonStub, self).wrap2stub(self.stubfunc)
-        self.condition = {"args":[], "kwargs":[], "action": [], "oncall":[]}
+        # Todo: target is a dirty hack
+        self.condition = {"args":[], "kwargs":[], "action": [], "oncall":[], "target":self.obj}
         self.cond_args = self.cond_kwargs = self.oncall = None
 
     def __append_condition(self, func):

@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../')
+
 import unittest
 import lib.SinonBase as sinon
 from lib.SinonStub import SinonStub
@@ -212,3 +215,10 @@ class TestSinonBase(unittest.TestCase):
         stub = SinonStub(os, "system") #in func3 of fto, it calls os.system
         stub.returns("it's a stub function")
         self.assertEqual(fto.func3(), "it's a stub function")
+
+    @sinontest
+    def test301_withArgs_os(self):
+        stub = SinonStub(os, "system")
+        stub.withArgs("pwd").returns("customized result")
+        self.assertEqual(os.system("pwd"), "customized result")
+        self.assertFalse(os.system())

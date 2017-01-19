@@ -84,15 +84,21 @@ def __gen_index_list(condition, *args, **kwargs):
     # Generating index list based on arguments and condition
     # Note: ignore args[0] because it is callback in this condition
     # combination
-    if args[1:] and kwargs:
-        if args[1:] in condition["args"] and kwargs in condition["kwargs"]:
-            args_indices = [i for i, x in enumerate(condition["args"]) if x == args[1:]]
+
+    # Todo: dirty hack
+    if len(args) > 0:
+        if condition["target"] == args[0].__class__:
+            args = args[1:]
+
+    if args and kwargs:
+        if args in condition["args"] and kwargs in condition["kwargs"]:
+            args_indices = [i for i, x in enumerate(condition["args"]) if x == args]
             kwargs_indices = [i for i, x in enumerate(condition["kwargs"]) if x == kwargs]
             return list(set(args_indices).intersection(kwargs_indices))
     # args only
-    elif args[1:]:
-        if args[1:] in condition["args"]:
-            return [i for i, x in enumerate(condition["args"]) if x == args[1:] and not condition["kwargs"][i]]
+    elif args:
+        if args in condition["args"]:
+            return [i for i, x in enumerate(condition["args"]) if x == args and not condition["kwargs"][i]]
     #kwargs only
     elif kwargs:
         if kwargs in condition["kwargs"]:
