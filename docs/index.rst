@@ -26,6 +26,12 @@ Contents
 
    Setup
    Spies
+   Stubs
+   Mocks
+   Assertions
+   Matchers
+   Sandboxes
+   Scopes
    Practices
 
 New Ideas & Issues

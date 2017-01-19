@@ -8,10 +8,12 @@ Test spies
 
 What is a test spy?
 -------------------
+
 A test spy is a function that records arguments, return value, the value of this and exception thrown (if any) for all its calls. A test spy can be an anonymous function or it can wrap an existing function.
 
 When to use spies?
 ------------------
+
 Test spies are useful to test both callbacks and how certain functions/methods are used throughout the system under test. The following simplified example shows how to use spies to test how a function handles a callback:
 
 .. code-block:: python
@@ -60,7 +62,7 @@ Creating spies: sinon.spy()
 
     Spies on the provided function
 
-    *Note:* If the scope of "expected_spy_function" and test_case_function are same, you should use sinon.init(locals()) or sinon.init(globals()) for passing it before spy them.
+    *Note:* If there is a function declare in the same scope of unittest file, you should use :ref:`scope-label`. You can read the reason from :ref:`scope-reason-label`
 
 **spy = sinon.spy(class, "method")**
 
@@ -68,7 +70,7 @@ Creating spies: sinon.spy()
 
 **spy = sinon.spy(module, "method")**
 
-    Creates a spy for object.method and wraps the original method. The spy acts exactly like the original method in all cases. The original method can be restored by calling spy.restore(). The returned spy is the function object which replaced the original method.
+    Creates a spy for object.method and wraps the original method. The spy acts exactly like the original method in all cases. The original method can be restored by calling :ref:`restore-label`. The returned spy is the function object which replaced the original method.
 
 Spy API
 -------
