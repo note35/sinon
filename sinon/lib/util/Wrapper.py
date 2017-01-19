@@ -65,8 +65,9 @@ def __add_spy(func):
         if kwargs:
             wrapped.kwargs_list.append(kwargs)
         try:
-            wrapped.ret_list.append(func(*args, **kwargs))
-            return func(*args, **kwargs)
+            ret = func(*args, **kwargs)
+            wrapped.ret_list.append(ret)
+            return ret
         except Exception as excpt:
             # Todo: make sure e.__class__ is enough for all purpose or not
             wrapped.error_list.append(excpt.__class__)
