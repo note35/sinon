@@ -17,8 +17,22 @@ Overview
 This document contains the entire Sinon.PY API documentation along with brief
 introductions and examples to the concepts Sinon implements.
 
-.. include:: contents.rst.inc
-.. include:: ideas.rst.inc
+Contents
+========
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   Setup
+   Spies
+   Practices
+
+New Ideas & Issues
+==================
+
+Please send any defects, issues, feature requests to the `Github`_.
+I really appreciate people to make Sinon.PY better, easier to work with.
 
 Indices and tables
 ==================
@@ -28,3 +42,4 @@ Indices and tables
 * :ref:`search`
 
 .. _Sinon.JS: http://sinonjs.org/
+.. _Github: https://github.com/note35/sinon/issues
