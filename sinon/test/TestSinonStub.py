@@ -222,3 +222,9 @@ class TestSinonBase(unittest.TestCase):
         stub.withArgs("pwd").returns("customized result")
         self.assertEqual(os.system("pwd"), "customized result")
         self.assertFalse(os.system())
+
+    @sinontest
+    def test350_withArgs_empty_stub(self):
+        stub = SinonStub()
+        stub.withArgs(42).returns(1)
+        self.assertEqual(stub(42), 1)

@@ -120,7 +120,7 @@ class SinonBase(object):
         """
         self.pure_count = self.pure_count + 1
         if self.args_type == "PURE":
-            getattr(self.pure, "func")(*args, **kwargs)
+            return getattr(self.pure, "func")(*args, **kwargs)
 
     def __set_type(self, obj, prop):
         """
