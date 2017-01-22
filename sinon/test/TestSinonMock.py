@@ -264,6 +264,16 @@ class TestSinonMockExpectation(unittest.TestCase):
         self.assertTrue(expectation.verify())
 
     @sinontest
+    def test030_withArgs_args_module(self):
+        # Todo: source code use a dirty to pass this case, it should be fixed in the future
+        mock = SinonMock(os)
+        expectation = mock.expects("getenv")
+        expectation.withArgs("SHELL")
+        self.assertFalse(expectation.verify())
+        os.getenv("SHELL")
+        self.assertTrue(expectation.verify())
+
+    @sinontest
     def test040_withExactArgs_args(self):
         # Todo: source code use a dirty to pass this case, it should be fixed in the future
         mock = SinonMock(ForTestOnly)

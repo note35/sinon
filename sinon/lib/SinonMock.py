@@ -33,11 +33,14 @@ class SinonExpectation(SinonStub):
         When using mock, the first argument of inspectors' args will be itself
         For passing testcases, it should be ignore
         """
-        new_args_list = []
-        for item in self._args_list():
-            new_args_list.append(item[1:])
-        self._set_args_list(new_args_list)
-
+        if len(self._args_list()) > 0:
+            new_args_list = []
+            for item in self._args_list():
+                if self.obj == item[0].__class__:
+                    new_args_list.append(item[1:])
+                else:
+                    new_args_list.append(item[:])
+            self._set_args_list(new_args_list)
 
     def atLeast(self, number): #pylint: disable=invalid-name
         """
