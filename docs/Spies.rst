@@ -72,6 +72,8 @@ Creating spies: sinon.spy()
 
     Creates a spy for object.method and wraps the original method. The spy acts exactly like the original method in all cases. The original method can be restored by calling :ref:`restore-label`. The returned spy is the function object which replaced the original method.
 
+.. _spy-api-label:
+
 Spy API
 -------
 
@@ -283,7 +285,7 @@ Returns true if spy was called with matching arguments (and possibly others). Th
     spy = sinon.spy(os, "system")
     os.system("pwd")
     assert spy.calledWithMatch(str)
-    assert spy.calledWithMatch(sinon.match(str))
+    assert spy.calledWith(sinon.match(str))
 
 **spy.alwaysCalledWithMatch(\*args, \*\*kwargs)**
 
