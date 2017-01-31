@@ -99,9 +99,9 @@ class Matcher(object):
         Comparing target and expectation of Matcher
         Args:
             Anything (target)
-            Boolead (checked or not, default is not)
+            Boolean (checked or not, default is not)
         Return:
-            Boolead (Return of __matcher_test -> __get_match_result)
+            Boolean (Return of __matcher_test -> __get_match_result)
         """
         return self.__matcher_test(target, checked)
 
