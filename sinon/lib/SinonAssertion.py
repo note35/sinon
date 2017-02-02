@@ -24,15 +24,6 @@ class SinonAssertion(object):
             ErrorHandler.is_not_spy_error(spy)
 
     @classmethod
-    def __is_satisfied(cls, condition):
-        """
-        checking if condition is be satisfied
-        Raised: customized exception
-        """
-        if not condition:
-            raise cls.failException(cls.message)
-
-    @classmethod
     def fail(cls, message):
         """
         Defining fail message of assertion
@@ -48,7 +39,8 @@ class SinonAssertion(object):
         Args: SinonSpy
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(not spy.called)
+        if not (not spy.called):
+            raise cls.failException(cls.message)
 
     @classmethod
     def called(cls, spy):
@@ -57,7 +49,8 @@ class SinonAssertion(object):
         Args: SinonSpy
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.called)
+        if not (spy.called):
+            raise cls.failException(cls.message)
 
     @classmethod
     def calledOnce(cls, spy): #pylint: disable=invalid-name
@@ -66,7 +59,8 @@ class SinonAssertion(object):
         Args: SinonSpy
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledOnce)
+        if not (spy.calledOnce):
+            raise cls.failException(cls.message)
 
     @classmethod
     def calledTwice(cls, spy): #pylint: disable=invalid-name
@@ -75,7 +69,8 @@ class SinonAssertion(object):
         Args: SinonSpy
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledTwice)
+        if not (spy.calledTwice):
+            raise cls.failException(cls.message)
 
     @classmethod
     def calledThrice(cls, spy): #pylint: disable=invalid-name
@@ -84,7 +79,8 @@ class SinonAssertion(object):
         Args: SinonSpy
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledThrice)
+        if not (spy.calledThrice):
+            raise cls.failException(cls.message)
 
     @classmethod
     def callCount(cls, spy, number): #pylint: disable=invalid-name
@@ -93,7 +89,8 @@ class SinonAssertion(object):
         Args: SinonSpy, number
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.callCount == number)
+        if not (spy.callCount == number):
+            raise cls.failException(cls.message)
 
     @classmethod
     def callOrder(cls, *args): #pylint: disable=invalid-name
@@ -108,9 +105,11 @@ class SinonAssertion(object):
             cls.__is_spy(spy)
         for idx, val in enumerate(args):
             if val != args[0]:
-                cls.__is_satisfied(val.calledAfter(args[idx-1]))
+                if not (val.calledAfter(args[idx-1])):
+                    raise cls.failException(cls.message)
             if val != args[-1]:
-                cls.__is_satisfied(val.calledBefore(args[idx+1]))
+                if not (val.calledBefore(args[idx+1])):
+                    raise cls.failException(cls.message)
 
     @classmethod
     def calledWith(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -119,7 +118,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledWith(*args, **kwargs))
+        if not (spy.calledWith(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def alwaysCalledWith(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -128,7 +128,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.alwaysCalledWith(*args, **kwargs))
+        if not (spy.alwaysCalledWith(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def neverCalledWith(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -137,7 +138,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.neverCalledWith(*args, **kwargs))
+        if not (spy.neverCalledWith(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def calledWithExactly(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -146,7 +148,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledWithExactly(*args, **kwargs))
+        if not (spy.calledWithExactly(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def alwaysCalledWithExactly(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -155,7 +158,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.alwaysCalledWithExactly(*args, **kwargs))
+        if not (spy.alwaysCalledWithExactly(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def calledWithMatch(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -164,7 +168,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.calledWithMatch(*args, **kwargs))
+        if not (spy.calledWithMatch(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def alwaysCalledWithMatch(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -173,7 +178,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.alwaysCalledWithMatch(*args, **kwargs))
+        if not (spy.alwaysCalledWithMatch(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def neverCalledWithMatch(cls, spy, *args, **kwargs): #pylint: disable=invalid-name
@@ -182,7 +188,8 @@ class SinonAssertion(object):
         Args: SinonSpy, args/kwargs
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.neverCalledWithMatch(*args, **kwargs))
+        if not (spy.neverCalledWithMatch(*args, **kwargs)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def threw(cls, spy, error_type=None):
@@ -191,7 +198,8 @@ class SinonAssertion(object):
         Args: SinonSpy, Exception (defaut: None)
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.threw(error_type))
+        if not (spy.threw(error_type)):
+            raise cls.failException(cls.message)
 
     @classmethod
     def alwaysThrew(cls, spy, error_type=None): #pylint: disable=invalid-name
@@ -200,4 +208,5 @@ class SinonAssertion(object):
         Args: SinonSpy, Exception (defaut: None)
         """
         cls.__is_spy(spy)
-        cls.__is_satisfied(spy.alwaysThrew(error_type))
+        if not (spy.alwaysThrew(error_type)):
+            raise cls.failException(cls.message)
