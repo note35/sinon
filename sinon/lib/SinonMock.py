@@ -26,22 +26,6 @@ class SinonExpectation(SinonStub):
         super(SinonExpectation, self).__init__(obj, prop)
         self.valid_list = []
 
-    def __remove_args_first_item(self):
-        """
-        # Todo: figure the root cause
-        This is a dirty solution
-        When using mock, the first argument of inspectors' args will be itself
-        For passing testcases, it should be ignore
-        """
-        if len(self._args_list()) > 0:
-            new_args_list = []
-            for item in self._args_list():
-                if self.obj == item[0].__class__:
-                    new_args_list.append(item[1:])
-                else:
-                    new_args_list.append(item[:])
-            self._set_args_list(new_args_list)
-
     def atLeast(self, number): #pylint: disable=invalid-name
         """
         Inspected function should be called at least number times.
@@ -122,7 +106,6 @@ class SinonExpectation(SinonStub):
         Return: self
         """
         def check(): #pylint: disable=missing-docstring
-            self.__remove_args_first_item()
             return super(SinonExpectation, self).calledWith(*args, **kwargs)
         self.valid_list.append(check)
         return self
@@ -134,7 +117,6 @@ class SinonExpectation(SinonStub):
         Return: self
         """
         def check(): #pylint: disable=missing-docstring
-            self.__remove_args_first_item()
             return super(SinonExpectation, self).calledWithExactly(*args, **kwargs)
         self.valid_list.append(check)
         return self

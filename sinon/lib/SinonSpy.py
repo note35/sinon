@@ -47,6 +47,22 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         return arg
 
+    def __remove_args_first_item(self):
+        """
+        # Todo: finding a better solution
+        This is a dirty solution
+        Because the first argument of inspectors' args will be itself
+        For current implementation, it should be ignore
+        """
+        if len(self._args_list()) > 0:
+            new_args_list = []
+            for item in self._args_list():
+                if self.obj == item[0].__class__:
+                    new_args_list.append(item[1:])
+                else:
+                    new_args_list.append(item[:])
+            self._set_args_list(new_args_list)
+
     def _set_args_list(self, new_args_list):
         """
         For solving special case of mock
@@ -241,6 +257,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             spy.alwaysCalledWith(1, 2, 3) will return True, because they are fully matched
         Return: Boolean
         """
+        self.__remove_args_first_item()
         if args and kwargs:
             return True if (uch.tuple_in_list(self._args_list(), args) and
                             uch.dict_in_list(self._kwargs_list(), kwargs)) else False
@@ -261,6 +278,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
             spy.alwaysCalledWith(1, 2, 4) will return False, because they are not fully matched
         Return: Boolean
         """
+        self.__remove_args_first_item()
         if args and kwargs:
             return True if (uch.tuple_in_list_always(self._args_list(), args) and
                             uch.dict_in_list_always(self._kwargs_list(), kwargs)) else False
@@ -298,6 +316,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
                 spy.calledWithMatch(1,2,c=6) is valid,
                     because spy.calledWithMatch(1,2) and spy.calledWithMatch(c=6) are valid
         """
+        self.__remove_args_first_item()
         if args and kwargs:
             return (uch.tuple_partial_cmp(args, self._args_list(), self.__get_func) and
                     uch.dict_partial_cmp(kwargs, self._kwargs_list(), self.__get_func))
@@ -315,6 +334,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Handle each arg/kwarg as a SinonMatcher
         Return: Boolean
         """
+        self.__remove_args_first_item()
         alist, klist, gfunc = self._args_list(), self._kwargs_list(), self.__get_func
         if args and kwargs:
             return (uch.tuple_partial_cmp_always(args, alist, gfunc) and
