@@ -1,10 +1,5 @@
-Test spies
-==========
-
-*Note*
-
-    This document is partially referenced from Sinon.JS. However, most usages and API are redesigned.
-
+Spies
+=====
 
 What is a test spy?
 -------------------
@@ -14,7 +9,9 @@ A test spy is a function that records arguments, return value, the value of this
 When to use spies?
 ------------------
 
-Test spies are useful to test both callbacks and how certain functions/methods are used throughout the system under test. The following simplified example shows how to use spies to test how a function handles a callback:
+Test spies are useful to test both callbacks and how certain functions/methods are used throughout the system under test.
+
+**Example1: use spies to test how a function handles a callback**
 
 .. code-block:: python
 
@@ -34,8 +31,7 @@ Test spies are useful to test both callbacks and how certain functions/methods a
     if __name__ == "__main__":
         test_handle_empty_spy()
 
-Spying on existing methods
---------------------------
+**Example2: Spying on existing methods**
 
 .. code-block:: python
 
@@ -64,11 +60,7 @@ Creating spies: sinon.spy()
 
     *Note:* If there is a function declare in the same scope of unittest file, you should use :ref:`scope-label`. You can read the reason from :ref:`scope-reason-label`
 
-**spy = sinon.spy(class, "method")**
-
-**spy = sinon.spy(instance, "method")**
-
-**spy = sinon.spy(module, "method")**
+**spy = sinon.spy(class|instance|module, "method")**
 
     Creates a spy for object.method and wraps the original method. The spy acts exactly like the original method in all cases. The original method can be restored by calling :ref:`restore-label`. The returned spy is the function object which replaced the original method.
 

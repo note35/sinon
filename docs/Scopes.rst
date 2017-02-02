@@ -34,14 +34,17 @@ In this case, a_function_of_test is not wrapped successfully. Because the scope 
 
 .. _scope-label:
 
-sinon.init(scope)
------------------
+
+Scope API
+---------
+
+**sinon.init(scope)**
 
 For getting a inspectable scope, passing globals()/locals() as an argument into .init()
 
 For inspecting the function, using the return scope to call the inspected function instead of calling original function directly.
 
-**Example: globals()**
+**Example1: globals()**
 
 .. code-block:: python
 
@@ -59,7 +62,7 @@ For inspecting the function, using the return scope to call the inspected functi
 
     test_func()
 
-**Example: locals()**
+**Example2: locals()**
 
 .. code-block:: python
 

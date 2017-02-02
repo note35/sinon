@@ -4,13 +4,13 @@ Setup
 Installation
 ------------
 
-You can get lastest Sinon.PY from pypi:
+1. Get the stable Sinon.PY from pypi:
 
 .. code-block:: shell
 
     $ pip install sinon
 
-Install manually:
+2. Install latest version manually:
 
 .. code-block:: shell
 
@@ -18,8 +18,7 @@ Install manually:
     $ cd sinon/
     $ python setup.py install
 
-Since Sinon.PY is a library for unittest, It would be good if using virtualenv
-in development environment by following command below:
+3. With venv, since Sinon.PY is a library for unittest, It would be good if using virtualenv in development environment by following command below:
 
 .. code-block:: shell
 

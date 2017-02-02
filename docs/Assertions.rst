@@ -9,8 +9,8 @@ The assertions can be used with either spies or stubs.
 
 .. _assertion-api-label:
 
-Assertions API
---------------
+Assertion API
+-------------
 
 **sinon.assertion.fail(message)**
 

@@ -1,5 +1,5 @@
-Test stubs
-==========
+Stubs
+=====
 
 What are stubs?
 ---------------
@@ -16,11 +16,6 @@ Use a stub when you want to:
 1. Control a method’s behavior from a test to force the code down a specific path. Examples include forcing a method to throw an error in order to test error handling.
 
 2. When you want to prevent a specific method from being called directly (possibly because it triggers undesired behavior).
-
-Defining stub behavior on consecutive calls
--------------------------------------------
-
-Calling behavior defining methods like returns or throws multiple times overrides the behavior of the stub. You can use the onCall method to make a stub respond differently on consecutive calls.
 
 Creating stubs: sinon.stub()
 ----------------------------
@@ -51,6 +46,10 @@ Creating stubs: sinon.stub()
 
 Stub API
 --------
+
+*Defining stub behavior on consecutive calls*
+
+    Calling behavior defining methods like returns or throws multiple times overrides the behavior of the stub. You can use the onCall method to make a stub respond differently on consecutive calls.
 
 **stub.withArgs(\*args, \*\*kwargs)**
 

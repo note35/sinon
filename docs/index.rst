@@ -6,23 +6,20 @@
 Sinon.PY
 ========
 
-Sinon.PY is inspired by `Sinon.JS`_.
+**Note**: This document is partially referenced from Sinon.JS. However, most usages and API are redesigned.
 
-Standalone test spies, stubs and mocks for Python.
-No dependencies, works with any unit testing framework.
+Sinon.PY is inspired by `Sinon.JS`_. Standalone test spies, stubs and mocks for Python. No dependencies, works with any unit testing framework.
 
 Overview
 ========
 
-This document contains the entire Sinon.PY API documentation along with brief
-introductions and examples to the concepts Sinon implements.
+This document contains the entire Sinon.PY API documentation along with brief introductions and examples to the concepts Sinon implements.
 
 Contents
 ========
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    Setup
    Spies
@@ -39,13 +36,6 @@ New Ideas & Issues
 
 Please send any defects, issues, feature requests to the `Github`_.
 I really appreciate people to make Sinon.PY better, easier to work with.
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. _Sinon.JS: http://sinonjs.org/
 .. _Github: https://github.com/note35/sinon/issues
