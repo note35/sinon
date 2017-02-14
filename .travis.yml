@@ -18,6 +18,9 @@ script:
   - python -m doctest lib/util/CollectionHandler.py
   - cd test
   - python -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock TestSinonAssertion TestSinonMatcher
+  - cd ../../example/restful_flask_example_with_sinon/
+  - pip install -r requirement.txt
+  - python test.py
 after_success:
   - coverage run --source=../lib/ -m unittest TestSinonBase TestSinonSpy TestSinonStub TestSinonSandbox TestSinonMock TestSinonAssertion TestSinonMatcher
   - coverage report -m

@@ -1,3 +1,6 @@
+# db
+*.db
+
 # vim swp
 *.swp
 
