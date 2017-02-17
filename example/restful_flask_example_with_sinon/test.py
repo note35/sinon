@@ -220,4 +220,7 @@ class FlaskrTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # Only run test if python version == 3.x:
+    import sys
+    if sys.version_info[0] == 3:
+        unittest.main()

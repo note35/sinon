@@ -56,7 +56,9 @@ Mock API
 Expectations API
 ----------------
 
-All the expectation methods return the expectation, meaning you can chain them. Typical usage:
+(1) The constructor of expectation is as same as Spy and Stub.
+
+(2) All the expectation methods return the expectation, meaning you can chain them. Typical usage is below.
 
 .. code-block:: python
 
@@ -65,6 +67,7 @@ All the expectation methods return the expectation, meaning you can chain them. 
     assert not mock.verify()
     os.system("ls")
     assert mock.verify()
+
 
 **expectation.atLeast(number)**
 

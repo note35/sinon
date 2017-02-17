@@ -42,6 +42,8 @@ Creating stubs: sinon.stub()
 
     Creates a stub for object.method and wraps the original method. The stub acts exactly an provided func in all cases. The original method can be restored by calling :ref:`restore-label`. The returned stub is the function object which replaced the original method.
 
+    Because in python2, if im_self is empty, the unbound function will not have fixed id, thus **class is only supported by python3**.
+
 .. _stub-api-label:
 
 Stub API

@@ -64,6 +64,8 @@ Creating spies: sinon.spy()
 
     Creates a spy for object.method and wraps the original method. The spy acts exactly like the original method in all cases. The original method can be restored by calling :ref:`restore-label`. The returned spy is the function object which replaced the original method.
 
+    Because in python2, if im_self is empty, the unbound function will not have fixed id, thus **class is only supported by python3**.
+
 .. _spy-api-label:
 
 Spy API
