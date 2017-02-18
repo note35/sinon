@@ -1,3 +1,5 @@
+.. image:: https://readthedocs.org/projects/sinon/badge/?version=master
+    :target: https://sinon.readthedocs.io
 .. image:: https://badge.fury.io/py/sinon.svg
     :target: https://badge.fury.io/py/sinon
 .. image:: https://travis-ci.org/note35/sinon.svg?branch=dev
@@ -5,6 +7,10 @@
     :target: https://travis-ci.org/note35/sinon
 .. image:: https://coveralls.io/repos/github/note35/sinon/badge.svg
     :target: https://coveralls.io/github/note35/sinon
+.. image:: https://img.shields.io/github/downloads/note35/sinon/total.svg
+.. image:: https://img.shields.io/pypi/pyversions/sinon.svg
+.. image:: https://img.shields.io/pypi/status/sinon.svg
+.. image:: https://img.shields.io/badge/style-pylint-green.svg
 
 Status
 ------
@@ -14,7 +20,7 @@ Status
 :Source: https://github.com/note35/sinon
 :Keywords: python, unittest, spy, stub, mock, sandbox, unittest2, pytest, sinon, doctest
 
-Document
---------
+Documentation
+-------------
 
 Please click `here <http://sinon.readthedocs.io/>`_ to read the documentation
