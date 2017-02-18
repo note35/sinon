@@ -9,7 +9,7 @@
 Status
 ------
 
-:Version: 0.0.5
+:Version: 0.1.0
 :Download: http://pypi.python.org/pypi/sinon
 :Source: https://github.com/note35/sinon
 :Keywords: python, unittest, spy, stub, mock, sandbox, unittest2, pytest, sinon, doctest

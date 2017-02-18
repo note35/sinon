@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
   name = 'sinon',
-  version = '0.0.5',
+  version = '0.1.0',
   author = 'Kir Chou',
   author_email = 'note351@hotmail.com',
   packages = ['sinon', 'sinon.lib', 'sinon.lib.util'],
@@ -13,10 +13,10 @@ setup(
   license='LICENSE.txt',
   description = 'Standalone and test framework agnostic Python test spies, stubs and mocks (pronounced "sigh-non"). ',
   long_description=open('README.rst').read(),
-  download_url = 'https://github.com/note35/sinon/archive/dev.zip',
+  download_url = 'https://github.com/note35/sinon/archive/master.zip',
   keywords = ['unittest', 'spy', 'stub', 'mock', 'unittest2', 'pytest', 'sinon'], 
   classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: BSD License",
     "Intended Audience :: Developers",
     "Operating System :: POSIX",
