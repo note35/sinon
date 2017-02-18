@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
   name = 'sinon',
-  version = '0.1.0',
+  version = '0.1.1',
   author = 'Kir Chou',
   author_email = 'note351@hotmail.com',
   packages = ['sinon', 'sinon.lib', 'sinon.lib.util'],

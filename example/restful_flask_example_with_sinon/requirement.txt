@@ -10,6 +10,6 @@ packaging==16.8
 pyparsing==2.1.10
 python-dateutil==2.6.0
 pytz==2016.10
-sinon==0.1.0
+sinon==0.1.1
 six==1.10.0
 Werkzeug==0.11.15
