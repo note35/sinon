@@ -1,16 +1,21 @@
-.. image:: https://readthedocs.org/projects/sinon/badge/?version=master
+Sinon.PY
+========
+
+|Documentation| |Version| |Build| |Coverage| |Downloads| |Support| |Status| |Style|
+
+.. |Documentation| image:: https://readthedocs.org/projects/sinon/badge/?version=master
     :target: https://sinon.readthedocs.io
-.. image:: https://badge.fury.io/py/sinon.svg
+.. |Version| image:: https://badge.fury.io/py/sinon.svg
     :target: https://badge.fury.io/py/sinon
-.. image:: https://travis-ci.org/note35/sinon.svg?branch=dev
+.. |Build| image:: https://travis-ci.org/note35/sinon.svg?branch=dev
     :alt: dev-branch-ci-status
     :target: https://travis-ci.org/note35/sinon
-.. image:: https://coveralls.io/repos/github/note35/sinon/badge.svg
+.. |Coverage| image:: https://coveralls.io/repos/github/note35/sinon/badge.svg
     :target: https://coveralls.io/github/note35/sinon
-.. image:: https://img.shields.io/github/downloads/note35/sinon/total.svg
-.. image:: https://img.shields.io/pypi/pyversions/sinon.svg
-.. image:: https://img.shields.io/pypi/status/sinon.svg
-.. image:: https://img.shields.io/badge/style-pylint-green.svg
+.. |Downloads| image:: https://img.shields.io/github/downloads/note35/sinon/total.svg
+.. |Support| image:: https://img.shields.io/pypi/pyversions/sinon.svg
+.. |Status| image:: https://img.shields.io/pypi/status/sinon.svg
+.. |Style| image:: https://img.shields.io/badge/style-pylint-green.svg
 
 Status
 ------
