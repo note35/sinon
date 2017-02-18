@@ -49,7 +49,7 @@ Mock API
 
 **mock.verify()**
 
-    Verifies all expectations on the mock. If any expectation is not satisfied, an exception is thrown. Also restores the mocked methods.
+    Verifies all expectations on the mock. If any expectation is not satisfied, it will return false.
 
 .. _expectation-label:
 
@@ -166,7 +166,7 @@ Restores current mocked method
 
 **expectation.verify()**
 
-Verifies the expectation and throws an exception if it’s not met.
+Verifies the expectation and returns false if it’s not met.
 
 .. code-block:: python
 
