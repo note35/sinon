@@ -6,7 +6,7 @@ import weakref
 import inspect
 from types import ModuleType, FunctionType
 
-from .SinonStub import SinonStub
+from .stub import SinonStub
 from .util import ErrorHandler
 
 class SinonExpectation(SinonStub):

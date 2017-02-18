@@ -2,10 +2,10 @@ import sys
 sys.path.insert(0, '../')
 
 import unittest
-import lib.SinonBase as sinon
-from lib.SinonMatcher import SinonMatcher
-from lib.SinonSpy import SinonSpy
-from lib.SinonStub import SinonStub
+import lib.base as sinon
+from lib.matcher import SinonMatcher
+from lib.spy import SinonSpy
+from lib.stub import SinonStub
 
 """
 ======================================================

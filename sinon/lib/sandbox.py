@@ -2,7 +2,7 @@
 Copyright (c) 2016-2017, Kir Chou
 https://github.com/note35/sinon/blob/master/LICENSE
 '''
-from .SinonBase import SinonBase
+from .base import SinonBase
 
 def __clear_assertion_message(obj):
     """

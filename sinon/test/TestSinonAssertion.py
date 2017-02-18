@@ -2,12 +2,12 @@ import sys
 sys.path.insert(0, '../')
 
 import unittest
-import lib.SinonBase as sinon
-from lib.SinonAssertion import SinonAssertion
-from lib.SinonSpy import SinonSpy
-from lib.SinonStub import SinonStub
-from lib.SinonMock import SinonMock
-from lib.SinonSandbox import sinontest
+import lib.base as sinon
+from lib.assertion import SinonAssertion
+from lib.spy import SinonSpy
+from lib.stub import SinonStub
+from lib.mock import SinonMock
+from lib.sandbox import sinontest
 
 """
 ======================================================

@@ -3,7 +3,7 @@ Copyright (c) 2016-2017, Kir Chou
 https://github.com/note35/sinon/blob/master/LICENSE
 """
 from .util import ErrorHandler
-from .SinonSpy import SinonSpy
+from .spy import SinonSpy
 
 class SinonAssertion(object):
     """

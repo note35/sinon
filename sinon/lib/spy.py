@@ -4,8 +4,8 @@ https://github.com/note35/sinon/blob/master/LICENSE
 '''
 from .util import ErrorHandler, Wrapper
 from .util import CollectionHandler as uch
-from .SinonBase import SinonBase
-from .SinonMatcher import SinonMatcher, Matcher
+from .base import SinonBase
+from .matcher import SinonMatcher, Matcher
 
 class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
     """

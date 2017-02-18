@@ -1,9 +1,9 @@
-from .lib import SinonBase, SinonSpy, SinonStub, SinonMock, SinonSandbox, SinonAssertion, SinonMatcher 
+from .lib import base, spy, stub, mock, sandbox, assertion, matcher 
 
-init = SinonBase.init
-test = SinonSandbox.sinontest
-stub = SinonStub.SinonStub
-spy = SinonSpy.SinonSpy
-mock = SinonMock.SinonMock
-assertion = SinonAssertion.SinonAssertion
-match = SinonMatcher.SinonMatcher
+init = base.init
+test = sandbox.sinontest
+stub = stub.SinonStub
+spy = spy.SinonSpy
+mock = mock.SinonMock
+assertion = assertion.SinonAssertion
+match = matcher.SinonMatcher
