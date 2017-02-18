@@ -1,7 +1,9 @@
 Sinon.PY
 ========
 
-|Documentation| |Version| |Build| |Coverage| |Downloads| |Support| |Status| |Style|
+|Documentation| |Build| |Coverage| |Style|
+
+|Version| |Downloads| |Support| |Status|
 
 .. |Documentation| image:: https://readthedocs.org/projects/sinon/badge/?version=master
     :target: https://sinon.readthedocs.io
