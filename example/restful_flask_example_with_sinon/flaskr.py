@@ -5,8 +5,7 @@ https://github.com/note35/sinon/blob/master/LICENSE
 This is an example flask_restful application, which is adapted by that official document
 """
 
-import sqlite3
-from flask import Flask, g, jsonify
+from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 
 from utils.absdb import TodoModel
@@ -53,7 +52,7 @@ class Todo(Resource):
 
     def put(self, todo_id):
         args = parser.parse_args()
-        r = tmodel.put_todo(todo_id, args["name"], args["content"])
+        tmodel.put_todo(todo_id, args["name"], args["content"])
         return args, 201
 
 

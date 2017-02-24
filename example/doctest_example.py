@@ -1,7 +1,10 @@
+"""
+Copyright (c) 2016-2017, Kir Chou
+https://github.com/note35/sinon/blob/master/LICENSE
+"""
 import sys
 sys.path.insert(0, '../')
 
-import unittest
 import sinon
 from TestClass import ForTestOnly
 

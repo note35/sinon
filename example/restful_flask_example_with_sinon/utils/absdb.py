@@ -6,7 +6,7 @@ This is a simple model for example flask_restful application
 """
 
 import sqlite3
-from flask import current_app, g
+from flask import current_app
 
 
 class TodoModel(object):
@@ -17,7 +17,7 @@ class TodoModel(object):
     def open_connection(self):
         self.db = sqlite3.connect(current_app.config["DATABASE"])
 
-    def close_connection(self, exception):
+    def close_connection(self):
         if hasattr(self, "db"):
             self.db.close()
 
@@ -26,6 +26,7 @@ class TodoModel(object):
         try:
             self.db.cursor().execute("DROP TABLE main.Tasks")
         except:
+            # table is not exist.
             pass
         self.db.cursor().execute("CREATE TABLE IF NOT EXISTS main.Tasks(ID integer PRIMARY KEY AUTOINCREMENT, Name varchar(255), Content varchar(255));")
         self.db.cursor().execute("INSERT INTO main.Tasks(ID, Name, Content) VALUES (1, 'todo1', 'build an API');")
@@ -49,7 +50,7 @@ class TodoModel(object):
     def del_todo(self, todoid):
         self.open_connection()
         todoid_str = str(todoid)
-        r = self.db.cursor().execute("DELETE FROM main.Tasks WHERE ID=?;", (todoid_str))
+        self.db.cursor().execute("DELETE FROM main.Tasks WHERE ID=?;", (todoid_str))
         self.db.commit()
 
     def put_todo(self, todoid, name, content):
