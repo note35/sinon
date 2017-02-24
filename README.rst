@@ -1,20 +1,20 @@
 Sinon.PY
 ========
 
-|Documentation| |Build| |Coverage| |Style|
-
-|Version| |Downloads| |Support| |Status|
+|Documentation| |Build| |Coverage| |Healthy| |Style| |Version| |Support| |Status|
 
 .. |Documentation| image:: https://readthedocs.org/projects/sinon/badge/?version=master
     :target: https://sinon.readthedocs.io
 .. |Version| image:: https://badge.fury.io/py/sinon.svg
     :target: https://badge.fury.io/py/sinon
-.. |Build| image:: https://travis-ci.org/note35/sinon.svg?branch=dev
-    :alt: dev-branch-ci-status
+.. |Build| image:: https://travis-ci.org/note35/sinon.svg?branch=master
+    :alt: master-branch-ci-status
     :target: https://travis-ci.org/note35/sinon
 .. |Coverage| image:: https://coveralls.io/repos/github/note35/sinon/badge.svg
     :target: https://coveralls.io/github/note35/sinon
-.. |Downloads| image:: https://img.shields.io/github/downloads/note35/sinon/total.svg
+.. |Healthy| image:: https://landscape.io/github/note35/sinon/dev/landscape.svg?style=flat
+    :target: https://landscape.io/github/note35/sinon/dev
+    :alt: Code Health
 .. |Support| image:: https://img.shields.io/pypi/pyversions/sinon.svg
 .. |Status| image:: https://img.shields.io/pypi/status/sinon.svg
 .. |Style| image:: https://img.shields.io/badge/style-pylint-green.svg
@@ -31,3 +31,8 @@ Documentation
 -------------
 
 Please click `here <http://sinon.readthedocs.io/>`_ to read the documentation
+
+Previous Discussion
+-------------------
+
+Reddit(r/Python): `Sinon.PY, another mocking library inspired by Sinon.JS <https://redd.it/5v9rou>`_
