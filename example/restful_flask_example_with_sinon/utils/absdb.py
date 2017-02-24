@@ -17,7 +17,7 @@ class TodoModel(object):
     def open_connection(self):
         self.db = sqlite3.connect(current_app.config["DATABASE"])
 
-    def close_connection(self):
+    def close_connection(self, exception):
         if hasattr(self, "db"):
             self.db.close()
 
