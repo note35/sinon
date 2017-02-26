@@ -6,7 +6,7 @@ Scopes
 Why should use scope?
 ---------------------
 
-In a general unittest, the test function will import other class or module and test them. However, there are some exceptional possibilities for testing functions in the same module/class/function level.
+In a general unittest, the test function will import other classes or modules and test them. However, there are some exceptional possibilities for testing functions in the same module/class/function level.
 
 **For example**
 

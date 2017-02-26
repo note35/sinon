@@ -18,7 +18,7 @@ Installation
     $ cd sinon/
     $ python setup.py install
 
-3. With venv, since Sinon.PY is a library for unittest, It would be good if using virtualenv in development environment by following command below:
+3. With venv, since Sinon.PY is a library for unittest, It would be best if virtualenv is used in the development platform by following the command below:
 
 .. code-block:: shell
 

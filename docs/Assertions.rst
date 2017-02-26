@@ -14,7 +14,7 @@ Assertion API
 
 **sinon.assertion.fail(message)**
 
-Setting error message when assert failed, by default the error message is empty.
+Setting error message when assert fails, by default the error message is empty.
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ Setting error message when assert failed, by default the error message is empty.
 
 **sinon.assertion.failException**
 
-The exception when assert failed, by default the exception is "AssertError".
+The exception when assert fails, by default the exception is "AssertError".
 
 .. code-block:: python
 
@@ -86,7 +86,7 @@ Passes if the spy was called exactly num times.
 
 **sinon.assertion.callOrder(spy1, spy2, ...)**
 
-Passes if the provided spies where called in the specified order.
+Passes if the provided spies were called in the specified order.
 
 .. code-block:: python
 

@@ -1,7 +1,7 @@
 Matchers
 ========
 
-Matchers allow to be either more fuzzy or more specific about the expected value. Matchers can be passed as arguments to spy.calledWith and the corresponding sinon.assert functions. *Generally, there is no need to use Matcher directly.*
+Matchers allow the parameter to be either more vague or more specific about the expected value. Matchers can be passed as arguments to spy.called with the corresponding sinon.assert functions. *Generally, there is no need to use Matcher directly.*
 
 => stub.withArgs, spy.returned is not supported
 
@@ -43,7 +43,7 @@ See :ref:`custom-matcher-label`.
 
 **sinon.match(ref)**
 
-For anything not belongs to above, the argument will be processed as a value (usually, using sinon.match.same to compare).
+For anything that does not belong to the above, the argument will be processed as a value (usually, using sinon.match.same to compare).
 
 .. code-block:: python
 
@@ -140,7 +140,7 @@ Requires the value to be an instance of the given instance.
 Combining matchers
 ------------------
 
-All matchers implement `and` and `or`. This allows to logically combine two matchers. The result is a new matchers that requires both (and) or one of the matchers (or) to return true.
+All matchers implement `and` and `or`. This allows to logically combine two matchers. The result is a new matcher that requires both (and) or one of the matchers (or) to return true.
 
 **and_match(another_matcher)**
 

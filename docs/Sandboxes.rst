@@ -35,7 +35,7 @@ Sandbox API
 
 **decorator: sinon.test**
 
-Using restore in the end of each testcase makes code size huge. For solving this problem, sandbox is a good solution. Below is a fully example about using sandbox of Sinon.PY. In this example, there is no need to call .restore() anymore, sinon.test will automatically clean all inspectors in each test cases.
+Using restore in the end of each testcase makes code size huge. For solving this problem, sandbox is a good solution. Below is an example using sandbox of Sinon.PY. In this example, there is no need to call .restore() anymore, sinon.test will automatically clean all inspectors in each test cases.
 
 .. code-block:: python 
 

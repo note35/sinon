@@ -32,7 +32,7 @@ Creating stubs: sinon.stub()
 
     Stubs on the provided function
 
-    *Note:* If there is a function declare in the same scope of unittest file, you should use :ref:`scope-label`. You can read the reason from :ref:`scope-reason-label`
+    *Note:* If there is a function declared in the same scope of unittest file, you should use :ref:`scope-label`. You can read the reason from :ref:`scope-reason-label`
 
 **stub = sinon.stub(class/instance/module, "method")**
 

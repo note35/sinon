@@ -35,7 +35,7 @@ New Ideas & Issues
 ==================
 
 Please send any defects, issues, feature requests to the `Github`_.
-I really appreciate people to make Sinon.PY better, easier to work with.
+I would really appreciate it if people could work together to make Sinon.PY better, easier to work with.
 
 .. _Sinon.JS: http://sinonjs.org/
 .. _Github: https://github.com/note35/sinon/issues
