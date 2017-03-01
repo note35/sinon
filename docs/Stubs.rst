@@ -170,5 +170,5 @@ Empty Function
 
 .. code-block:: python
 
-    def empty_function(\*args, \*\*kwargs):
+    def empty_function(*args, **kwargs):
         pass

@@ -173,19 +173,6 @@ The third call
     os.system("pwd")
     assert spy.thirdCall
 
-**spy.thirdCall**
-
-The third call
-
-.. code-block:: python
-
-    spy = sinon.spy(os, "system")
-    spy2 = sinon.spy(os, "getcwd")
-    os.system("pwd")
-    os.getcwd()
-    os.system("pwd")
-    assert spy.thirdCall
-
 **spy.lastCall**
 
 The last call
