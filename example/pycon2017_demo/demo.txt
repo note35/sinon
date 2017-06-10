@@ -1,0 +1,20 @@
+>>> import sinon
+>>> import os
+>>>
+>>> spy_os_system = sinon.spy(os, "system")
+>>> spy_os_system.callCount
+0
+>>> os.system("a")
+sh: a: command not found
+32512
+>>> spy_os_system.callCount
+1
+>>> spy_os_system.restore()
+>>>
+>>> stub_os_system = sinon.stub(os, "system")
+>>> os.system("ls")
+>>> stub_os_system.returns("example")
+<sinon.lib.stub.SinonStub object at 0x10588ddd8>
+>>> os.system("ls")
+'example'
+>>> stub_os_system.restore()
