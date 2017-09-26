@@ -2,6 +2,11 @@
 Copyright (c) 2016-2017, Kir Chou
 https://github.com/note35/sinon/blob/master/LICENSE
 """
+import traceback
+import sys
+from .SpyCall import SpyCall
+
+# TODO: consider removing CALLQUEUE, since it can probably be replaced by Call.callId
 global CALLQUEUE #pylint: disable=global-at-module-level
 CALLQUEUE = []
 
@@ -62,17 +67,29 @@ def __add_spy(func):
         CALLQUEUE.append(wrapped)
         wrapped.args_list.append(args)
         wrapped.kwargs_list.append(kwargs)
+        
+        call = SpyCall()
+        call.args = args
+        call.kwargs = kwargs
+        call.callId = len(CALLQUEUE) - 1
+        call.stack = traceback.format_stack()
+        wrapped.call_list.append(call)
+        
         try:
             ret = func(*args, **kwargs)
             wrapped.ret_list.append(ret)
+            call.returnValue = ret
             return ret
-        except Exception as excpt:
+        except BaseException as excpt:
             # Todo: make sure e.__class__ is enough for all purpose or not
             wrapped.error_list.append(excpt.__class__)
+            call.exception = excpt
             return func(*args, **kwargs)
+
     wrapped.__set__ = __set__
     wrapped.callCount = 0
     wrapped.args_list = []
+    wrapped.call_list = []
     wrapped.kwargs_list = []
     wrapped.error_list = []
     wrapped.ret_list = []

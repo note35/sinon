@@ -6,6 +6,7 @@ from .util import ErrorHandler, Wrapper
 from .util import CollectionHandler as uch
 from .base import SinonBase
 from .matcher import SinonMatcher, Matcher
+import weakref
 
 class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
     """
@@ -68,77 +69,60 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         For solving special case of mock
         Args: List (new argument list)
         """
+        self.__get_wrapper().__set__("args_list", new_args_list)
+
+    def __get_wrapper(self):
+        """
+        Return:
+            Wrapper object
+        Raise:
+            Exception if wrapper object cannot be found
+        """
+        #TODO: consider to remove "PURE" condition
         if self.args_type == "MODULE_FUNCTION":
-            getattr(self.obj, self.prop).__set__("args_list", new_args_list)
+            return getattr(self.obj, self.prop)
         elif self.args_type == "FUNCTION":
-            getattr(self.g, self.obj.__name__).__set__("args_list", new_args_list)
+            return getattr(self.g, self.obj.__name__)
         elif self.args_type == "PURE":
-            getattr(self.pure, "func").__set__("args_list", new_args_list)
+            return getattr(self.pure, "func")
+        else:
+            ErrorHandler.wrapper_object_not_found_error()
 
     @property
     def args(self):
         """
         Return: List (arguments which are called)
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).args_list
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).args_list
-        elif self.args_type == "PURE":
-            return getattr(self.pure, "func").args_list
+        return self.__get_wrapper().args_list
 
     @property
     def kwargs(self):
         """
         Return: List (dictionary arguments which are called)
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).kwargs_list
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).kwargs_list
-        elif self.args_type == "PURE":
-            return getattr(self.pure, "func").kwargs_list
+        return self.__get_wrapper().kwargs_list
 
     @property
     def exceptions(self):
         """
         Return: List (exceptions which are happened)
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).error_list
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).error_list
-        elif self.args_type == "PURE": #TODO: consider to remove this condition
-            return getattr(self.pure, "func").error_list
+        return self.__get_wrapper().error_list
 
     @property
     def returnValues(self):
         """
         Return: List (returns which are happened)
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).ret_list
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).ret_list
-        elif self.args_type == "PURE": #TODO: consider to remove this condition
-            return getattr(self.pure, "func").ret_list
+        return self.__get_wrapper().ret_list
 
     def get_callqueue_idx(self):
         """
         Return: List (indexes of self in the CALLQUEUE of Wrapper)
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
-                    if val == getattr(self.obj, self.prop)]
-        elif self.args_type == "MODULE": #TODO: consider to remove this condition
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
-                    if val == self]
-        elif self.args_type == "FUNCTION":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
-                    if val == getattr(self.g, self.obj.__name__)]
-        elif self.args_type == "PURE":
-            return [idx for idx, val in enumerate(Wrapper.CALLQUEUE)
-                    if val == getattr(self.pure, "func")]
+        #TODO: consider to remove "MODULE" condition
+        wrapper = self.__get_wrapper() if self.args_type != "MODULE" else self
+        return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == wrapper]
 
     def withArgs(self, *args, **kwargs):
         """
@@ -152,14 +136,11 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Return:
             count of target function
         """
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop).callCount
-        elif self.args_type == "MODULE": #TODO: consider to remove this condition
+        #TODO: consider to remove "MODULE" condition
+        if self.args_type in ["MODULE", "PURE"]:
             return self.pure_count
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__).callCount
-        elif self.args_type == "PURE":
-            return self.pure_count
+        else:
+            return self.__get_wrapper().callCount
 
     @property
     def called(self): #pylint: disable=missing-docstring
@@ -409,3 +390,16 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         super(SinonSpy, self).unwrap()
         super(SinonSpy, self).wrap2spy()
+
+    def getCall(self, n): #pylint: disable=invalid-name
+        """
+        Args:
+            n: integer (index of function call)
+        Return:
+            SpyCall object
+        Raise:
+            IndexError if n is not a valid index
+        """
+        call = self.__get_wrapper().call_list[n]
+        call.proxy = weakref.proxy(self)
+        return call
