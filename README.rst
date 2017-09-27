@@ -1,6 +1,10 @@
 Sinon.PY
 ========
 
+.. image:: https://badges.gitter.im/sinonpy/Lobby.svg
+   :alt: Join the chat at https://gitter.im/sinonpy/Lobby
+   :target: https://gitter.im/sinonpy/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 |Documentation| |Build| |Coverage| |Healthy| |Style| |Version| |Support| |Status|
 
 .. |Documentation| image:: https://readthedocs.org/projects/sinon/badge/?version=master
