@@ -34,6 +34,10 @@ def D_func(err=False):
         raise err
     else:
         return "test_local_D_func"
+
+def E_func(*args, **kwargs):
+    return str(args) + ' ' + str(kwargs)
+
 """
 ======================================================
                  FOR TEST ONLY END
@@ -852,3 +856,15 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.neverCalledWithMatch("a", "e"))
         self.assertTrue(spy.neverCalledWithMatch("d", "e", "c")) #it's a combination
 
+    @sinontest
+    def test270_args_and_kwargs(self):
+        spy = SinonSpy(E_func)
+        sinon.g.E_func()
+        self.assertListEqual(spy.args, [()])
+        self.assertListEqual(spy.kwargs, [{}])
+        sinon.g.E_func(1, a=1)
+        self.assertListEqual(spy.args, [(), (1,)])
+        self.assertListEqual(spy.kwargs, [{}, {'a':1}])
+        sinon.g.E_func(1, 2, a=1, b=2)
+        self.assertListEqual(spy.args, [(), (1,), (1,2)])
+        self.assertListEqual(spy.kwargs, [{}, {'a':1}, {'a':1,'b':2}])

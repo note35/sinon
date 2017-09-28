@@ -60,10 +60,8 @@ def __add_spy(func):
         """
         wrapped.callCount += 1
         CALLQUEUE.append(wrapped)
-        if args:
-            wrapped.args_list.append(args)
-        if kwargs:
-            wrapped.kwargs_list.append(kwargs)
+        wrapped.args_list.append(args)
+        wrapped.kwargs_list.append(kwargs)
         try:
             ret = func(*args, **kwargs)
             wrapped.ret_list.append(ret)
