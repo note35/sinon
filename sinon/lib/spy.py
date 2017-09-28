@@ -57,7 +57,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         if len(self.args) > 0:
             new_args_list = []
             for item in self.args:
-                if self.obj == item[0].__class__:
+                if len(item) > 0 and self.obj == item[0].__class__:
                     new_args_list.append(item[1:])
                 else:
                     new_args_list.append(item[:])
