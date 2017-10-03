@@ -119,7 +119,7 @@ class TestSinonSpy(unittest.TestCase):
         self.assertTrue(spy.calledThrice)
 
     @sinontest
-    def test050_firstCall_secondCall_thirdCall_lastCall(self):
+    def test050_firstCall_callId(self):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
         spy3 = SinonSpy(B_func)
@@ -128,10 +128,10 @@ class TestSinonSpy(unittest.TestCase):
         spy2()
         sinon.g.B_func()
         spy4()
-        self.assertTrue(spy1.firstCall)
-        self.assertTrue(spy2.secondCall)
-        self.assertTrue(spy3.thirdCall)
-        self.assertTrue(spy4.lastCall)
+        self.assertEqual(spy1.firstCall.callId, 0)
+        self.assertEqual(spy2.firstCall.callId, 1)
+        self.assertEqual(spy3.firstCall.callId, 2)
+        self.assertEqual(spy4.firstCall.callId, 3)
  
     @sinontest
     def test051_calledBefore_calledAfter_normal(self):
@@ -855,6 +855,34 @@ class TestSinonSpy(unittest.TestCase):
         self.assertFalse(spy.neverCalledWithMatch("d", "e"))
         self.assertTrue(spy.neverCalledWithMatch("a", "e"))
         self.assertTrue(spy.neverCalledWithMatch("d", "e", "c")) #it's a combination
+
+    @sinontest
+    def test250_firstCall_to_lastCall_with_call(self):
+        spy = SinonSpy(E_func)
+        sinon.g.E_func(1, 2)
+        sinon.g.E_func(3, 4)
+        sinon.g.E_func(5, 6)
+        sinon.g.E_func(7, 8)
+        self.assertEqual(type(spy.firstCall).__name__, "SpyCall")
+        self.assertEqual(spy.firstCall.args, (1, 2))
+        self.assertEqual(type(spy.secondCall).__name__, "SpyCall")
+        self.assertEqual(spy.secondCall.args, (3, 4))
+        self.assertEqual(type(spy.thirdCall).__name__, "SpyCall")
+        self.assertEqual(spy.thirdCall.args, (5, 6))
+        self.assertEqual(type(spy.lastCall).__name__, "SpyCall")
+        self.assertEqual(spy.lastCall.args, (7, 8))
+
+    @sinontest
+    def test251_firstCall_to_lastCall_without_call(self):
+        spy = SinonSpy(C_func)
+        with self.assertRaises(IndexError):
+            spy.firstCall
+        with self.assertRaises(IndexError):
+            spy.secondCall
+        with self.assertRaises(IndexError):
+            spy.thirdCall
+        with self.assertRaises(IndexError):
+            spy.lastCall
 
     @sinontest
     def test260_getCall(self):

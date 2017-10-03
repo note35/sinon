@@ -159,20 +159,33 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         return True if self.callCount == 3 else False
 
     @property
-    def firstCall(self): #pylint: disable=invalid-name,missing-docstring
-        return True if 0 in self.get_callqueue_idx() else False
+    def firstCall(self): #pylint: disable=invalid-name
+        """
+        Return: SpyCall object for the first time this spy was called
+        """
+        return self.getCall(0)
 
     @property
-    def secondCall(self): #pylint: disable=invalid-name,missing-docstring
-        return True if 1 in self.get_callqueue_idx() else False
+    def secondCall(self): #pylint: disable=invalid-name
+        """
+        Return: SpyCall object for the second time this spy was called
+        """
+        return self.getCall(1)
 
     @property
-    def thirdCall(self): #pylint: disable=invalid-name,missing-docstring
-        return True if 2 in self.get_callqueue_idx() else False
+    def thirdCall(self): #pylint: disable=invalid-name
+        """
+        Return: SpyCall object for the third time this spy was called
+        """
+        return self.getCall(2)
 
     @property
-    def lastCall(self): #pylint: disable=invalid-name,missing-docstring
-        return True if len(Wrapper.CALLQUEUE)-1 in self.get_callqueue_idx() else False
+    def lastCall(self): #pylint: disable=invalid-name
+        """
+        Return: SpyCall object for this spy's most recent call
+        """
+        lastIndex = len(self.__get_wrapper().call_list) - 1
+        return self.getCall(lastIndex)
 
     def calledBefore(self, obj): #pylint: disable=invalid-name
         """
