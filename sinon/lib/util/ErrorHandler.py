@@ -53,3 +53,7 @@ def matcher_type_error(prop): #pylint: disable=missing-docstring
 def matcher_instance_error(prop): #pylint: disable=missing-docstring
     error_msg = "[{}] is an invalid property, it should be an instance".format(prop)
     return __exception_helper(error_msg, exception=TypeError)
+
+def wrapper_object_not_found_error():
+    error_msg = 'Wrapper object cannot be found'
+    return __exception_helper(error_msg)

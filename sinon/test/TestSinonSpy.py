@@ -521,20 +521,20 @@ class TestSinonSpy(unittest.TestCase):
         self.assertFalse(spy.alwaysReturned("test_local_B_func"))
 
     @sinontest
-    def test110_getCall(self):
+    def test110_called(self):
         spy1 = SinonSpy(B_func)
         spy2 = SinonSpy(C_func)
         sinon.g.B_func()
-        call = SinonSpy.getCall(0)
+        self.assertTrue(spy1.called)   #B_func is called
         self.assertFalse(spy2.called)  #C_func is never called
-        self.assertTrue(call.called)    #B_func is called
 
     @sinontest
     def test111_getCall_wrongIndex(self):
-        exception = "0"
-        with self.assertRaises(Exception) as context:
-            SinonSpy.getCall(100)
-        self.assertTrue(exception in str(context.exception)) # test args of errmsg
+        spy = SinonSpy(C_func)
+        sinon.g.C_func()
+        spy.getCall(0)
+        with self.assertRaises(IndexError):
+            spy.getCall(100)
 
     @sinontest
     def test120_kwargs(self):
@@ -855,6 +855,74 @@ class TestSinonSpy(unittest.TestCase):
         self.assertFalse(spy.neverCalledWithMatch("d", "e"))
         self.assertTrue(spy.neverCalledWithMatch("a", "e"))
         self.assertTrue(spy.neverCalledWithMatch("d", "e", "c")) #it's a combination
+
+    @sinontest
+    def test260_getCall(self):
+        spy = SinonSpy(E_func)
+        sinon.g.E_func(1, 2, a=1)
+        sinon.g.E_func(3, 4, b=2)
+        sinon.g.E_func(5, 6, c=3)
+        
+        call0 = spy.getCall(0)
+        self.assertTupleEqual(call0.args, (1,2))
+        self.assertDictEqual(call0.kwargs, {'a':1})
+        self.assertEqual(call0.callId, 0)
+        self.assertEqual(call0.exception, None)
+        self.assertEqual(call0.proxy, spy)
+        self.assertEqual(call0.returnValue, "(1, 2) {'a': 1}")
+        self.assertEqual(type(call0.stack), type([]))
+
+        call1 = spy.getCall(1)
+        self.assertTupleEqual(call1.args, (3,4))
+        self.assertDictEqual(call1.kwargs, {'b':2})
+        self.assertEqual(call1.callId, 1)
+        self.assertEqual(call1.exception, None)
+        self.assertEqual(call1.proxy, spy)
+        self.assertEqual(call1.returnValue, "(3, 4) {'b': 2}")
+        self.assertEqual(type(call1.stack), type([]))
+
+        call2 = spy.getCall(2)
+        self.assertTupleEqual(call2.args, (5,6))
+        self.assertDictEqual(call2.kwargs, {'c':3})
+        self.assertEqual(call2.callId, 2)
+        self.assertEqual(call2.exception, None)
+        self.assertEqual(call2.proxy, spy)
+        self.assertEqual(call2.returnValue, "(5, 6) {'c': 3}")
+        self.assertEqual(type(call2.stack), type([]))
+
+    @sinontest
+    def test261_getCall_exception(self):
+        spy = SinonSpy(D_func)
+        exception = BaseException()
+        try:
+            sinon.g.D_func(exception)
+        except BaseException as e:
+            call = spy.getCall(0)
+            self.assertTupleEqual(call.args, (exception,))
+            self.assertDictEqual(call.kwargs, {})
+            self.assertEqual(call.callId, 0)
+            self.assertEqual(exception, e)
+            self.assertEqual(call.exception, exception)
+            self.assertEqual(call.proxy, spy)
+            self.assertEqual(call.returnValue, None)
+            self.assertEqual(type(call.stack), type([]))
+        else:
+            self.assertTrue(False, "Failed to catch exception")
+
+    @sinontest
+    def test261_getCall_multipleSpies(self):
+        spy1 = SinonSpy(C_func)
+        spy2 = SinonSpy(E_func)
+        sinon.g.C_func(1, 2, 3)
+        sinon.g.E_func(4, 5, 6)
+        self.assertTupleEqual(spy1.getCall(0).args, (1, 2, 3))
+        self.assertListEqual(spy1.args, [(1, 2, 3)])
+        self.assertTupleEqual(spy2.getCall(0).args, (4, 5, 6))
+        self.assertListEqual(spy2.args, [(4, 5, 6)])
+        with self.assertRaises(IndexError):
+            spy1.getCall(1)
+        with self.assertRaises(IndexError):
+            spy2.getCall(1)
 
     @sinontest
     def test270_args_and_kwargs(self):

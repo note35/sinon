@@ -219,21 +219,6 @@ class SinonBase(object):
             setattr(self.pure, "func",
                     Wrapper.wrapspy(getattr(self.pure, "func"), customfunc, condition))
 
-    @classmethod
-    def getCall(cls, n): #pylint: disable=invalid-name
-        """
-        Args:
-            n: number (index of queue)
-        Return:
-            inspector of certain called
-        Raise:
-            get_callqueue_index_error if n is not valid index of queue
-        """
-        try:
-            return cls._queue[n]
-        except IndexError:
-            ErrorHandler.get_callqueue_index_error(len(cls._queue))
-
     @property
     def g(self): #pylint: disable=invalid-name
         """
