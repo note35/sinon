@@ -188,16 +188,12 @@ class SinonBase(object):
         Unwrapping the inspector based on the type
         """
         if self.args_type == "MODULE_FUNCTION":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.obj, self.prop)]
             setattr(self.obj, self.prop, self.orig_func)
         elif self.args_type == "MODULE":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != self]
             delattr(self.obj, "__SINONLOCK__")
         elif self.args_type == "FUNCTION":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(CPSCOPE, self.obj.__name__)] #pylint: disable=line-too-long
             setattr(CPSCOPE, self.obj.__name__, self.orig_func)
         elif self.args_type == "PURE":
-            Wrapper.CALLQUEUE = [f for f in Wrapper.CALLQUEUE if f != getattr(self.pure, "func")]
             setattr(self.pure, "func", self.orig_func)
 
     def wrap2stub(self, customfunc, condition=None):

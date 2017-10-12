@@ -116,14 +116,6 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         return self.__get_wrapper().ret_list
 
-    def get_callqueue_idx(self):
-        """
-        Return: List (indexes of self in the CALLQUEUE of Wrapper)
-        """
-        #TODO: consider to remove "MODULE" condition
-        wrapper = self.__get_wrapper() if self.args_type != "MODULE" else self
-        return [idx for idx, val in enumerate(Wrapper.CALLQUEUE) if val == wrapper]
-
     def withArgs(self, *args, **kwargs):
         """
         Todo: feature in the future
@@ -184,39 +176,46 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         Return: SpyCall object for this spy's most recent call
         """
-        lastIndex = len(self.__get_wrapper().call_list) - 1
-        return self.getCall(lastIndex)
+        last_index = len(self.__get_wrapper().call_list) - 1
+        return self.getCall(last_index)
 
-    def calledBefore(self, obj): #pylint: disable=invalid-name
+    def calledBefore(self, spy): #pylint: disable=invalid-name
         """
-        Comparing two spys' functions order in CALLQUEUE
-        Eg.
-            a()
-            b()
-            spy_a.calledBefore(spy_b) will return True, because a is called before b
-            a()
-            spy_b.calledBefore(spy_a) will return True, because a is called after b
-        Return: Boolean
-        """
-        idx = self.get_callqueue_idx()
-        idx2 = obj.get_callqueue_idx()
+        Compares the order in which two spies were called
 
-        if len(idx) == 0:
-            ErrorHandler.callqueue_is_empty_error()
-        if Wrapper.CALLQUEUE:
-            return True if min(idx) < max(idx2) else False
+        E.g.
+            spy_a()
+            spy_b()
+            spy_a.calledBefore(spy_b) # True
+            spy_b.calledBefore(spy_a) # False
+            spy_a()
+            spy_b.calledBefore(spy_a) # True
 
-    def calledAfter(self, obj): #pylint: disable=invalid-name
+        Args: a Spy to compare with
+        Return: Boolean True if this spy's first call was called before the given spy's last call
         """
-        Same as calledBefore
-        """
-        idx = self.get_callqueue_idx()
-        idx2 = obj.get_callqueue_idx()
+        this_call = self.firstCall if self.firstCall is not None else False
+        given_call = spy.lastCall if spy.lastCall is not None else False
+        return (this_call and not given_call) or (this_call and given_call and this_call.callId < given_call.callId)
 
-        if len(idx) == 0:
-            ErrorHandler.callqueue_is_empty_error()
-        if Wrapper.CALLQUEUE:
-            return True if max(idx) > min(idx2) else False
+    def calledAfter(self, spy): #pylint: disable=invalid-name
+        """
+        Compares the order in which two spies were called
+
+        E.g.
+            spy_a()
+            spy_b()
+            spy_a.calledAfter(spy_b) # False
+            spy_b.calledAfter(spy_a) # True
+            spy_a()
+            spy_a.calledAfter(spy_b) # True
+
+        Args: a Spy to compare with
+        Return: Boolean True if this spy's last call was called after the given spy's first call
+        """
+        this_call = self.lastCall if self.lastCall is not None else False
+        given_call = spy.firstCall if spy.firstCall is not None else False
+        return this_call and given_call and this_call.callId > given_call.callId
 
     def calledWith(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -409,10 +408,12 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Args:
             n: integer (index of function call)
         Return:
-            SpyCall object
-        Raise:
-            IndexError if n is not a valid index
+            SpyCall object (or None if the index is not valid)
         """
-        call = self.__get_wrapper().call_list[n]
-        call.proxy = weakref.proxy(self)
-        return call
+        call_list = self.__get_wrapper().call_list
+        if n >= 0 and n < len(call_list):
+            call = call_list[n]
+            call.proxy = weakref.proxy(self)
+            return call
+        else:
+            return None

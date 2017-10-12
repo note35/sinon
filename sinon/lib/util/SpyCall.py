@@ -10,13 +10,16 @@ class SpyCall(object):
     Holds data and test functions related to a single function call
     """
 
+    next_spy_call_id = 0
+
     def __init__(self):
         """
         Constructor
         """
         self.args = []
         self.kwargs = []
-        self.callId = -1
+        self.callId = SpyCall.next_spy_call_id
+        SpyCall.next_spy_call_id += 1
         self.exception = None
         self.proxy = None
         self.returnValue = None
