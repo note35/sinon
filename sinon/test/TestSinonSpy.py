@@ -141,34 +141,54 @@ class TestSinonSpy(unittest.TestCase):
         os.system("cd")
         spy2()
         sinon.g.B_func()
+        self.assertFalse(spy1.calledBefore(spy1))
+        self.assertFalse(spy2.calledBefore(spy2))
+        self.assertFalse(spy3.calledBefore(spy3))
+        self.assertFalse(spy1.calledAfter(spy1))
+        self.assertFalse(spy2.calledAfter(spy2))
+        self.assertFalse(spy3.calledAfter(spy3))
         self.assertTrue(spy1.calledBefore(spy2))
         self.assertTrue(spy1.calledBefore(spy3))
         self.assertTrue(spy2.calledBefore(spy3))
+        self.assertFalse(spy1.calledAfter(spy2))
+        self.assertFalse(spy1.calledAfter(spy3))
+        self.assertFalse(spy2.calledAfter(spy3))
         self.assertTrue(spy2.calledAfter(spy1))
         self.assertTrue(spy3.calledAfter(spy1))
         self.assertTrue(spy3.calledAfter(spy2))
+        self.assertFalse(spy2.calledBefore(spy1))
+        self.assertFalse(spy3.calledBefore(spy1))
+        self.assertFalse(spy3.calledBefore(spy2))
 
     @sinontest
     def test052_calledBefore_nothing_called(self):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
-        spy3 = SinonSpy(B_func)
-        with self.assertRaises(Exception) as context:
-            self.assertFalse(spy1.calledBefore(spy2))
-        with self.assertRaises(Exception) as context:
-            self.assertFalse(spy2.calledAfter(spy1))
+        self.assertFalse(spy1.calledBefore(spy2))
+        self.assertFalse(spy2.calledBefore(spy1))
+        self.assertFalse(spy2.calledAfter(spy1))
+        self.assertFalse(spy1.calledAfter(spy2))
  
     @sinontest
     def test053_calledBefore_calledAfter_recalled_method(self):
         spy1 = SinonSpy(os, "system")
         spy2 = SinonSpy()
         os.system("cd")
+        self.assertTrue(spy1.calledBefore(spy2))
+        self.assertFalse(spy1.calledAfter(spy2))
+        self.assertFalse(spy2.calledBefore(spy1))
+        self.assertFalse(spy2.calledAfter(spy1))
         spy2()
+        self.assertTrue(spy1.calledBefore(spy2))
+        self.assertFalse(spy1.calledAfter(spy2))
+        self.assertFalse(spy2.calledBefore(spy1))
+        self.assertTrue(spy2.calledAfter(spy1))
         os.system("cd")
         self.assertTrue(spy1.calledBefore(spy2))
         self.assertTrue(spy1.calledAfter(spy2))
         self.assertTrue(spy2.calledBefore(spy1))
         self.assertTrue(spy2.calledAfter(spy1))
+        spy1.restore()
 
     @sinontest
     def test054_calledBefore_calledAfter_called_restore_recalled(self):
@@ -180,7 +200,9 @@ class TestSinonSpy(unittest.TestCase):
         spy2()
         os.system("cd")
         self.assertTrue(spy1.calledAfter(spy2))
+        self.assertFalse(spy2.calledAfter(spy1))
         self.assertTrue(spy2.calledBefore(spy1))
+        self.assertFalse(spy1.calledBefore(spy2))
 
     @sinontest
     def test070_calledWith_method_fullmatch(self):
@@ -532,9 +554,9 @@ class TestSinonSpy(unittest.TestCase):
     def test111_getCall_wrongIndex(self):
         spy = SinonSpy(C_func)
         sinon.g.C_func()
-        spy.getCall(0)
-        with self.assertRaises(IndexError):
-            spy.getCall(100)
+        self.assertEqual(spy.getCall(-100), None)
+        self.assertEqual(spy.getCall(0).callId, 0)
+        self.assertEqual(spy.getCall(100), None)
 
     @sinontest
     def test120_kwargs(self):
@@ -875,14 +897,10 @@ class TestSinonSpy(unittest.TestCase):
     @sinontest
     def test251_firstCall_to_lastCall_without_call(self):
         spy = SinonSpy(C_func)
-        with self.assertRaises(IndexError):
-            spy.firstCall
-        with self.assertRaises(IndexError):
-            spy.secondCall
-        with self.assertRaises(IndexError):
-            spy.thirdCall
-        with self.assertRaises(IndexError):
-            spy.lastCall
+        self.assertEqual(spy.firstCall, None)
+        self.assertEqual(spy.secondCall, None)
+        self.assertEqual(spy.thirdCall, None)
+        self.assertEqual(spy.lastCall, None)
 
     @sinontest
     def test260_getCall(self):
@@ -890,7 +908,7 @@ class TestSinonSpy(unittest.TestCase):
         sinon.g.E_func(1, 2, a=1)
         sinon.g.E_func(3, 4, b=2)
         sinon.g.E_func(5, 6, c=3)
-        
+
         call0 = spy.getCall(0)
         self.assertTupleEqual(call0.args, (1,2))
         self.assertDictEqual(call0.kwargs, {'a':1})
@@ -947,10 +965,8 @@ class TestSinonSpy(unittest.TestCase):
         self.assertListEqual(spy1.args, [(1, 2, 3)])
         self.assertTupleEqual(spy2.getCall(0).args, (4, 5, 6))
         self.assertListEqual(spy2.args, [(4, 5, 6)])
-        with self.assertRaises(IndexError):
-            spy1.getCall(1)
-        with self.assertRaises(IndexError):
-            spy2.getCall(1)
+        self.assertEqual(spy1.getCall(1), None)
+        self.assertEqual(spy2.getCall(1), None)
 
     @sinontest
     def test270_args_and_kwargs(self):

@@ -34,16 +34,8 @@ def called_with_empty_error(): #pylint: disable=missing-docstring
     error_msg = "There is no argument"
     return __exception_helper(error_msg)
 
-def get_callqueue_index_error(number): #pylint: disable=missing-docstring
-    error_msg = "The call queue only contains {} calls".format(str(number))
-    return __exception_helper(error_msg, exception=IndexError)
-
 def is_not_spy_error(obj): #pylint: disable=missing-docstring
     error_msg = "[{}] is an invalid spy".format(str(obj))
-    return __exception_helper(error_msg)
-
-def callqueue_is_empty_error(): #pylint: disable=missing-docstring
-    error_msg = "CALLQUEUE is empty"
     return __exception_helper(error_msg)
 
 def matcher_type_error(prop): #pylint: disable=missing-docstring

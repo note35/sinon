@@ -3,6 +3,7 @@ Copyright (c) 2016-2017, Kir Chou
 https://github.com/note35/sinon/blob/master/LICENSE
 '''
 from .base import SinonBase
+from .util.SpyCall import SpyCall
 
 def __clear_assertion_message(obj):
     """
@@ -35,6 +36,7 @@ def sinontest(test_func):
         for item in SinonBase._queue: #pylint: disable=protected-access
             original_queue.append(item)
 
+        SpyCall.next_spy_call_id = 0
         ret = test_func(*args, **kwargs)
 
         # handle indirect use (called by sinon.py)

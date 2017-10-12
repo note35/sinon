@@ -6,11 +6,6 @@ import traceback
 import sys
 from .SpyCall import SpyCall
 
-# TODO: consider removing CALLQUEUE, since it can probably be replaced by Call.callId
-global CALLQUEUE #pylint: disable=global-at-module-level
-CALLQUEUE = []
-
-
 class ClassPropertyDescriptor(object): #pylint: disable=too-few-public-methods
     """
     A standard classPropertyDescriptor
@@ -64,14 +59,12 @@ def __add_spy(func):
         Fully manipulatable inspector function
         """
         wrapped.callCount += 1
-        CALLQUEUE.append(wrapped)
         wrapped.args_list.append(args)
         wrapped.kwargs_list.append(kwargs)
         
         call = SpyCall()
         call.args = args
         call.kwargs = kwargs
-        call.callId = len(CALLQUEUE) - 1
         call.stack = traceback.format_stack()
         wrapped.call_list.append(call)
         
