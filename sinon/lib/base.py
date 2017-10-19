@@ -75,6 +75,22 @@ class SinonBase(object):
         cls._queue.append(new)
         return weakref.proxy(new)
 
+    def _get_wrapper(self):
+        """
+        Return:
+            Wrapper object
+        Raise:
+            Exception if wrapper object cannot be found
+        """
+        if self.args_type == "MODULE_FUNCTION":
+            return getattr(self.obj, self.prop)
+        elif self.args_type == "FUNCTION":
+            return getattr(self.g, self.obj.__name__)
+        elif self.args_type == "PURE":
+            return getattr(self.pure, "func")
+        else:
+            ErrorHandler.wrapper_object_not_found_error()
+
     def restore(self):
         """
         It will remove the wrapper of each inspector and remove weakref in _queue
@@ -107,20 +123,16 @@ class SinonBase(object):
 
     def __call__(self, *args, **kwargs):
         """
-        Customized __call__ function for two purpose
-        If base is a Pure instance: call Pure.func
-            Keeping original function works
-            Wrapped function will record itself when is called
-        If base is other type:
-            Store called record
+        Customized __call__ function for two purposes:
+          1. Track the number of calls
+          2. Return the user-defined value (e.g. after a call to stub.returns() )
         Args:
-            no limitation, only pure.func will use args
+            no limitation
         Return:
-            no limitation, only pure.func will return values
+            no limitation
         """
         self.pure_count = self.pure_count + 1
-        if self.args_type == "PURE":
-            return getattr(self.pure, "func")(*args, **kwargs)
+        return self._get_wrapper()(*args, **kwargs)
 
     def __set_type(self, obj, prop):
         """
