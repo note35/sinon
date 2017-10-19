@@ -36,7 +36,7 @@ def sinontest(test_func):
         for item in SinonBase._queue: #pylint: disable=protected-access
             original_queue.append(item)
 
-        SpyCall.next_spy_call_id = 0
+        SpyCall._next_spy_call_id = 0
         ret = test_func(*args, **kwargs)
 
         # handle indirect use (called by sinon.py)

@@ -69,52 +69,35 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         For solving special case of mock
         Args: List (new argument list)
         """
-        self.__get_wrapper().__set__("args_list", new_args_list)
-
-    def __get_wrapper(self):
-        """
-        Return:
-            Wrapper object
-        Raise:
-            Exception if wrapper object cannot be found
-        """
-        #TODO: consider to remove "PURE" condition
-        if self.args_type == "MODULE_FUNCTION":
-            return getattr(self.obj, self.prop)
-        elif self.args_type == "FUNCTION":
-            return getattr(self.g, self.obj.__name__)
-        elif self.args_type == "PURE":
-            return getattr(self.pure, "func")
-        else:
-            ErrorHandler.wrapper_object_not_found_error()
+        super(SinonSpy, self)._get_wrapper().__set__("args_list", new_args_list)
 
     @property
     def args(self):
         """
         Return: List (arguments which are called)
         """
-        return self.__get_wrapper().args_list
+        return super(SinonSpy, self)._get_wrapper().args_list
 
     @property
     def kwargs(self):
         """
         Return: List (dictionary arguments which are called)
         """
-        return self.__get_wrapper().kwargs_list
+        return super(SinonSpy, self)._get_wrapper().kwargs_list
 
     @property
     def exceptions(self):
         """
         Return: List (exceptions which are happened)
         """
-        return self.__get_wrapper().error_list
+        return super(SinonSpy, self)._get_wrapper().error_list
 
     @property
     def returnValues(self):
         """
         Return: List (returns which are happened)
         """
-        return self.__get_wrapper().ret_list
+        return super(SinonSpy, self)._get_wrapper().ret_list
 
     def withArgs(self, *args, **kwargs):
         """
@@ -132,7 +115,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         if self.args_type in ["MODULE", "PURE"]:
             return self.pure_count
         else:
-            return self.__get_wrapper().callCount
+            return super(SinonSpy, self)._get_wrapper().callCount
 
     @property
     def called(self): #pylint: disable=missing-docstring
@@ -176,7 +159,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         """
         Return: SpyCall object for this spy's most recent call
         """
-        last_index = len(self.__get_wrapper().call_list) - 1
+        last_index = len(super(SinonSpy, self)._get_wrapper().call_list) - 1
         return self.getCall(last_index)
 
     def calledBefore(self, spy): #pylint: disable=invalid-name
@@ -410,7 +393,7 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
         Return:
             SpyCall object (or None if the index is not valid)
         """
-        call_list = self.__get_wrapper().call_list
+        call_list = super(SinonSpy, self)._get_wrapper().call_list
         if n >= 0 and n < len(call_list):
             call = call_list[n]
             call.proxy = weakref.proxy(self)

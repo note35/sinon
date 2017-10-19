@@ -228,3 +228,31 @@ class TestSinonBase(unittest.TestCase):
         stub = SinonStub()
         stub.withArgs(42).returns(1)
         self.assertEqual(stub(42), 1)
+
+    @sinontest
+    def test360_pure_returns(self):
+        stub = SinonStub()
+        stub.returns(5)
+        self.assertEqual(stub(), 5)
+
+    @sinontest
+    def test361_module_returns(self):
+        stub = SinonStub(os, 'system')
+        stub.returns(5)
+        self.assertEqual(os.system(), 5)
+        self.assertEqual(stub(), 5)
+
+    @sinontest
+    def test362_function_returns(self):
+        stub = SinonStub(C_func)
+        stub.returns(5)
+        self.assertEqual(stub.g.C_func(), 5)
+        self.assertEqual(stub(), 5)
+
+    @sinontest
+    def test363_method_returns(self):
+        o = A_object()
+        stub = SinonStub(o, 'A_func')
+        stub.returns(5)
+        self.assertEqual(o.A_func(), 5)
+        self.assertEqual(stub(), 5)
