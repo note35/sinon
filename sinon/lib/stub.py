@@ -70,7 +70,7 @@ class SinonStub(SinonSpy):
         Return:
             self (able to be chained)
         """
-        self.oncall = n
+        self.oncall = n + 1
         return self
 
     def onFirstCall(self): #pylint: disable=invalid-name,missing-docstring

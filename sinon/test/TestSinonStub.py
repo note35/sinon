@@ -41,7 +41,7 @@ from TestClass import ForTestOnly
 ======================================================
 """
 
-class TestSinonBase(unittest.TestCase):
+class TestSinonStub(unittest.TestCase):
 
     @staticmethod
     def my_func(*args, **kwargs):
@@ -53,7 +53,7 @@ class TestSinonBase(unittest.TestCase):
     @sinontest
     def test200_constructor_object_method_with_replaced_method(self):
         a = A_object()
-        stub = SinonStub(a, "A_func", TestSinonBase.my_func)
+        stub = SinonStub(a, "A_func", TestSinonStub.my_func)
         self.assertEqual(a.A_func(), "my_func")
 
     @sinontest
@@ -79,7 +79,7 @@ class TestSinonBase(unittest.TestCase):
     @sinontest
     def test204_constructor_empty_library_function(self):
         self.assertEqual(os.system("cd"), 0)
-        stub = SinonStub(os, "system", TestSinonBase.my_func)
+        stub = SinonStub(os, "system", TestSinonStub.my_func)
         self.assertEqual(os.system("cd"), "my_func")
         stub.restore()
         self.assertEqual(os.system("cd"), 0)
@@ -93,8 +93,8 @@ class TestSinonBase(unittest.TestCase):
         self.assertEqual(fto.func1(), 1)
         stub.returns({})
         self.assertEqual(fto.func1(), {})
-        stub.returns(TestSinonBase.my_func)
-        self.assertEqual(fto.func1(), TestSinonBase.my_func)  
+        stub.returns(TestSinonStub.my_func)
+        self.assertEqual(fto.func1(), TestSinonStub.my_func)  
 
     @sinontest
     def test221_throws(self):
@@ -125,11 +125,11 @@ class TestSinonBase(unittest.TestCase):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
-        stub.onCall(3).returns("oncall")
+        stub.onThirdCall().returns("oncall")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "oncall") #3 will return oncall
-        stub.onCall(2).returns("oncall") # the callCount will be reset to 0
+        stub.onSecondCall().returns("oncall") # the callCount will be reset to 0
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "oncall") #2 will return oncall
         self.assertEqual(fto.func1(), "oncall") #3 will still return oncall
@@ -139,11 +139,11 @@ class TestSinonBase(unittest.TestCase):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
-        stub.withArgs(1).onCall(3).returns("oncall")
+        stub.withArgs(1).onThirdCall().returns("oncall")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(1), "oncall")
-        stub.withArgs(2).onCall(2).returns("oncall")
+        stub.withArgs(2).onSecondCall().returns("oncall")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(2), "oncall")
 
@@ -154,14 +154,14 @@ class TestSinonBase(unittest.TestCase):
         stub = SinonStub(ForTestOnly, "func1")
         stub.withArgs(1).returns("1")
         self.assertEqual(fto.func1(1), "1")
-        stub.withArgs(1).onCall(2).returns("oncall")
+        stub.withArgs(1).onSecondCall().returns("oncall")
         self.assertEqual(fto.func1(1), "1")
         self.assertEqual(fto.func1(1), "oncall")
-        stub.onCall(3).returns("###")
+        stub.onThirdCall().returns("###")
         self.assertEqual(fto.func1(1), "1")
         self.assertEqual(fto.func1(1), "oncall")
         self.assertEqual(fto.func1(1), "1") # the priority of onCall is lower than withArgs
-        stub.onCall(2).returns("##")
+        stub.onSecondCall().returns("##")
         self.assertEqual(fto.func1(), None)
         self.assertEqual(fto.func1(), "##")
         self.assertEqual(fto.func1(), "###")
@@ -171,7 +171,7 @@ class TestSinonBase(unittest.TestCase):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
-        stub.onCall(2).throws()
+        stub.onSecondCall().throws()
         fto.func1()
         with self.assertRaises(Exception) as context:
             fto.func1()
@@ -256,3 +256,27 @@ class TestSinonBase(unittest.TestCase):
         stub.returns(5)
         self.assertEqual(o.A_func(), 5)
         self.assertEqual(stub(), 5)
+
+    @sinontest
+    def test370_multiple_onCall_returns(self):
+        o = A_object()
+        stub = SinonStub(o, 'A_func')
+        stub.onCall(0).returns(5)
+        stub.onCall(1).returns(10)
+        stub.onCall(2).returns(20)
+        stub.onCall(3).returns(30)
+        self.assertEqual(o.A_func(), 5)
+        self.assertEqual(o.A_func(), 10)
+        self.assertEqual(o.A_func(), 20)
+        self.assertEqual(o.A_func(), 30)
+
+    @sinontest
+    def test370_multiple_onCall_returns_named_functions(self):
+        o = A_object()
+        stub = SinonStub(o, 'A_func')
+        stub.onFirstCall().returns(5)
+        stub.onSecondCall().returns(10)
+        stub.onThirdCall().returns(20)
+        self.assertEqual(o.A_func(), 5)
+        self.assertEqual(o.A_func(), 10)
+        self.assertEqual(o.A_func(), 20)
