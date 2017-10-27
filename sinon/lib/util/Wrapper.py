@@ -77,7 +77,7 @@ def __add_spy(func):
             # Todo: make sure e.__class__ is enough for all purpose or not
             wrapped.error_list.append(excpt.__class__)
             call.exception = excpt
-            return func(*args, **kwargs)
+            raise excpt
 
     wrapped.__set__ = __set__
     wrapped.callCount = 0
