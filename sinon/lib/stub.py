@@ -17,118 +17,179 @@ class SinonStub(SinonSpy):
     (4) a module
 
     All function/module will be replaced into customized or empty function/class
-    Able to be assigned special condition (on which call, with what args...etc)
+    Able to be assigned special conditions (on which call, with what args, etc.)
     """
 
     def __init__(self, obj=None, prop=None, func=None):
         super(SinonStub, self).__init__(obj, prop)
-        self.stubfunc = func if func else Wrapper.empty_function
-        super(SinonStub, self).wrap2stub(self.stubfunc)
+        self._stubfunc = func if func else Wrapper.empty_function
+        super(SinonStub, self).wrap2stub(self._stubfunc)
+        self._cond_args = self._cond_kwargs = self._oncall = None
         # Todo: target is a dirty hack
-        self.condition = {"args":[], "kwargs":[], "action": [], "oncall":[], "target":self.obj}
-        self.cond_args = self.cond_kwargs = self.oncall = None
+        self._conditions = {"args":[], "kwargs":[], "action": [], "oncall": [], "target": self.obj}            
 
-    def __append_condition(self, func):
-        self.condition["args"].append(self.cond_args)
-        self.condition["kwargs"].append(self.cond_kwargs)
-        self.condition["oncall"].append(self.oncall)
-        self.condition["action"].append(func)
-        self.cond_args = self.cond_kwargs = self.oncall = None
+    def _append_condition(self, sinon_stub_condition, func):
+        '''
+        Permanently saves the current (volatile) conditions, which would be otherwise lost
+
+        Args:
+            sinon_stub_condition: the SinonStubCondition object that holds the current conditions
+            func: returns a value or raises an exception, as specified by the user
+        Returns: the SinonStub._conditions dictionary (for convenience)
+        '''
+        self._conditions["args"].append(sinon_stub_condition._cond_args)
+        self._conditions["kwargs"].append(sinon_stub_condition._cond_kwargs)
+        self._conditions["oncall"].append(sinon_stub_condition._oncall)
+        self._conditions["action"].append(func)
+        return self._conditions
+
+    def _get_original(self):
+        """
+        Returns the original SinonStub object that wrapped the function under test
+        """
+        return self
 
     def withArgs(self, *args, **kwargs): #pylint: disable=invalid-name
         """
-        Adding arguments into condition list
-        When meeting conditions, special return will be triggered
+        Adds a condition for when the stub is called. When the condition is met, a special
+        return value can be returned. Adds the specified argument(s) into the condition list.
 
-        When stub function is called with arguments 1, it will return "#"
+        For example, when the stub function is called with argument 1, it will return "#":
             stub.withArgs(1).returns("#")
 
-        Without returns/throws in the end of chained functions, nothing will happen
-        In this case, although 1 is in condition list, nothing will happed
+        Without returns/throws at the end of the chain of functions, nothing will happen.
+        For example, in this case, although 1 is in the condition list, nothing will happen:
             stub.withArgs(1)
 
         Return:
-            self (able to be chained)
+            a SinonStub object (able to be chained)
         """
-        if args:
-            self.cond_args = args
-        if kwargs:
-            self.cond_kwargs = kwargs
-        return self
+        cond_args = args if len(args) > 0 else None
+        cond_kwargs = kwargs if len(kwargs) > 0 else None
+        return SinonStubCondition(copy_of=self, cond_args=cond_args, cond_kwargs=cond_kwargs, oncall=self._oncall)
 
     def onCall(self, n): #pylint: disable=invalid-name
         """
-        Adding specified call number into condition list
+        Adds a condition for when the stub is called. When the condition is met, a special
+        return value can be returned. Adds the specified call number into the condition
+        list.
 
-        When stub function is called second times, it will return "#"
-            stub.onCall(2).returns("#")
+        For example, when the stub function is called the second time, it will return "#":
+            stub.onCall(1).returns("#")
 
-        Without returns/throws in the end of chained functions, nothing will happen
-        In this case, although 2 is in condition list, nothing will happed
+        Without returns/throws at the end of the chain of functions, nothing will happen.
+        For example, in this case, although 2 is in the condition list, nothing will happen:
             stub.onCall(2)
 
+        Args:
+            n: integer, the call # for which we want a special return value.
+               The first call has an index of 0.
+
         Return:
-            self (able to be chained)
+            a SinonStub object (able to be chained)
         """
-        self.oncall = n + 1
-        return self
+        cond_oncall = n + 1
+        return SinonStubCondition(copy_of=self, oncall=cond_oncall, cond_args=self._cond_args, cond_kwargs=self._cond_kwargs)
 
-    def onFirstCall(self): #pylint: disable=invalid-name,missing-docstring
-        self.oncall = 1
-        return self
+    def onFirstCall(self): #pylint: disable=invalid-name
+        """
+        Equivalent to stub.onCall(0)
+        """
+        return self.onCall(0)
 
-    def onSecondCall(self): #pylint: disable=invalid-name,missing-docstring
-        self.oncall = 2
-        return self
+    def onSecondCall(self): #pylint: disable=invalid-name
+        """
+        Equivalent to stub.onCall(1)
+        """
+        return self.onCall(1)
 
-    def onThirdCall(self): #pylint: disable=invalid-name,missing-docstring
-        self.oncall = 3
-        return self
+    def onThirdCall(self): #pylint: disable=invalid-name
+        """
+        Equivalent to stub.onCall(2)
+        """
+        return self.onCall(2)
 
     def returns(self, obj):
         """
-        Customizing return of stub function
-
-        The final chained functions of returns/throws will be triggered
-        If there is some conditions, it will ONLY triggered when meeting conditions
+        Customizes the return values of the stub function. If conditions like withArgs or onCall
+        were specified, then the return value will only be returned when the conditions are met.
 
         Args: obj (anything)
-        Return: self (able to be chained)
+        Return: a SinonStub object (able to be chained)
         """
-        def return_function(*args, **kwargs):
-            """
-            A stub function with customized return
-            """
-            _ = args, kwargs
-            return obj
-
-        if self.cond_args or self.cond_kwargs or self.oncall:
-            self.__append_condition(return_function)
-            super(SinonStub, self).wrap2stub(self.stubfunc, self.condition)
-        else:
-            super(SinonStub, self).wrap2stub(return_function)
+        super(SinonStub, self).wrap2stub(lambda *args, **kwargs: obj)
         return self
 
-    def throws(self, exceptions=Exception):
+    def throws(self, exception=Exception):
         """
-        Customizing exception of stub function
-
-        The final chained functions of returns/throws will be triggered
-        If there is some conditions, it will ONLY triggered when meeting conditions
+        Customizes the stub function to raise an exception. If conditions like withArgs or onCall
+        were specified, then the return value will only be returned when the conditions are met.
 
         Args: exception (by default=Exception, it could be any customized exception)
-        Return: self (able to be chained)
+        Return: a SinonStub object (able to be chained)
         """
         def exception_function(*args, **kwargs):
-            """
-            A stub function with customized exception
-            """
-            _ = args, kwargs
-            raise exceptions
+            raise exception
+        super(SinonStub, self).wrap2stub(exception_function)
+        return self
 
-        if self.cond_args or self.cond_kwargs or self.oncall:
-            self.__append_condition(exception_function)
-            super(SinonStub, self).wrap2stub(self.stubfunc, self.condition)
-        else:
-            super(SinonStub, self).wrap2stub(exception_function)
+class SinonStubCondition(SinonStub):
+    """
+    Allows a new SinonStub object to be created each time the end user specifies a new condition. This is necessary
+    to mimic the behaviour of Sinon.JS.
+
+    Author: Jonathan Benn
+    """
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Override the __new__ provided by SinonBase, since we don't want to do any function wrapping
+        """
+        return object.__new__(cls)
+
+    def __init__(self, copy_of, cond_args, cond_kwargs, oncall):
+        """
+        Args:
+            copy_of: the original SinonStub object that spawned this one
+            cond_args: the args to which a subsequent call to returns/throws should apply
+            cond_kwargs: the kwargs to which a subsequent call to returns/throws should apply
+            oncall: the integer call number to which a subsequent call to returns/throws should apply
+        """
+        self.__copy_of = copy_of
+        self._cond_args = cond_args
+        self._cond_kwargs = cond_kwargs
+        self._oncall = oncall
+
+    def _get_original(self):
+        """
+        Returns the original SinonStub object that wrapped the function under test
+        """
+        return self.__copy_of._get_original()
+
+    def returns(self, obj):
+        """
+        Customizes the return values of the stub function. If conditions like withArgs or onCall
+        were specified, then the return value will only be returned when the conditions are met.
+
+        Args: obj (anything)
+        Return: a SinonStub object (able to be chained)
+        """
+        original = self._get_original()
+        conditions = original._append_condition(self, lambda *args, **kwargs: obj)
+        super(SinonStub, original).wrap2stub(original._stubfunc, conditions)
+        return self
+
+    def throws(self, exception=Exception):
+        """
+        Customizes the stub function to raise an exception. If conditions like withArgs or onCall
+        were specified, then the return value will only be returned when the conditions are met.
+
+        Args: exception (by default=Exception, it could be any customized exception)
+        Return: a SinonStub object (able to be chained)
+        """
+        def exception_function(*args, **kwargs):
+            raise exception
+        original = self._get_original()
+        conditions = original._append_condition(self, exception_function)
+        super(SinonStub, original).wrap2stub(original._stubfunc, conditions)
         return self

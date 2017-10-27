@@ -271,7 +271,7 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(o.A_func(), 30)
 
     @sinontest
-    def test370_multiple_onCall_returns_named_functions(self):
+    def test371_multiple_onCall_returns_named_functions(self):
         o = A_object()
         stub = SinonStub(o, 'A_func')
         stub.onFirstCall().returns(5)
@@ -280,3 +280,103 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(o.A_func(), 5)
         self.assertEqual(o.A_func(), 10)
         self.assertEqual(o.A_func(), 20)
+
+    @sinontest
+    def test380_chained_pure_returns(self):
+        stub = SinonStub()
+        stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
+        self.assertEqual(stub(42), 1)
+        self.assertEqual(stub(42), 2)
+
+    @sinontest
+    def test381_chained_module_returns(self):
+        stub = SinonStub(os, 'system')
+        stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
+        self.assertEqual(os.system(42), 1)
+        self.assertEqual(os.system(42), 2)
+
+    @sinontest
+    def test382_chained_function_returns(self):
+        stub = SinonStub(C_func)
+        stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
+        self.assertEqual(stub.g.C_func(42), 1)
+        self.assertEqual(stub.g.C_func(42), 2)
+
+    @sinontest
+    def test383_chained_method_returns(self):
+        o = A_object()
+        stub = SinonStub(o, 'A_func')
+        stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
+        self.assertEqual(o.A_func(42), 1)
+        self.assertEqual(o.A_func(42), 2)
+        
+    @sinontest
+    def test390_chained_pure_throws(self):
+        stub = SinonStub()
+        stub.withArgs(42).onFirstCall().throws(Exception('A')).onSecondCall().throws(Exception('B'))
+        with self.assertRaisesRegexp(Exception, 'A'):
+            stub(42)
+        with self.assertRaisesRegexp(Exception, 'B'):
+            stub(42)
+
+    @sinontest
+    def test391_chained_module_throws(self):
+        stub = SinonStub(os, 'system')
+        stub.withArgs(42).onFirstCall().throws(Exception('A')).onSecondCall().throws(Exception('B'))
+        with self.assertRaisesRegexp(Exception, 'A'):
+            os.system(42)
+        with self.assertRaisesRegexp(Exception, 'B'):
+            os.system(42)
+
+    @sinontest
+    def test392_chained_function_throws(self):
+        stub = SinonStub(C_func)
+        stub.withArgs(42).onFirstCall().throws(Exception('A')).onSecondCall().throws(Exception('B'))
+        with self.assertRaisesRegexp(Exception, 'A'):
+            stub.g.C_func(42)
+        with self.assertRaisesRegexp(Exception, 'B'):
+            stub.g.C_func(42)
+
+    @sinontest
+    def test393_chained_method_throws(self):
+        o = A_object()
+        stub = SinonStub(o, 'A_func')
+        stub.withArgs(42).onFirstCall().throws(Exception('A')).onSecondCall().throws(Exception('B'))
+        with self.assertRaisesRegexp(Exception, 'A'):
+            o.A_func(42)
+        with self.assertRaisesRegexp(Exception, 'B'):
+            o.A_func(42)
+
+    @sinontest
+    def test410_conditions_do_not_persist(self):
+        stub = SinonStub()
+        stub.withArgs('A')
+        stub.onThirdCall()
+        stub.returns(5)
+        self.assertEqual(stub(), 5)
+
+    @sinontest
+    def test415_conditions_can_be_overwritten_withArgs(self):
+        stub = SinonStub()
+        stub.withArgs('A').withArgs('B').returns(3)
+        self.assertEqual(stub('A'), None)
+        self.assertEqual(stub('B'), 3)
+
+    @sinontest
+    def test420_conditions_can_be_overwritten_onCall(self):
+        stub = SinonStub()
+        stub.onFirstCall().onSecondCall().returns(3)
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub(), 3)
+
+    @sinontest
+    def test425_returns_throws_can_be_overwritten(self):
+        stub = SinonStub()
+        self.assertEqual(stub(), None)
+        stub.returns(5)
+        self.assertEqual(stub(), 5)
+        stub.throws()
+        with self.assertRaises(Exception):
+            stub()
+        stub.returns(10)
+        self.assertEqual(stub(), 10)
