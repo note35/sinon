@@ -26,11 +26,23 @@ class SinonStub(SinonSpy):
         super(SinonStub, self).wrap2stub(self._stubfunc)
         self._copy = self._cond_args = self._cond_kwargs = self._oncall = None
         # Todo: target is a dirty hack
-        self._conditions = {"args":[], "kwargs":[], "action": [], "oncall": [], "target": self.obj}            
+        self._conditions = {"args":[], "kwargs":[], "action":[], "oncall":[], "target": self.obj}
+        self._conditions["default"] =  lambda *args, **kwargs: None
 
     def _append_condition(self, sinon_stub_condition, func):
         '''
         Permanently saves the current (volatile) conditions, which would be otherwise lost
+
+        In the _conditions dictionary, the keys "args", "kwargs", "oncall" and "action"
+        each refer to a list. All 4 lists have a value appended each time the user calls
+        returns or throws to add a condition to the stub. Hence, all 4 lists are in sync,
+        so a single index refers to the same condition in all 4 lists.
+
+        e.g.
+            stub.withArgs(5).returns(7)
+              # conditions: args [(5,)] kwargs [()] action [7] oncall [None]
+            stub.withArgs(10).onFirstCall().returns(14)
+              # conditions: args [(5,),(10,)] kwargs [(),()] action [7,14] oncall [None,1]
 
         Args:
             sinon_stub_condition: the _SinonStubCondition object that holds the current conditions
@@ -113,7 +125,8 @@ class SinonStub(SinonSpy):
         Args: obj (anything)
         Return: a SinonStub object (able to be chained)
         """
-        super(SinonStub, self).wrap2stub(lambda *args, **kwargs: obj)
+        self._conditions["default"] = lambda *args, **kwargs: obj
+        super(SinonStub, self).wrap2stub(self._conditions["default"], self._conditions)
         return self
 
     def throws(self, exception=Exception):
@@ -126,7 +139,8 @@ class SinonStub(SinonSpy):
         """
         def exception_function(*args, **kwargs):
             raise exception
-        super(SinonStub, self).wrap2stub(exception_function)
+        self._conditions["default"] = exception_function
+        super(SinonStub, self).wrap2stub(self._conditions["default"], self._conditions)
         return self
 
 class _SinonStubCondition(SinonStub):

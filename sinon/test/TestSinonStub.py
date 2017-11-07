@@ -94,7 +94,7 @@ class TestSinonStub(unittest.TestCase):
         stub.returns({})
         self.assertEqual(fto.func1(), {})
         stub.returns(TestSinonStub.my_func)
-        self.assertEqual(fto.func1(), TestSinonStub.my_func)  
+        self.assertEqual(fto.func1(), TestSinonStub.my_func)
 
     @sinontest
     def test221_throws(self):
@@ -140,12 +140,14 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
         stub.withArgs(1).onThirdCall().returns("oncall")
-        self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(1), "oncall")
         stub.withArgs(2).onSecondCall().returns("oncall")
-        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(1), None)
+        self.assertEqual(fto.func1(1), None)
+        self.assertEqual(fto.func1(1), "oncall")
+        self.assertEqual(fto.func1(1), None)
+        self.assertEqual(fto.func1(2), None)
         self.assertEqual(fto.func1(2), "oncall")
+        self.assertEqual(fto.func1(2), None)
 
     @sinontest
     def test225_onCall_plus_withArgs(self):
@@ -153,17 +155,13 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
         stub.withArgs(1).returns("1")
-        self.assertEqual(fto.func1(1), "1")
         stub.withArgs(1).onSecondCall().returns("oncall")
-        self.assertEqual(fto.func1(1), "1")
-        self.assertEqual(fto.func1(1), "oncall")
-        stub.onThirdCall().returns("###")
+        stub.onThirdCall().returns("##")
+        stub.onCall(4).returns("###") # on fifth call will return "###"
         self.assertEqual(fto.func1(1), "1")
         self.assertEqual(fto.func1(1), "oncall")
         self.assertEqual(fto.func1(1), "1") # the priority of onCall is lower than withArgs
-        stub.onSecondCall().returns("##")
         self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(), "##")
         self.assertEqual(fto.func1(), "###")
 
     @sinontest
@@ -258,6 +256,13 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(stub(), 5)
 
     @sinontest
+    def test364_class_returns(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.returns(5)
+        self.assertEqual(stub(fto), 5)
+
+    @sinontest
     def test370_multiple_onCall_returns(self):
         o = A_object()
         stub = SinonStub(o, 'A_func')
@@ -309,7 +314,7 @@ class TestSinonStub(unittest.TestCase):
         stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
         self.assertEqual(o.A_func(42), 1)
         self.assertEqual(o.A_func(42), 2)
-        
+
     @sinontest
     def test390_chained_pure_throws(self):
         stub = SinonStub()
@@ -348,6 +353,130 @@ class TestSinonStub(unittest.TestCase):
             o.A_func(42)
 
     @sinontest
+    def test400_correct_precedence(self):
+        stub = SinonStub()
+        stub.withArgs('A').returns('Arg of A')
+        stub.onFirstCall().returns('First call!')
+        stub.onSecondCall().returns('Second call!')
+        stub.returns('No args')
+        self.assertEqual(stub(), 'First call!')
+        self.assertEqual(stub('A'), 'Arg of A')
+        self.assertEqual(stub(), 'No args')
+
+    @sinontest
+    def test401_correct_precedence_throws(self):
+        stub = SinonStub()
+        stub.withArgs('A').throws(Exception('A'))
+        stub.onFirstCall().throws(Exception('First call!'))
+        stub.onSecondCall().throws(Exception('Second call!'))
+        stub.throws(Exception('No args'))
+        with self.assertRaisesRegexp(Exception, 'First call!'):
+            stub()
+        with self.assertRaisesRegexp(Exception, 'A'):
+            stub('A')
+        with self.assertRaisesRegexp(Exception, 'No args'):
+            stub()
+
+    @sinontest
+    def test402_correct_precedence_withArgs_args(self):
+        stub = SinonStub()
+        stub.withArgs('A').onSecondCall().returns('second call!')
+        stub.withArgs('A').returns('Arg of A')
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub('A'), 'Arg of A')
+        self.assertEqual(stub('A'), 'second call!')
+        self.assertEqual(stub('A'), 'Arg of A')
+
+    @sinontest
+    def test403_correct_precedence_withArgs_kwargs(self):
+        stub = SinonStub()
+        stub.withArgs(a='A').onSecondCall().returns('second call!')
+        stub.withArgs(a='A').returns('Kwarg of A')
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub(a='A'), 'Kwarg of A')
+        self.assertEqual(stub(a='A'), 'second call!')
+        self.assertEqual(stub(a='A'), 'Kwarg of A')
+
+    @sinontest
+    def test404_correct_precedence_withArgs_args_kwargs(self):
+        stub = SinonStub()
+        stub.withArgs('A', b='B').onSecondCall().returns('second call!')
+        stub.withArgs('A', b='B').returns('Arg of A, Kwarg of B')
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub('A', b='B'), 'Arg of A, Kwarg of B')
+        self.assertEqual(stub('A', b='B'), 'second call!')
+        self.assertEqual(stub('A', b='B'), 'Arg of A, Kwarg of B')
+
+    @sinontest
+    def test405_correct_precedence_withArgs_args_throws(self):
+        stub = SinonStub()
+        stub.withArgs('A').onSecondCall().throws(Exception('second call!'))
+        stub.withArgs('A').throws(Exception('Arg of A'))
+        self.assertEqual(stub(), None)
+        with self.assertRaisesRegexp(Exception, 'Arg of A'):
+            stub('A')
+        with self.assertRaisesRegexp(Exception, 'second call!'):
+            stub('A')
+        with self.assertRaisesRegexp(Exception, 'Arg of A'):
+            stub('A')
+
+    @sinontest
+    def test406_correct_precedence_withArgs_kwargs_throws(self):
+        stub = SinonStub()
+        stub.withArgs(a='A').onSecondCall().throws(Exception('second call!'))
+        stub.withArgs(a='A').throws(Exception('Kwarg of A'))
+        self.assertEqual(stub(), None)
+        with self.assertRaisesRegexp(Exception, 'Kwarg of A'):
+            stub(a='A')
+        with self.assertRaisesRegexp(Exception, 'second call!'):
+            stub(a='A')
+        with self.assertRaisesRegexp(Exception, 'Kwarg of A'):
+            stub(a='A')
+
+    @sinontest
+    def test407_correct_precedence_withArgs_args_kwargs_throws(self):
+        stub = SinonStub()
+        stub.withArgs('A', b='B').onSecondCall().throws(Exception('second call!'))
+        stub.withArgs('A', b='B').throws(Exception('Arg of A, Kwarg of B'))
+        self.assertEqual(stub(), None)
+        with self.assertRaisesRegexp(Exception, 'Arg of A, Kwarg of B'):
+            stub('A', b='B')
+        with self.assertRaisesRegexp(Exception, 'second call!'):
+            stub('A', b='B')
+        with self.assertRaisesRegexp(Exception, 'Arg of A, Kwarg of B'):
+            stub('A', b='B')
+
+    @sinontest
+    def test408_chained_withArgs_onCall_returns(self):
+        stub = SinonStub()
+        stub.withArgs(42).onFirstCall().returns(1).onSecondCall().returns(2)
+        stub.returns(0);
+        self.assertEqual(stub(1), 0)
+        self.assertEqual(stub(42), 1)
+        self.assertEqual(stub(1), 0)
+        self.assertEqual(stub(42), 2)
+        self.assertEqual(stub(1), 0)
+        self.assertEqual(stub(42), 0)
+
+    @sinontest
+    def test409_chained_withArgs_onCall_throws(self):
+        stub = SinonStub()
+        stub.withArgs(42).onFirstCall().throws(Exception('A')).onSecondCall().throws(Exception('B'))
+        stub.throws(Exception('C'));
+        with self.assertRaisesRegexp(Exception, 'C'):
+            stub(1)
+        with self.assertRaisesRegexp(Exception, 'A'):
+            stub(42)
+        with self.assertRaisesRegexp(Exception, 'C'):
+            stub(1)
+        with self.assertRaisesRegexp(Exception, 'B'):
+            stub(42)
+        with self.assertRaisesRegexp(Exception, 'C'):
+            stub(1)
+        with self.assertRaisesRegexp(Exception, 'C'):
+            stub(42)
+
+    @sinontest
     def test410_conditions_do_not_persist(self):
         stub = SinonStub()
         stub.withArgs('A')
@@ -380,3 +509,53 @@ class TestSinonStub(unittest.TestCase):
             stub()
         stub.returns(10)
         self.assertEqual(stub(), 10)
+
+    @sinontest
+    def test430_withArgs_onCall_combine_correctly_returns(self):
+        stub = SinonStub()
+        stub.withArgs('A').onFirstCall().returns(1)
+        stub.withArgs('A').onSecondCall().returns(2)
+        stub.withArgs('B').onFirstCall().returns(10)
+        stub.withArgs('B').onSecondCall().returns(20)
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub('A'), 1)
+        self.assertEqual(stub('A'), 2)
+        self.assertEqual(stub('A'), None)
+        self.assertEqual(stub('B'), 10)
+        self.assertEqual(stub('B'), 20)
+        self.assertEqual(stub('B'), None)
+
+    @sinontest
+    def test431_withArgs_onCall_combine_correctly_throws(self):
+        stub = SinonStub()
+        stub.withArgs('A').onFirstCall().throws(Exception('1'))
+        stub.withArgs('A').onSecondCall().throws(Exception('2'))
+        stub.withArgs('B').onFirstCall().throws(Exception('10'))
+        stub.withArgs('B').onSecondCall().throws(Exception('20'))
+        self.assertEqual(stub(), None)
+        with self.assertRaisesRegexp(Exception, '1'):
+            stub('A')
+        with self.assertRaisesRegexp(Exception, '2'):
+            stub('A')
+        self.assertEqual(stub('A'), None)
+        with self.assertRaisesRegexp(Exception, '10'):
+            stub('B')
+        with self.assertRaisesRegexp(Exception, '20'):
+            stub('B')
+        self.assertEqual(stub('B'), None)
+
+    @sinontest
+    def test432_withArgs_onCall_combine_correctly_class(self):
+        fto = ForTestOnly()
+        stub = SinonStub(ForTestOnly, "func1")
+        stub.withArgs('A').onFirstCall().returns(1)
+        stub.withArgs('A').onSecondCall().returns(2)
+        stub.withArgs('B').onFirstCall().returns(10)
+        stub.withArgs('B').onSecondCall().returns(20)
+        self.assertEqual(stub(fto), None)
+        self.assertEqual(stub(fto, 'A'), 1)
+        self.assertEqual(stub(fto, 'A'), 2)
+        self.assertEqual(stub(fto, 'A'), None)
+        self.assertEqual(stub(fto, 'B'), 10)
+        self.assertEqual(stub(fto, 'B'), 20)
+        self.assertEqual(stub(fto, 'B'), None)
