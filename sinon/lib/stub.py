@@ -24,7 +24,7 @@ class SinonStub(SinonSpy):
         super(SinonStub, self).__init__(obj, prop)
         self._stubfunc = func if func else Wrapper.empty_function
         super(SinonStub, self).wrap2stub(self._stubfunc)
-        self._cond_args = self._cond_kwargs = self._oncall = None
+        self._copy = self._cond_args = self._cond_kwargs = self._oncall = None
         # Todo: target is a dirty hack
         self._conditions = {"args":[], "kwargs":[], "action": [], "oncall": [], "target": self.obj}            
 
@@ -33,7 +33,7 @@ class SinonStub(SinonSpy):
         Permanently saves the current (volatile) conditions, which would be otherwise lost
 
         Args:
-            sinon_stub_condition: the SinonStubCondition object that holds the current conditions
+            sinon_stub_condition: the _SinonStubCondition object that holds the current conditions
             func: returns a value or raises an exception, as specified by the user
         Returns: the SinonStub._conditions dictionary (for convenience)
         '''
@@ -42,12 +42,6 @@ class SinonStub(SinonSpy):
         self._conditions["oncall"].append(sinon_stub_condition._oncall)
         self._conditions["action"].append(func)
         return self._conditions
-
-    def _get_original(self):
-        """
-        Returns the original SinonStub object that wrapped the function under test
-        """
-        return self
 
     def withArgs(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -66,7 +60,8 @@ class SinonStub(SinonSpy):
         """
         cond_args = args if len(args) > 0 else None
         cond_kwargs = kwargs if len(kwargs) > 0 else None
-        return SinonStubCondition(copy_of=self, cond_args=cond_args, cond_kwargs=cond_kwargs, oncall=self._oncall)
+        copy = self if not self._copy else self._copy
+        return _SinonStubCondition(copy=copy, cond_args=cond_args, cond_kwargs=cond_kwargs, oncall=self._oncall)
 
     def onCall(self, n): #pylint: disable=invalid-name
         """
@@ -89,7 +84,8 @@ class SinonStub(SinonSpy):
             a SinonStub object (able to be chained)
         """
         cond_oncall = n + 1
-        return SinonStubCondition(copy_of=self, oncall=cond_oncall, cond_args=self._cond_args, cond_kwargs=self._cond_kwargs)
+        copy = self if not self._copy else self._copy
+        return _SinonStubCondition(copy=copy, oncall=cond_oncall, cond_args=self._cond_args, cond_kwargs=self._cond_kwargs)
 
     def onFirstCall(self): #pylint: disable=invalid-name
         """
@@ -133,7 +129,7 @@ class SinonStub(SinonSpy):
         super(SinonStub, self).wrap2stub(exception_function)
         return self
 
-class SinonStubCondition(SinonStub):
+class _SinonStubCondition(SinonStub):
     """
     Allows a new SinonStub object to be created each time the end user specifies a new condition. This is necessary
     to mimic the behaviour of Sinon.JS.
@@ -147,24 +143,18 @@ class SinonStubCondition(SinonStub):
         """
         return object.__new__(cls)
 
-    def __init__(self, copy_of, cond_args, cond_kwargs, oncall):
+    def __init__(self, copy, cond_args, cond_kwargs, oncall):
         """
         Args:
-            copy_of: the original SinonStub object that spawned this one
+            copy: the original SinonStub object that spawned this one
             cond_args: the args to which a subsequent call to returns/throws should apply
             cond_kwargs: the kwargs to which a subsequent call to returns/throws should apply
             oncall: the integer call number to which a subsequent call to returns/throws should apply
         """
-        self.__copy_of = copy_of
+        self._copy = copy
         self._cond_args = cond_args
         self._cond_kwargs = cond_kwargs
         self._oncall = oncall
-
-    def _get_original(self):
-        """
-        Returns the original SinonStub object that wrapped the function under test
-        """
-        return self.__copy_of._get_original()
 
     def returns(self, obj):
         """
@@ -174,9 +164,8 @@ class SinonStubCondition(SinonStub):
         Args: obj (anything)
         Return: a SinonStub object (able to be chained)
         """
-        original = self._get_original()
-        conditions = original._append_condition(self, lambda *args, **kwargs: obj)
-        super(SinonStub, original).wrap2stub(original._stubfunc, conditions)
+        conditions = self._copy._append_condition(self, lambda *args, **kwargs: obj)
+        super(SinonStub, self._copy).wrap2stub(self._copy._stubfunc, conditions)
         return self
 
     def throws(self, exception=Exception):
@@ -189,7 +178,6 @@ class SinonStubCondition(SinonStub):
         """
         def exception_function(*args, **kwargs):
             raise exception
-        original = self._get_original()
-        conditions = original._append_condition(self, exception_function)
-        super(SinonStub, original).wrap2stub(original._stubfunc, conditions)
+        conditions = self._copy._append_condition(self, exception_function)
+        super(SinonStub, self._copy).wrap2stub(self._copy._stubfunc, conditions)
         return self
