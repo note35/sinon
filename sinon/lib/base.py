@@ -184,16 +184,16 @@ class SinonBase(object):
         """
         if self.args_type == "MODULE_FUNCTION":
             self.orig_func = deepcopy(getattr(self.obj, self.prop))
-            setattr(self.obj, self.prop, Wrapper.wrapspy(getattr(self.obj, self.prop)))
+            setattr(self.obj, self.prop, Wrapper.wrap_spy(getattr(self.obj, self.prop)))
         elif self.args_type == "MODULE":
             setattr(self.obj, "__SINONLOCK__", True)
         elif self.args_type == "FUNCTION":
             self.orig_func = deepcopy(getattr(CPSCOPE, self.obj.__name__))
             setattr(CPSCOPE, self.obj.__name__,
-                    Wrapper.wrapspy(getattr(CPSCOPE, self.obj.__name__)))
+                    Wrapper.wrap_spy(getattr(CPSCOPE, self.obj.__name__)))
         elif self.args_type == "PURE":
             self.orig_func = deepcopy(getattr(self.pure, "func"))
-            setattr(self.pure, "func", Wrapper.wrapspy(getattr(self.pure, "func")))
+            setattr(self.pure, "func", Wrapper.wrap_spy(getattr(self.pure, "func")))
 
     def unwrap(self):
         """
@@ -208,24 +208,27 @@ class SinonBase(object):
         elif self.args_type == "PURE":
             setattr(self.pure, "func", self.orig_func)
 
-    def wrap2stub(self, customfunc, condition=None):
+    def wrap2stub(self, customfunc):
         """
         Wrapping the inspector as a stub based on the type
         Args:
-            customfunc: function
-            condition: dict
+            customfunc: function that replaces the original
+        Returns:
+            function, the spy wrapper around the customfunc
         """
         if self.args_type == "MODULE_FUNCTION":
-            setattr(self.obj, self.prop,
-                    Wrapper.wrapspy(getattr(self.obj, self.prop), customfunc, condition))
+            wrapper = Wrapper.wrap_spy(customfunc)
+            setattr(self.obj, self.prop, wrapper)
         elif self.args_type == "MODULE":
-            setattr(CPSCOPE, self.obj.__name__, Wrapper.EmptyClass)
+            wrapper = Wrapper.EmptyClass
+            setattr(CPSCOPE, self.obj.__name__, wrapper)
         elif self.args_type == "FUNCTION":
-            setattr(CPSCOPE, self.obj.__name__,
-                    Wrapper.wrapspy(getattr(CPSCOPE, self.obj.__name__), customfunc, condition))
+            wrapper = Wrapper.wrap_spy(customfunc)
+            setattr(CPSCOPE, self.obj.__name__, wrapper)
         elif self.args_type == "PURE":
-            setattr(self.pure, "func",
-                    Wrapper.wrapspy(getattr(self.pure, "func"), customfunc, condition))
+            wrapper = Wrapper.wrap_spy(customfunc)
+            setattr(self.pure, "func", wrapper)
+        return wrapper
 
     @property
     def g(self): #pylint: disable=invalid-name

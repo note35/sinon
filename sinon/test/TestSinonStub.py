@@ -125,14 +125,12 @@ class TestSinonStub(unittest.TestCase):
         fto = ForTestOnly()
         self.assertEqual(fto.func1(), "func1")
         stub = SinonStub(ForTestOnly, "func1")
+        stub.onSecondCall().returns("oncall")
+        self.assertEqual(fto.func1(), None)
+        self.assertEqual(fto.func1(), "oncall")
         stub.onThirdCall().returns("oncall")
+        self.assertEqual(fto.func1(), "oncall")
         self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(), "oncall") #3 will return oncall
-        stub.onSecondCall().returns("oncall") # the callCount will be reset to 0
-        self.assertEqual(fto.func1(), None)
-        self.assertEqual(fto.func1(), "oncall") #2 will return oncall
-        self.assertEqual(fto.func1(), "oncall") #3 will still return oncall
 
     @sinontest
     def test224_onCall_withArgs(self):
@@ -559,3 +557,42 @@ class TestSinonStub(unittest.TestCase):
         self.assertEqual(stub(fto, 'B'), 10)
         self.assertEqual(stub(fto, 'B'), 20)
         self.assertEqual(stub(fto, 'B'), None)
+
+    @sinontest
+    def test440_returns_does_not_reset_call_count(self):
+        stub = SinonStub()
+        stub.onFirstCall().returns('first call')
+        self.assertEqual(stub(), 'first call')
+        stub.onSecondCall().returns('second call')
+        self.assertEqual(stub(), 'second call')
+
+    @sinontest
+    def test441_throws_does_not_reset_call_count(self):
+        stub = SinonStub()
+        stub.onFirstCall().throws(Exception('first call'))
+        with self.assertRaisesRegexp(Exception, 'first call'):
+            stub()
+        stub.onSecondCall().throws(Exception('second call'))
+        with self.assertRaisesRegexp(Exception, 'second call'):
+            stub()
+
+    @sinontest
+    def test442_withArgs_onCall_returns_does_not_reset_call_count(self):
+        stub = SinonStub()
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub('A'), None)
+        stub.withArgs('A').onSecondCall().returns('second call!')
+        self.assertEqual(stub('A'), 'second call!')
+        self.assertEqual(stub('A'), None)
+        self.assertEqual(stub(), None)
+
+    @sinontest
+    def test443_withArgs_onCall_throws_does_not_reset_call_count(self):
+        stub = SinonStub()
+        self.assertEqual(stub(), None)
+        self.assertEqual(stub('A'), None)
+        stub.withArgs('A').onSecondCall().throws(Exception('second call!'))
+        with self.assertRaisesRegexp(Exception, 'second call'):
+            stub('A')
+        self.assertEqual(stub('A'), None)
+        self.assertEqual(stub(), None)
