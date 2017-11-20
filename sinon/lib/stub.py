@@ -22,12 +22,152 @@ class SinonStub(SinonSpy):
 
     def __init__(self, obj=None, prop=None, func=None):
         super(SinonStub, self).__init__(obj, prop)
-        self._stubfunc = func if func else Wrapper.empty_function
-        super(SinonStub, self).wrap2stub(self._stubfunc)
-        self._copy = self._cond_args = self._cond_kwargs = self._oncall = None
-        # Todo: target is a dirty hack
-        self._conditions = {"args":[], "kwargs":[], "action":[], "oncall":[], "target": self.obj}
+        self._stubfunc = func if func else self.__default_custom_function
+        self._wrapper = super(SinonStub, self).wrap2stub(self._stubfunc)
+        self._cond_args = self._cond_kwargs = self._oncall = None
+        self._copy = self
+        self._conditions = {"args":[], "kwargs":[], "action":[], "oncall":[]}
         self._conditions["default"] =  lambda *args, **kwargs: None
+
+    def __default_custom_function(self, *args, **kwargs):
+        """
+        If the user does not specify a custom function with which to replace the original,
+        then this is the function that we shall use. This function allows the user to call
+        returns/throws to customize the return value.
+        
+        Args:
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+        Returns:
+            anything, the return values specified by the conditions
+                      (i.e. what the user defined with returns/throws)
+        """
+        index_list = self.__get_matching_withargs_indices(*args, **kwargs)
+        # if there are 'withArgs' conditions that might be applicable
+        if index_list:
+            return self.__get_return_value_withargs(index_list, *args, **kwargs)
+        # else no 'withArgs' conditions are applicable
+        else:
+            return self.__get_return_value_no_withargs(*args, **kwargs)
+
+    def __get_matching_indices(self, args, kwargs, args_list, kwargs_list):
+        """
+        Args:
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+            args_list: list, a list of argument tuples
+            kwargs_list: list, a list of keyword argument dictionaries
+        Returns:
+            list, the list of indices in args_list/kwargs_list for which the user args/kwargs match
+        """
+        target = self.obj
+        
+        # Todo: dirty hack
+        if len(args) > 0:
+            if target == args[0].__class__:
+                # Note: ignore args[0] because it is a callback (self) in this condition combination
+                args = args[1:]
+                args_list = [i[1:] if i and i[0].__class__ == target else i for i in args_list]
+
+        if args and kwargs:
+            if args in args_list and kwargs in kwargs_list:
+                args_indices = [i for i, x in enumerate(args_list) if x == args]
+                kwargs_indices = [i for i, x in enumerate(kwargs_list) if x == kwargs]
+                return list(set(args_indices).intersection(kwargs_indices))
+        # args only
+        elif args:
+            if args in args_list:
+                return [i for i, x in enumerate(args_list) if x == args and not kwargs_list[i]]
+        #kwargs only
+        elif kwargs:
+            if kwargs in kwargs_list:
+                return [i for i, x in enumerate(kwargs_list) if x == kwargs and not args_list[i]]
+        else:
+            return []
+
+    def __get_matching_withargs_indices(self, *args, **kwargs):
+        """
+        Args:
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+        Returns:
+            list, the list of indices in conditions for which the user args/kwargs match
+        """
+        return self.__get_matching_indices(args, kwargs, self._conditions["args"], self._conditions["kwargs"])
+
+    def __get_call_count(self, args, kwargs, args_list, kwargs_list):
+        """
+        Args:
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+            args_list: list, the tuples of args from all the times this stub was called
+            kwargs_list: list, the dictionaries of kwargs from all the times this stub was called
+        Returns:
+            integer, the number of times this combination of args/kwargs has been called
+        """
+        return len(self.__get_matching_indices(args, kwargs, args_list, kwargs_list))
+
+    def __get_return_value_withargs(self, index_list, *args, **kwargs):
+        """    
+        Pre-conditions:
+           (1) The user has created a stub and specified the stub behaviour
+           (2) The user has called the stub function with the specified "args" and "kwargs"
+           (3) One or more 'withArgs' conditions were applicable in this case
+        Args:
+            index_list: list, the list of indices in conditions for which the user args/kwargs match
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+        Returns:
+            any type, the appropriate return value, based on the stub's behaviour setup and the user input
+        """
+        c = self._conditions
+        args_list = self._wrapper.args_list
+        kwargs_list = self._wrapper.kwargs_list
+
+        # indices with an arg and oncall have higher priority and should be checked first
+        indices_with_oncall = [i for i in reversed(index_list) if c["oncall"][i]]
+
+        # if there are any combined withArgs+onCall conditions
+        if indices_with_oncall:
+            call_count = self.__get_call_count(args, kwargs, args_list, kwargs_list)
+            for i in indices_with_oncall:
+                if c["oncall"][i] == call_count:
+                    return c["action"][i](*args, **kwargs)
+
+        # else if there are simple withArgs conditions
+        indices_without_oncall = [i for i in reversed(index_list) if not c["oncall"][i]]
+        if indices_without_oncall:
+            max_index = max(indices_without_oncall)
+            return c["action"][max_index](*args, **kwargs)
+
+        # else all conditions did not match
+        return c["default"](*args, **kwargs)
+
+    def __get_return_value_no_withargs(self, *args, **kwargs):
+        """    
+        Pre-conditions:
+           (1) The user has created a stub and specified the stub behaviour
+           (2) The user has called the stub function with the specified "args" and "kwargs"
+           (3) No 'withArgs' conditions were applicable in this case
+        Args:
+            args: tuple, the arguments inputed by the user
+            kwargs: dictionary, the keyword arguments inputed by the user
+        Returns:
+            any type, the appropriate return value, based on the stub's behaviour setup and the user input
+        """
+        c = self._conditions
+        call_count = self._wrapper.callCount
+
+        # if there might be applicable onCall conditions
+        if call_count in c["oncall"]:
+            index_list = [i for i, x in enumerate(c["oncall"]) if x and not c["args"][i] and not c["kwargs"][i]]
+            for i in reversed(index_list):
+                # if the onCall condition applies
+                if call_count == c["oncall"][i]:
+                    return c["action"][i](*args, **kwargs)
+
+        # else all conditions did not match
+        return c["default"](*args, **kwargs)
 
     def _append_condition(self, sinon_stub_condition, func):
         '''
@@ -40,20 +180,18 @@ class SinonStub(SinonSpy):
 
         e.g.
             stub.withArgs(5).returns(7)
-              # conditions: args [(5,)] kwargs [()] action [7] oncall [None]
+              # conditions: args [(5,)] kwargs [()] oncall [None] action [7]
             stub.withArgs(10).onFirstCall().returns(14)
-              # conditions: args [(5,),(10,)] kwargs [(),()] action [7,14] oncall [None,1]
+              # conditions: args [(5,),(10,)] kwargs [(),()] oncall [None,1] action [7,14]
 
         Args:
             sinon_stub_condition: the _SinonStubCondition object that holds the current conditions
-            func: returns a value or raises an exception, as specified by the user
-        Returns: the SinonStub._conditions dictionary (for convenience)
+            func: returns a value or raises an exception (i.e. the action to take, as specified by the user)
         '''
         self._conditions["args"].append(sinon_stub_condition._cond_args)
         self._conditions["kwargs"].append(sinon_stub_condition._cond_kwargs)
         self._conditions["oncall"].append(sinon_stub_condition._oncall)
-        self._conditions["action"].append(func)
-        return self._conditions
+        self._conditions["action"].append(func)     
 
     def withArgs(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -72,8 +210,7 @@ class SinonStub(SinonSpy):
         """
         cond_args = args if len(args) > 0 else None
         cond_kwargs = kwargs if len(kwargs) > 0 else None
-        copy = self if not self._copy else self._copy
-        return _SinonStubCondition(copy=copy, cond_args=cond_args, cond_kwargs=cond_kwargs, oncall=self._oncall)
+        return _SinonStubCondition(copy=self._copy, cond_args=cond_args, cond_kwargs=cond_kwargs, oncall=self._oncall)
 
     def onCall(self, n): #pylint: disable=invalid-name
         """
@@ -96,8 +233,7 @@ class SinonStub(SinonSpy):
             a SinonStub object (able to be chained)
         """
         cond_oncall = n + 1
-        copy = self if not self._copy else self._copy
-        return _SinonStubCondition(copy=copy, oncall=cond_oncall, cond_args=self._cond_args, cond_kwargs=self._cond_kwargs)
+        return _SinonStubCondition(copy=self._copy, oncall=cond_oncall, cond_args=self._cond_args, cond_kwargs=self._cond_kwargs)
 
     def onFirstCall(self): #pylint: disable=invalid-name
         """
@@ -126,7 +262,6 @@ class SinonStub(SinonSpy):
         Return: a SinonStub object (able to be chained)
         """
         self._conditions["default"] = lambda *args, **kwargs: obj
-        super(SinonStub, self).wrap2stub(self._conditions["default"], self._conditions)
         return self
 
     def throws(self, exception=Exception):
@@ -140,7 +275,6 @@ class SinonStub(SinonSpy):
         def exception_function(*args, **kwargs):
             raise exception
         self._conditions["default"] = exception_function
-        super(SinonStub, self).wrap2stub(self._conditions["default"], self._conditions)
         return self
 
 class _SinonStubCondition(SinonStub):
@@ -178,8 +312,7 @@ class _SinonStubCondition(SinonStub):
         Args: obj (anything)
         Return: a SinonStub object (able to be chained)
         """
-        conditions = self._copy._append_condition(self, lambda *args, **kwargs: obj)
-        super(SinonStub, self._copy).wrap2stub(self._copy._stubfunc, conditions)
+        self._copy._append_condition(self, lambda *args, **kwargs: obj)
         return self
 
     def throws(self, exception=Exception):
@@ -192,6 +325,5 @@ class _SinonStubCondition(SinonStub):
         """
         def exception_function(*args, **kwargs):
             raise exception
-        conditions = self._copy._append_condition(self, exception_function)
-        super(SinonStub, self._copy).wrap2stub(self._copy._stubfunc, conditions)
+        self._copy._append_condition(self, exception_function)
         return self
