@@ -60,15 +60,6 @@ class SinonStub(SinonSpy):
         Returns:
             list, the list of indices in args_list/kwargs_list for which the user args/kwargs match
         """
-        target = self.obj
-        
-        # Todo: dirty hack
-        if len(args) > 0:
-            if target == args[0].__class__:
-                # Note: ignore args[0] because it is a callback (self) in this condition combination
-                args = args[1:]
-                args_list = [i[1:] if i and i[0].__class__ == target else i for i in args_list]
-
         if args and kwargs:
             if args in args_list and kwargs in kwargs_list:
                 args_indices = [i for i, x in enumerate(args_list) if x == args]

@@ -217,7 +217,7 @@ class SinonBase(object):
             function, the spy wrapper around the customfunc
         """
         if self.args_type == "MODULE_FUNCTION":
-            wrapper = Wrapper.wrap_spy(customfunc)
+            wrapper = Wrapper.wrap_spy(customfunc, self.obj)
             setattr(self.obj, self.prop, wrapper)
         elif self.args_type == "MODULE":
             wrapper = Wrapper.EmptyClass
