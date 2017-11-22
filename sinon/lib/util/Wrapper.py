@@ -29,7 +29,7 @@ class EmptyClass(object): #pylint: disable=too-few-public-methods,missing-docstr
 def empty_function(*args, **kwargs): #pylint: disable=unused-argument,missing-docstring
     pass
 
-def wrap_spy(function):
+def wrap_spy(function, owner=None):
     """
     Surrounds the given 'function' with a spy wrapper that tracks usage data, such as:
       * call count
@@ -43,6 +43,9 @@ def wrap_spy(function):
                     1. the original function the user wants to spy on
                     2. the custom function the user specified to replace the original
                     3. a default function configurable via returns/throws
+        owner: object, the owner of the original function. It is necessary in certain cases
+               to specify this, such as when the user stubs a class. Otherwise, the SpyCall
+               arguments will erroneously include the 'owner' as the first parameter of every call.
     Returns:
         function, the spy wrapper that is replacing the inputted function
     """
@@ -56,6 +59,11 @@ def wrap_spy(function):
         """
         Fully manipulatable inspector function
         """
+        if owner:
+            if len(args) > 0:
+                if owner == args[0].__class__:
+                    args = args[1:]
+        
         wrapped.callCount += 1
         wrapped.args_list.append(args)
         wrapped.kwargs_list.append(kwargs)
