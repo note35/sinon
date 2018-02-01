@@ -118,20 +118,16 @@ class SinonBase(object):
             self.obj, self.prop = obj, prop
             self.__check_lock()
             self.wrap2spy()
-            self.pure_count = 0
             self.is_in_queue = False
 
     def __call__(self, *args, **kwargs):
         """
-        Customized __call__ function for two purposes:
-          1. Track the number of calls
-          2. Return the user-defined value (e.g. after a call to stub.returns() )
+        Customized __call__ function to return the user-defined value (e.g. after a call to stub.returns() )
         Args:
             no limitation
         Return:
             no limitation
         """
-        self.pure_count = self.pure_count + 1
         return self._get_wrapper()(*args, **kwargs)
 
     def __set_type(self, obj, prop):

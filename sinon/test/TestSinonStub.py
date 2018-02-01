@@ -596,3 +596,33 @@ class TestSinonStub(unittest.TestCase):
             stub('A')
         self.assertEqual(stub('A'), None)
         self.assertEqual(stub(), None)
+
+    @sinontest
+    def test500_stub_is_SinonStubCondition_pure(self):
+        pure_stub = SinonStub().onFirstCall().throws(BaseException('Hello World')).onSecondCall().returns(42)
+        self.assertEqual(pure_stub.callCount, 0)
+        with self.assertRaisesRegexp(BaseException, 'Hello World'):
+            pure_stub()
+        self.assertEqual(pure_stub(), 42)
+        self.assertEqual(pure_stub(), None)
+        self.assertEqual(pure_stub.callCount, 3)
+
+    @sinontest
+    def test510_stub_is_SinonStubCondition_module_function(self):
+        module_function_stub = SinonStub(os, "system").onFirstCall().throws(BaseException('Hello World')).onSecondCall().returns(42)
+        self.assertEqual(module_function_stub.callCount, 0)
+        with self.assertRaisesRegexp(BaseException, 'Hello World'):
+            os.system("cd")
+        self.assertEqual(os.system("cd"), 42)
+        self.assertEqual(os.system("cd"), None)
+        self.assertEqual(module_function_stub.callCount, 3)
+
+    @sinontest
+    def test520_stub_is_SinonStubCondition_function(self):
+        function_stub = SinonStub(C_func).onFirstCall().throws(BaseException('Hello World')).onSecondCall().returns(42)
+        self.assertEqual(function_stub.callCount, 0)
+        with self.assertRaisesRegexp(BaseException, 'Hello World'):
+            sinon.g.C_func()
+        self.assertEqual(sinon.g.C_func(), 42)
+        self.assertEqual(sinon.g.C_func(), None)
+        self.assertEqual(function_stub.callCount, 3)
