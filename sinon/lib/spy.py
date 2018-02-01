@@ -109,13 +109,9 @@ class SinonSpy(SinonBase): #pylint: disable=too-many-public-methods
     def callCount(self): #pylint: disable=invalid-name
         """
         Return:
-            count of target function
+            integer, count of number of times the spied-on function has been called
         """
-        #TODO: consider to remove "MODULE" condition
-        if self.args_type in ["MODULE", "PURE"]:
-            return self.pure_count
-        else:
-            return super(SinonSpy, self)._get_wrapper().callCount
+        return super(SinonSpy, self)._get_wrapper().callCount
 
     @property
     def called(self): #pylint: disable=missing-docstring

@@ -182,7 +182,7 @@ class SinonStub(SinonSpy):
         self._conditions["args"].append(sinon_stub_condition._cond_args)
         self._conditions["kwargs"].append(sinon_stub_condition._cond_kwargs)
         self._conditions["oncall"].append(sinon_stub_condition._oncall)
-        self._conditions["action"].append(func)     
+        self._conditions["action"].append(func)
 
     def withArgs(self, *args, **kwargs): #pylint: disable=invalid-name
         """
@@ -294,6 +294,29 @@ class _SinonStubCondition(SinonStub):
         self._cond_args = cond_args
         self._cond_kwargs = cond_kwargs
         self._oncall = oncall
+
+    @property
+    def args_type(self): #pylint: disable=missing-docstring
+        return self._copy.args_type
+
+    @property
+    def pure(self): #pylint: disable=missing-docstring
+        return self._copy.pure
+
+    @property
+    def obj(self): #pylint: disable=missing-docstring
+        return self._copy.obj
+
+    @property
+    def prop(self): #pylint: disable=missing-docstring
+        return self._copy.prop
+
+    @property
+    def orig_func(self): #pylint: disable=missing-docstring
+        return self._copy.orig_func
+
+    def restore(self): #pylint: disable=missing-docstring
+        self._copy.restore()
 
     def returns(self, obj):
         """
