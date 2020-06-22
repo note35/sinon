@@ -50,7 +50,7 @@ class TestSinonMatcher(unittest.TestCase):
         self.assertFalse(m.mtest("match strig"))
 
     def test003_constructor_strcmp_regex(self):
-        m = SinonMatcher("(\w*) (\w*)", strcmp="regex")
+        m = SinonMatcher(r"(\w*) (\w*)", strcmp="regex")
         self.assertFalse(m.mtest("match"))
         self.assertTrue(m.mtest("ch st"))
         self.assertTrue(m.mtest("match string"))
@@ -62,7 +62,7 @@ class TestSinonMatcher(unittest.TestCase):
             return a+b+c
         m = SinonMatcher(custom_test_func, is_custom_func=True)
         self.assertEqual(m.mtest(1,2,3), 6)
-        m = SinonMatcher("(\w*) (\w*)", strcmp="regex")
+        m = SinonMatcher(r"(\w*) (\w*)", strcmp="regex")
         self.assertFalse(m.mtest("match"))
 
     def test005_constructor_func_invalid(self):
